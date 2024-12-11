@@ -1,9 +1,16 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface User {
-  name?: string;
-  email: string;
-  verified?: boolean;
+  id: number | null;
+  name: string | null;
+  email: string | null;
+  position: string | null;
+  division_name: string | null;
+  district_name: string | null;
+  upazila_name: string | null;
+  union_name: string | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 type TInitialState = {
@@ -18,7 +25,7 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setUser: (state, { payload }) => {
+    setUser: (state, { payload }: PayloadAction<User>) => {
       state.user = payload;
     },
     removeUser: state => {

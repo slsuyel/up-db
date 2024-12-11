@@ -28,7 +28,6 @@ type SidebarItemWithoutSubmenu = SidebarItemBase & {
 type SidebarItem = SidebarItemWithSubmenu | SidebarItemWithoutSubmenu;
 
 const Sidebar = () => {
-  // const sonodInfo = useAppSelector((state: RootState) => state.union.sonodList);
 
   const sidebarItems: SidebarItem[] = [
     {

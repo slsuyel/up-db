@@ -113,7 +113,6 @@ const SearchFilter: React.FC = () => {
 
     const admin: TAdminData = data?.data;
 
-    console.log(admin);
 
     return (
         <>
