@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Input, Checkbox } from "antd";
+import { Input, Checkbox, message } from "antd";
 
 import { useUserLoginMutation } from "@/redux/api/auth/authApi";
 
@@ -11,8 +11,8 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/dashboard";
-  const [email, setEmail] = useState("ups@gmail.com");
-  const [password, setPassword] = useState("12345678");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
@@ -21,6 +21,10 @@ const Login = () => {
       if (res.status_code == 200) {
         localStorage.setItem("token", res.data.token);
         navigate(from);
+
+      } else if (res.status_code == 401) {
+        message.error('Unauthorized access')
+        console.error("Unauthorized access");
       } else {
         console.error("Login failed");
       }
