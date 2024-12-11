@@ -1,12 +1,12 @@
 export type TDivision = {
   id: string;
-  naem: string;
+  name: string;
   bn_name: string;
 };
 export type TDistrict = {
   id: string;
   division_id: string;
-  naem: string;
+  name: string;
   bn_name: string;
 };
 export type TUpazila = {
@@ -279,4 +279,33 @@ export interface TSonodName {
   sonod_fee: number;
   created_at: string | null;
   updated_at: string | null;
+}
+
+
+
+export interface TAdminData {
+  sonod_reports:   SonodReport[];
+  payment_reports: PaymentReport[];
+  totals:          Totals;
+}
+
+export interface PaymentReport {
+  sonod_type:     string;
+  total_payments: number;
+  total_amount:   string;
+}
+
+export interface SonodReport {
+  sonod_name:     string;
+  pending_count:  number;
+  approved_count: number;
+  cancel_count:   number;
+}
+
+export interface Totals {
+  total_pending:  number;
+  total_approved: number;
+  total_cancel:   number;
+  total_payments: number;
+  total_amount:   number;
 }

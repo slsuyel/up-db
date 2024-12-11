@@ -24,7 +24,7 @@ const UserLayout = () => {
   }, []);
 
   return (
-    <Layout style={{ height: "100%" }}>
+    <Layout >
       <Sidebar />
       <Layout>
         <Header
@@ -40,8 +40,8 @@ const UserLayout = () => {
                 ? "rgba(0, 0, 0, 0.8)"
                 : "#001529"
               : scrollY > 0
-              ? "#fffcfc8a"
-              : "white",
+                ? "#fffcfc8a"
+                : "white",
 
             backdropFilter: scrollY > 0 ? "blur(4px)" : "none",
             transition: "background-color 0.3s, backdrop-filter 0.3s",

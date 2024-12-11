@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { RootState } from "@/redux/features/store";
-import { useAppSelector } from "@/redux/features/hooks";
+
 import { Badge, Layout, Menu } from "antd";
 import { Link } from "react-router-dom";
 
@@ -29,7 +28,7 @@ type SidebarItemWithoutSubmenu = SidebarItemBase & {
 type SidebarItem = SidebarItemWithSubmenu | SidebarItemWithoutSubmenu;
 
 const Sidebar = () => {
-  const sonodInfo = useAppSelector((state: RootState) => state.union.sonodList);
+  // const sonodInfo = useAppSelector((state: RootState) => state.union.sonodList);
 
   const sidebarItems: SidebarItem[] = [
     {
@@ -39,40 +38,15 @@ const Sidebar = () => {
       pendingCount: 0,
     },
     { key: "reports", title: "সকল প্রতিবেদন", slug: "/reports" },
-    {
-      key: "profile",
-      title: "ইউনিয়ন প্রোফাইল",
-      slug: "/union/profile",
-    },
-    { key: "tax", title: "হোল্ডিং ট্যাক্স", slug: "/holding/tax/" },
-    { key: "fee", title: "সনদ ফি", slug: "/sonod/fee" },
-    ...sonodInfo.map((sonod) => ({
-      key: sonod.id.toString(),
-      title: sonod.bnname,
-      pendingCount: sonod.pendingCount,
-      submenu: [
-        {
-          key: `${sonod.id}-1`,
-          title: "নতুন আবেদন",
-          new_sonod: sonod.id,
-          slug: `/sonod/${sonod.bnname}/Pending`,
-        },
-        {
-          key: `${sonod.id}-2`,
-          title: "অনুমোদিত আবেদন",
-          slug: `/sonod/${sonod.bnname}/approved`,
-        },
-        {
-          key: `${sonod.id}-3`,
-          title: "বাতিল আবেদন",
-          slug: `/sonod/${sonod.bnname}/cancel`,
-        },
-      ],
-    })),
+    { key: "search", title: "সার্চ", slug: "/up-search" },
+
+
+
+
   ];
 
   return (
-    <Sider theme={theme ? "light" : "dark"} breakpoint="lg" collapsedWidth="0">
+    <Sider style={{ height: '100vh' }} theme={theme ? "light" : "dark"} breakpoint="lg" collapsedWidth="0">
       <div
         className="border-bottom "
         style={{

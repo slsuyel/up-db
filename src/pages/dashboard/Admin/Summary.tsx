@@ -1,4 +1,5 @@
-import { useDashboardMetricsQuery } from "@/redux/api/auth/authApi";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Spinner } from "react-bootstrap";
 
 const SummaryItem = ({
@@ -11,7 +12,7 @@ const SummaryItem = ({
   value: number;
 }) => {
   return (
-    <div className="col-md-3 my-1 font_amazon">
+    <div className="col-md-3 my-1 ">
       <div className="border-0 card hov-card mb-2 py-3 shadow-sm">
         <div className="card-body d-flex align-item-center justify-content-around">
           <i className={`p-3 rounded-circle my-auto ${icon} fs-1`}></i>
@@ -25,54 +26,51 @@ const SummaryItem = ({
   );
 };
 
-interface TSonodData {
-  totalSonod: number;
-  pendingSonod: number;
-  approvedSonod: number;
-  cancelSonod: number;
-  totalRevenue: string;
-}
 
-const Summary = () => {
-  const token = localStorage.getItem("token");
-  const { data, isLoading } = useDashboardMetricsQuery({ token });
+
+const Summary = ({ data, isLoading }: { data: any, isLoading: boolean }) => {
+
 
   if (isLoading) {
     return <Spinner />;
   }
 
-  const all: TSonodData = data.data;
+  const all = data;
+
+
+  console.log(all);
+
 
   const summaryItems = [
     {
       icon: "fa-solid fa-file-contract",
       title: "মোট আবেদন",
-      value: all.totalSonod,
+      value: all.total_pending + all.total_cancel + all.total_approved,
     },
     {
       icon: "fa-solid fa-file-pen",
       title: "নতুন আবেদন",
-      value: all.pendingSonod,
+      value: all.total_pending,
     },
     {
       icon: "fa-solid fa-file-circle-check",
       title: "ইস্যুকৃত সনদ",
-      value: all.approvedSonod,
+      value: all.total_approved,
     },
     {
       icon: "fa-solid fa-file-excel",
       title: "বাতিলকৃত আবেদন",
-      value: all.cancelSonod,
+      value: all.total_cancel,
     },
     {
       icon: "fa-solid fa-bangladeshi-taka-sign",
-      title: "মোট আদায়কৃত ফি পরিমাণ",
-      value: all.totalRevenue,
+      title: "মোট আদায়কৃত ফি",
+      value: all.total_amount,
     },
   ];
 
   return (
-    <div className="row mx-auto ">
+    <div className="row mx-auto  mt-4">
       {summaryItems.map((item, index) => (
         <SummaryItem
           key={index}

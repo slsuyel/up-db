@@ -1,5 +1,6 @@
 import UnderConstruction from '@/components/reusable/UnderConstruction';
 import Dhome from '@/pages/dashboard/Admin/Dhome';
+import SearchFilter from '@/pages/dashboard/Admin/SearchFilter';
 import HoldingAdd from '@/pages/dashboard/holding/HoldingAdd';
 import HoldingShow from '@/pages/dashboard/holding/HoldingShow';
 import HoldingTax from '@/pages/dashboard/holding/HoldingTax';
@@ -23,6 +24,10 @@ export const adminRoutes = [
   {
     path: 'union/profile',
     element: <UnionProfile />,
+  },
+  {
+    path: 'up-search',
+    element: <SearchFilter />,
   },
   {
     path: 'holding/tax/',

@@ -16,16 +16,28 @@ const authApi = apiSlice.injectEndpoints({
 
     userLogin: builder.mutation({
       query: ({ email, password }) => ({
-        url: `/auth/user/login`,
+        url: `/auth/admin/login`,
         method: "POST",
         body: { email, password },
+      }),
+      invalidatesTags: ["profileCreate"] as any,
+    }),
+    adminReport: builder.mutation({
+      query: ({ token, data }) => ({
+        url: `/admin/reports/get-reports`,
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        body: data,
+
       }),
       invalidatesTags: ["profileCreate"] as any,
     }),
 
     tokenCheck: builder.query({
       query: ({ token }) => ({
-        url: `/auth/user/check-token`,
+        url: `/auth/admin/check-token`,
         headers: { Authorization: `Bearer ${token}` },
       }),
     }),
@@ -77,7 +89,7 @@ const authApi = apiSlice.injectEndpoints({
 
     logout: builder.mutation({
       query: ({ token }) => ({
-        url: `/auth/user/logout`,
+        url: `/auth/admin/logout`,
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       }),
@@ -106,4 +118,7 @@ export const {
   useUpdateProfileMutation,
   useResetPassLinkMutation,
   useChangePasswordMutation,
+  useAdminReportMutation
 } = authApi;
+
+
