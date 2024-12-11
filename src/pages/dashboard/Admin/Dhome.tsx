@@ -9,7 +9,7 @@ import Summary from './Summary';
 import Loader from '@/components/reusable/Loader';
 
 const Dhome = () => {
-  // const user = useAppSelector((state: RootState) => state.user.user);
+
   const [adminReport, { isLoading, data }] = useAdminReportMutation();
   const token = localStorage.getItem('token')
 
