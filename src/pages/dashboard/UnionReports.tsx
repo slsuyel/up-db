@@ -32,13 +32,34 @@ const UnionReports = () => {
     toDate: '',
   });
 
+  /* user -- {
+    "id": 3,
+    "name": "DC",
+    "email": "dc@gmail.com",
+    "position": null,
+    "division_name": "Rangpur",
+    "district_name": "Panchagarh",
+    "upazila_name": null,
+    "union_name": null,
+    "created_at": "2024-12-11T10:55:02.000000Z",
+    "updated_at": "2024-12-11T10:55:02.000000Z"
+} */
+
 
   useEffect(() => {
-    fetch("/divisions.json")
+    fetch('/divisions.json')
       .then((res) => res.json())
-      .then((data: TDivision[]) => setDivisions(data))
-      .catch((error) => console.error("Error fetching divisions data:", error));
-  }, []);
+      .then((data: TDivision[]) => {
+        setDivisions(data);
+        if (user?.division_name) {
+          const userDivision = data.find((d) => d.name === user.division_name);
+          if (userDivision) {
+            setSelectedDivision(userDivision);
+          }
+        }
+      })
+      .catch((error) => console.error('Error fetching divisions data:', error));
+  }, [user]);
 
   useEffect(() => {
     if (selectedDivision) {
@@ -49,12 +70,21 @@ const UnionReports = () => {
             (d) => d.division_id === selectedDivision.id
           );
           setDistricts(filteredDistricts);
+          if (user?.district_name) {
+            const userDistrict = filteredDistricts.find(
+              (d) => d.name === user.district_name
+            );
+            if (userDistrict) {
+              setSelectedDistrict(userDistrict);
+            }
+          }
         })
         .catch((error) =>
           console.error("Error fetching districts data:", error)
         );
     }
-  }, [selectedDivision]);
+  }, [selectedDivision, user]);
+
 
   useEffect(() => {
     if (selectedDistrict) {
@@ -65,12 +95,20 @@ const UnionReports = () => {
             (upazila) => upazila.district_id === selectedDistrict.id
           );
           setUpazilas(filteredUpazilas);
+          if (user?.upazila_name) {
+            const userUpazila = filteredUpazilas.find(
+              (u) => u.name === user.upazila_name
+            );
+            if (userUpazila) {
+              setSelectedUpazila(userUpazila);
+            }
+          }
         })
         .catch((error) =>
           console.error("Error fetching upazilas data:", error)
         );
     }
-  }, [selectedDistrict]);
+  }, [selectedDistrict, user]);
 
   useEffect(() => {
     if (selectedUpazila) {
@@ -134,7 +172,6 @@ const UnionReports = () => {
     window.open(url, '_blank');
   };
 
-  console.log(user);
 
 
   return (
@@ -152,7 +189,7 @@ const UnionReports = () => {
               required
               id="division"
               className="form-control"
-
+              disabled={!!user?.division_name}
               value={selectedDivision?.id || ""}
               onChange={handleDivisionChange}
             >
@@ -172,6 +209,7 @@ const UnionReports = () => {
               required
               id="district"
               className="form-control"
+              disabled={!!user?.district_name}
               value={selectedDistrict?.id || ""}
               onChange={handleDistrictChange}
             >
@@ -193,6 +231,7 @@ const UnionReports = () => {
               id="upazila"
               className="form-control"
               value={selectedUpazila?.id || ""}
+              disabled={!!user?.upazila_name}
               onChange={handleUpazilaChange}
             >
               <option value="">উপজেলা নির্বাচন করুন</option>
