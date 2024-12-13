@@ -8,7 +8,7 @@ const adminEditFields = () => {
                 {" "}
                 <Form.Item
                     label="খাত"
-                    name=""
+                    name="khat"
                 >
                     <Input style={{ height: 40 }} />
                 </Form.Item>

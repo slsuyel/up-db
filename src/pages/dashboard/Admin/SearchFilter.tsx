@@ -5,6 +5,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import Summary from "./Summary";
 import { Link } from "react-router-dom";
+import { message } from "antd";
 
 const SearchFilter: React.FC = () => {
   const token = localStorage.getItem("token");
@@ -101,6 +102,12 @@ const SearchFilter: React.FC = () => {
   };
 
   const handleSearchClick = async () => {
+    if (!selectedDivision?.name) {
+      message.warning('বিভাগ নির্বাচন করুন')
+      return
+    }
+
+
     const data = {
       division_name: selectedDivision?.name,
       district_name: selectedDistrict?.name,
@@ -113,12 +120,16 @@ const SearchFilter: React.FC = () => {
 
   const admin: TAdminData = data?.data;
 
+  console.log(admin);
+
+
   return (
     <>
       <div className="row mx-auto">
         <div className="col-md-2">
           <label htmlFor="division">বিভাগ নির্বাচন করুন</label>
           <select
+
             id="division"
             className="searchFrom form_control"
             value={selectedDivision?.id || ""}
@@ -215,6 +226,24 @@ const SearchFilter: React.FC = () => {
       </div>
 
       <div className=" w-100"> {isLoading && <Spinner />}</div>
+
+
+      <div className=" my-3 d-flex justify-content-end text-white">
+        {admin?.sonod_reports.length >= 1 && <Link
+          target="_blank"
+          to={`https://api.uniontax.gov.bd/download/reports/get-reports${selectedDivision ? `?division_name=${selectedDivision.name}` : ''
+            }${selectedDistrict ? `&district_name=${selectedDistrict.name}` : ''
+            }${selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ''
+            }${selectedUnion ? `&union_name=${selectedUnion.name}` : ''
+            }${selected ? `&sonod_name=${selected}` : ''
+            }`}
+          className="btn btn-info text-white"
+        >
+          প্রতিবেদন ডাউনলোড করুন
+        </Link>
+        }
+      </div>
+
 
       {admin?.totals && <Summary data={admin.totals} isLoading={isLoading} />}
 

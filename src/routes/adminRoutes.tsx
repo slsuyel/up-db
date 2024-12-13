@@ -54,7 +54,7 @@ export const adminRoutes = [
     element: <SonodManagement />,
   },
   {
-    path: 'sonod/:sonodName/action/edit/:id',
+    path: 'sonod/:service/action/edit/:id',
     element: <EditSonod />,
   },
   {

@@ -136,11 +136,12 @@ import { useTradeInfoQuery } from "@/redux/api/user/userApi";
 import adminEditFields from "./adminEditFields";
 
 const ApplicationForm = () => {
-  const { service } = useParams<{ service: string }>();
+  const { service } = useParams();
   const [unionName, setUnionName] = useState("uniontax");
   const { data, isLoading } = useTradeInfoQuery(unionName, {
     skip: service !== "ট্রেড লাইসেন্স",
   });
+
 
   const navigate = useNavigate();
   const location = useLocation();
