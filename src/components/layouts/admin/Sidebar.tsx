@@ -36,8 +36,8 @@ const Sidebar = () => {
       slug: "",
       pendingCount: 0,
     },
-    { key: "reports", title: "সকল প্রতিবেদন", slug: "/reports" },
-    { key: "search", title: "সার্চ", slug: "/up-search" },
+    { key: "reports", title: "লেনদেনের প্রতিবেদন ", slug: "/reports" },
+    { key: "search", title: "সকল প্রতিবেদন", slug: "/up-search" },
 
 
 

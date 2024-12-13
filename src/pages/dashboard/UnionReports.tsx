@@ -151,7 +151,7 @@ const UnionReports = () => {
 
   return (
     <div>
-      <Breadcrumbs current="প্রতিবেদন" />
+      <Breadcrumbs current="লেনদেনের প্রতিবেদন" />
 
       <form onSubmit={handleSubmit}>
         <div className="row mx-auto mb-4">

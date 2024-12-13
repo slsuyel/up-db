@@ -1,62 +1,43 @@
-import { useSonodApplyMutation } from "@/redux/api/user/userApi";
-import { useAppSelector } from "@/redux/features/hooks";
-import { RootState } from "@/redux/features/store";
+import { useSingleSonodQuery } from "@/redux/api/sonod/sonodApi";
+
 
 import { TApplicantData } from "@/types";
-import { getFormattedDate } from "@/utils/getFormattedDate";
-import { Button, message, Modal } from "antd";
-import { useParams } from "react-router-dom";
+
+import { Button, Modal } from "antd";
+
 
 interface FormValueModalProps {
   visible: boolean;
   data?: TApplicantData;
   onCancel: () => void;
   from?: string;
+  id?: number
 }
 
 const FormValueModal = ({
   visible,
-  data,
   onCancel,
-  from,
+  id
 }: FormValueModalProps) => {
-  const unionInfo = useAppSelector((state: RootState) => state.union.unionInfo);
-  const sonodList = useAppSelector((state: RootState) => state.union.sonodList);
-  const { service } = useParams<{ service: string }>();
-  const sonod = sonodList.find((d) => d.bnname == service);
-  const tradeFee = useAppSelector((state: RootState) => state.union.tradeFee);
-  const [sonodApply, { isLoading }] = useSonodApplyMutation();
+  const token = localStorage.getItem('token')
+
+
+
+  const { data: singleS, isLoading: getingSonod } = useSingleSonodQuery({ id, token })
+
 
 
   const handleCancel = () => {
     onCancel();
   };
-  const formattedDate = getFormattedDate(data?.applicant_date_of_birth || null);
 
-  const handlePayment = async () => {
-    const additionalData = {
-      applicant_date_of_birth: formattedDate,
-      unioun_name: unionInfo?.short_name_e,
-      sonod_name: service,
-      s_uri: window.origin + "/payment-success",
-      f_uri: window.origin + "/payment-failed",
-      c_uri: window.origin + "/payment-cancel",
-    };
-    const updatedData = { ...data, ...additionalData };
-    try {
-      const response = await sonodApply(updatedData).unwrap();
-      console.log(response);
-      if (response.status_code === 200) {
-        message.success("You are redirect to payment gateway");
-        window.location.href = response.data.redirect_url;
-      }
-    } catch (error) {
-      message.error("An error occurred while processing your request");
-    }
-  };
+
+  const data: TApplicantData = !getingSonod && singleS?.data
+
 
   return (
     <Modal
+      loading={getingSonod}
       width={800}
       open={visible}
       onCancel={handleCancel}
@@ -94,7 +75,7 @@ const FormValueModal = ({
             <b>হোল্ডিং নং : {data?.applicant_holding_tax_number} </b>
           </div>
           <div className="col-md-4 col-6 mt-3">
-            <b>জম্ম তারিখ : {formattedDate} </b>
+            <b>জম্ম তারিখ : {data.applicant_date_of_birth} </b>
           </div>
           <div className="col-md-4 col-6 mt-3">
             <b>পাসপোর্ট নং : </b>
@@ -184,30 +165,7 @@ const FormValueModal = ({
           </div>
         </div>
         <br /> <br />
-        {from !== "dashboard" && (
-          <div
-            className="text-center"
-            style={{ width: "50%", margin: "0px auto" }}
-          >
-            <h3>
-              আপনার আবেদনটি সফল করার জন্য সনদের ফি প্রদান করুন । {service} এর ফি{" "}
 
-              {service === "ট্রেড লাইসেন্স" ? (tradeFee ? Number(tradeFee) + (Number(sonod?.sonod_fees) * 1.15) : Number(sonod?.sonod_fees)) : sonod?.sonod_fees}
-              {' '}
-
-              টাকা
-              ।
-            </h3>
-            <button
-              disabled={isLoading}
-              onClick={handlePayment}
-              type="submit"
-              className="border-1 btn_main text-nowrap w-100"
-            >
-              {isLoading ? "Please wait" : "Pay And Submit"}
-            </button>
-          </div>
-        )}
       </div>
     </Modal>
   );

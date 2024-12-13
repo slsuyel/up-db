@@ -167,6 +167,7 @@ const SonodManagement = () => {
                         <SonodActionBtn
                           condition={condition}
                           item={item}
+
                           sonodName={sonodName}
                         />
                       </td>

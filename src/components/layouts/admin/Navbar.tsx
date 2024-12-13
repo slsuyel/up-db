@@ -1,3 +1,5 @@
+import { useAppSelector } from "@/redux/features/hooks";
+import { RootState } from "@/redux/features/store";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { Dropdown, message } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +13,9 @@ function handleProfileClick() {
 // Define the onClick handler for Logout click
 
 const Navbar = () => {
+
+  const user = useAppSelector((state: RootState) => state.user.user);
+
   const items = [
     {
       label: "Profile",
@@ -44,7 +49,7 @@ const Navbar = () => {
         placement="bottom"
         icon={<UserOutlined />}
       >
-        Admin
+        {user?.name}
       </Dropdown.Button>
     </div>
   );

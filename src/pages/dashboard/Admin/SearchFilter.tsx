@@ -6,8 +6,12 @@ import { Spinner } from "react-bootstrap";
 import Summary from "./Summary";
 import { Link } from "react-router-dom";
 import { message } from "antd";
+import { useAppSelector } from "@/redux/features/hooks";
+import { RootState } from "@/redux/features/store";
+import Breadcrumbs from "@/components/reusable/Breadcrumbs";
 
 const SearchFilter: React.FC = () => {
+  const user = useAppSelector((state: RootState) => state.user.user);
   const token = localStorage.getItem("token");
   const services = useAllServices();
   const [selected, setSelected] = useState("");
@@ -27,9 +31,17 @@ const SearchFilter: React.FC = () => {
   useEffect(() => {
     fetch("/divisions.json")
       .then((res) => res.json())
-      .then((data: TDivision[]) => setDivisions(data))
+      .then((data: TDivision[]) => {
+        setDivisions(data);
+        if (user?.division_name) {
+          const userDivision = data.find((d) => d?.name === user.division_name);
+          if (userDivision) {
+            setSelectedDivision(userDivision);
+          }
+        }
+      })
       .catch((error) => console.error("Error fetching divisions data:", error));
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (selectedDivision) {
@@ -37,15 +49,23 @@ const SearchFilter: React.FC = () => {
         .then((response) => response.json())
         .then((data: TDistrict[]) => {
           const filteredDistricts = data.filter(
-            (d) => d.division_id === selectedDivision.id
+            (d) => d?.division_id === selectedDivision.id
           );
           setDistricts(filteredDistricts);
+          if (user?.district_name) {
+            const userDistrict = filteredDistricts.find(
+              (d) => d?.name === user.district_name
+            );
+            if (userDistrict) {
+              setSelectedDistrict(userDistrict);
+            }
+          }
         })
         .catch((error) =>
           console.error("Error fetching districts data:", error)
         );
     }
-  }, [selectedDivision]);
+  }, [selectedDivision, user]);
 
   useEffect(() => {
     if (selectedDistrict) {
@@ -56,12 +76,20 @@ const SearchFilter: React.FC = () => {
             (upazila) => upazila.district_id === selectedDistrict.id
           );
           setUpazilas(filteredUpazilas);
+          if (user?.upazila_name) {
+            const userUpazila = filteredUpazilas.find(
+              (u) => u?.name === user.upazila_name
+            );
+            if (userUpazila) {
+              setSelectedUpazila(userUpazila);
+            }
+          }
         })
         .catch((error) =>
           console.error("Error fetching upazilas data:", error)
         );
     }
-  }, [selectedDistrict]);
+  }, [selectedDistrict, user]);
 
   useEffect(() => {
     if (selectedUpazila) {
@@ -120,18 +148,16 @@ const SearchFilter: React.FC = () => {
 
   const admin: TAdminData = data?.data;
 
-  console.log(admin);
-
-
   return (
     <>
+      <Breadcrumbs current=" সকল প্রতিবেদন" />
       <div className="row mx-auto">
         <div className="col-md-2">
           <label htmlFor="division">বিভাগ নির্বাচন করুন</label>
           <select
-
+            disabled={!!user?.division_name}
             id="division"
-            className="searchFrom form_control"
+            className="searchFrom form-control"
             value={selectedDivision?.id || ""}
             onChange={handleDivisionChange}
           >
@@ -148,8 +174,9 @@ const SearchFilter: React.FC = () => {
           <div className="col-md-2">
             <label htmlFor="district">জেলা নির্বাচন করুন</label>
             <select
+              disabled={!!user?.district_name}
               id="district"
-              className="searchFrom form_control"
+              className="searchFrom form-control"
               value={selectedDistrict?.id || ""}
               onChange={handleDistrictChange}
             >
@@ -167,8 +194,9 @@ const SearchFilter: React.FC = () => {
           <div className="col-md-2">
             <label htmlFor="upazila">উপজেলা নির্বাচন করুন</label>
             <select
+              disabled={!!user?.upazila_name}
               id="upazila"
-              className="searchFrom form_control"
+              className="searchFrom form-control"
               value={selectedUpazila?.id || ""}
               onChange={handleUpazilaChange}
             >
@@ -187,7 +215,7 @@ const SearchFilter: React.FC = () => {
             <label htmlFor="union">ইউনিয়ন নির্বাচন করুন</label>
             <select
               id="union"
-              className="searchFrom form_control"
+              className="searchFrom form-control"
               value={selectedUnion?.id || ""}
               onChange={handleUnionChange}
             >
@@ -205,7 +233,7 @@ const SearchFilter: React.FC = () => {
           <label htmlFor="service">সেবা নির্বাচন করুন</label>
           <select
             id="service"
-            className="searchFrom form_control"
+            className="searchFrom form-control"
             value={selected}
             onChange={(e) => setSelected(e.target.value)}
           >
@@ -318,7 +346,7 @@ const SearchFilter: React.FC = () => {
           <thead className="thead-dark">
             <tr>
               <th>সনদ নাম</th>
-              <th>মোট পেমেন্ট</th>
+              <th>মোট লেনদেন</th>
               <th>মোট টাকার পরিমাণ</th>
             </tr>
           </thead>
