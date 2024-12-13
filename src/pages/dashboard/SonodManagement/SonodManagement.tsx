@@ -16,13 +16,14 @@ import { Spinner } from "react-bootstrap";
 const SonodManagement = () => {
   const [sonod_Id, setSonod_Id] = useState("");
   const [searchSonodId, setSearchSonodId] = useState("");
-  const { sonodName, condition } = useParams();
+  const { sonodName, condition, union } = useParams();
   const token = localStorage.getItem("token");
   const { data, isLoading, isFetching } = useAllSonodQuery({
     sonodName: sonodName,
     stutus: condition || "Pending",
     sondId: searchSonodId,
     token,
+    union
   });
 
   const services = useAllServices();
@@ -30,7 +31,8 @@ const SonodManagement = () => {
   const { s_name, condition_bn } = checkNameCondition(
     services,
     sonodName,
-    condition
+    condition,
+
   );
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -46,12 +48,17 @@ const SonodManagement = () => {
       setSearchSonodId("");
     }
   };
+  console.log(union);
 
   if (isLoading) {
     return <Loader />;
   }
 
+
   const allSonod: TApplicantData[] = data?.data.sonods.data || [];
+
+
+
 
   return (
     <div>
@@ -115,11 +122,10 @@ const SonodManagement = () => {
                       sonodName={sonodName}
                     />
                     <p
-                      className={`mt-2 fs-6 text-white text-center py-2 ${
-                        item.payment_status === "Paid"
-                          ? "bg-success"
-                          : "bg-danger"
-                      }`}
+                      className={`mt-2 fs-6 text-white text-center py-2 ${item.payment_status === "Paid"
+                        ? "bg-success"
+                        : "bg-danger"
+                        }`}
                     >
                       <strong>ফি:</strong> {item.payment_status}
                     </p>
@@ -150,11 +156,10 @@ const SonodManagement = () => {
                       <td>{item.applicant_present_word_number}</td>
                       <td>{item.created_at}</td>
                       <td
-                        className={` fs-6 text-white ${
-                          item.payment_status === "Paid"
-                            ? "bg-success"
-                            : "bg-danger"
-                        }`}
+                        className={` fs-6 text-white ${item.payment_status === "Paid"
+                          ? "bg-success"
+                          : "bg-danger"
+                          }`}
                       >
                         {item.payment_status}
                       </td>

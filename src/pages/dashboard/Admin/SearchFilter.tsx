@@ -4,6 +4,7 @@ import { TAdminData, TDistrict, TDivision, TUnion, TUpazila } from "@/types";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import Summary from "./Summary";
+import { Link } from "react-router-dom";
 
 const SearchFilter: React.FC = () => {
   const token = localStorage.getItem("token");
@@ -224,12 +225,12 @@ const SearchFilter: React.FC = () => {
             {selectedUnion?.bn_name
               ? `${selectedUnion.bn_name} ইউনিয়নের সনদের প্রতিবেদন`
               : selectedUpazila?.bn_name
-              ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
-              : selectedDistrict?.bn_name
-              ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
-              : selectedDivision?.bn_name
-              ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের সনদের প্রতিবেদন`
-              : "সনদের প্রতিবেদন"}
+                ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
+                : selectedDistrict?.bn_name
+                  ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
+                  : selectedDivision?.bn_name
+                    ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের সনদের প্রতিবেদন`
+                    : "সনদের প্রতিবেদন"}
           </h6>
         )}
 
@@ -246,7 +247,12 @@ const SearchFilter: React.FC = () => {
             {admin?.sonod_reports?.map((report, index) => (
               <tr key={index}>
                 <td>{report.sonod_name}</td>
-                <td>{report.pending_count}</td>
+                <td>
+
+                  {selectedUnion ? <Link to={`/dashboard/sonod/${report.sonod_name}/${'pending'}/${selectedUnion?.name}`}> {report.pending_count}</Link> : report.pending_count}
+
+
+                </td>
                 <td>{report.approved_count}</td>
                 <td>{report.cancel_count}</td>
               </tr>
@@ -260,12 +266,12 @@ const SearchFilter: React.FC = () => {
             {selectedUnion?.bn_name
               ? `${selectedUnion.bn_name} ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
               : selectedUpazila?.bn_name
-              ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-              : selectedDistrict?.bn_name
-              ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-              : selectedDivision?.bn_name
-              ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-              : "আদায়কৃত ফি এর প্রতিবেদন"}
+                ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+                : selectedDistrict?.bn_name
+                  ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+                  : selectedDivision?.bn_name
+                    ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+                    : "আদায়কৃত ফি এর প্রতিবেদন"}
           </h6>
         )}
 

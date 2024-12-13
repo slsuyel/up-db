@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import apiSlice from "../apiSlice";
-
+/* /admin/sonod/list?sonod_name=নাগরিকত্ব সনদ&stutus=approved&union=test */
 const sonodApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     allSonod: builder.query({
-      query: ({ sonodName, stutus, token, sondId }) => ({
-        url: `user/sonod/list?sonod_name=${sonodName}&stutus=${stutus}${
+      query: ({ sonodName, stutus, token, sondId,union }) => ({
+        url: `admin/sonod/list?sonod_name=${sonodName}&stutus=${stutus}$union=${union}${
           sondId ? `&sondId=${sondId}` : ""
         }`,
         method: "Get",

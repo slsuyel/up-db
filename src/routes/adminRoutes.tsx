@@ -50,7 +50,7 @@ export const adminRoutes = [
     element: <SonodFee />,
   },
   {
-    path: 'sonod/:sonodName/:condition',
+    path: 'sonod/:sonodName/:condition/:union',
     element: <SonodManagement />,
   },
   {
