@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChangeEvent, useEffect, useState } from 'react';
-import Breadcrumbs from '@/components/reusable/Breadcrumbs';
-import { useAppSelector } from '@/redux/features/hooks';
-import { RootState } from '@/redux/features/store';
-import { TDivision } from '@/types/global';
-import { TDistrict, TUpazila } from '@/types/global';
-import { TUnion } from '@/types/global';
-import { message } from 'antd';
-
+import { ChangeEvent, useEffect, useState } from "react";
+import Breadcrumbs from "@/components/reusable/Breadcrumbs";
+import { useAppSelector } from "@/redux/features/hooks";
+import { RootState } from "@/redux/features/store";
+import { TDivision } from "@/types/global";
+import { TDistrict, TUpazila } from "@/types/global";
+import { TUnion } from "@/types/global";
+import { message } from "antd";
 
 const UnionReports = () => {
   const user = useAppSelector((state: RootState) => state.user.user);
@@ -26,39 +25,25 @@ const UnionReports = () => {
 
   const sonodInfo = useAppSelector((state: RootState) => state.union.sonodList);
   const [formData, setFormData] = useState({
-    sonod: '',
-    paymentType: '',
-    fromDate: '',
-    toDate: '',
+    sonod: "",
+    paymentType: "",
+    fromDate: "",
+    toDate: "",
   });
 
-  /* user -- {
-    "id": 3,
-    "name": "DC",
-    "email": "dc@gmail.com",
-    "position": null,
-    "division_name": "Rangpur",
-    "district_name": "Panchagarh",
-    "upazila_name": null,
-    "union_name": null,
-    "created_at": "2024-12-11T10:55:02.000000Z",
-    "updated_at": "2024-12-11T10:55:02.000000Z"
-} */
-
-
   useEffect(() => {
-    fetch('/divisions.json')
+    fetch("/divisions.json")
       .then((res) => res.json())
       .then((data: TDivision[]) => {
         setDivisions(data);
         if (user?.division_name) {
-          const userDivision = data.find((d) => d.name === user.division_name);
+          const userDivision = data.find((d) => d?.name === user.division_name);
           if (userDivision) {
             setSelectedDivision(userDivision);
           }
         }
       })
-      .catch((error) => console.error('Error fetching divisions data:', error));
+      .catch((error) => console.error("Error fetching divisions data:", error));
   }, [user]);
 
   useEffect(() => {
@@ -67,12 +52,12 @@ const UnionReports = () => {
         .then((response) => response.json())
         .then((data: TDistrict[]) => {
           const filteredDistricts = data.filter(
-            (d) => d.division_id === selectedDivision.id
+            (d) => d?.division_id === selectedDivision.id
           );
           setDistricts(filteredDistricts);
           if (user?.district_name) {
             const userDistrict = filteredDistricts.find(
-              (d) => d.name === user.district_name
+              (d) => d?.name === user.district_name
             );
             if (userDistrict) {
               setSelectedDistrict(userDistrict);
@@ -85,7 +70,6 @@ const UnionReports = () => {
     }
   }, [selectedDivision, user]);
 
-
   useEffect(() => {
     if (selectedDistrict) {
       fetch("/upazilas.json")
@@ -97,7 +81,7 @@ const UnionReports = () => {
           setUpazilas(filteredUpazilas);
           if (user?.upazila_name) {
             const userUpazila = filteredUpazilas.find(
-              (u) => u.name === user.upazila_name
+              (u) => u?.name === user.upazila_name
             );
             if (userUpazila) {
               setSelectedUpazila(userUpazila);
@@ -125,61 +109,49 @@ const UnionReports = () => {
   }, [selectedUpazila]);
 
   const handleDivisionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const division = divisions.find((d) => d.id === event.target.value);
+    const division = divisions.find((d) => d?.id === event.target.value);
     setSelectedDivision(division || null);
     setSelectedDistrict(null);
     setSelectedUpazila(null);
   };
 
   const handleDistrictChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const district = districts.find((d) => d.id === event.target.value);
+    const district = districts.find((d) => d?.id === event.target.value);
     setSelectedDistrict(district || null);
     setSelectedUpazila(null);
   };
 
   const handleUpazilaChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const upazila = upazilas.find((u) => u.id === event.target.value);
+    const upazila = upazilas.find((u) => u?.id === event.target.value);
     setSelectedUpazila(upazila || null);
   };
 
   const handleUnionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const union = unions.find((u) => u.id === event.target.value);
+    const union = unions.find((u) => u?.id === event.target.value);
     setSelectedUnion(union || null);
   };
-
-
-
-
 
   const handleInputChange = (event: { target: { id: any; value: any } }) => {
     const { id, value } = event.target;
     setFormData({ ...formData, [id]: value });
   };
 
-  const smallUnion = `${selectedUnion?.name}`.replace(/\s+/g, '').toLowerCase();
-
+  const smallUnion = `${selectedUnion?.name}`.replace(/\s+/g, "").toLowerCase();
 
   const handleSubmit = (event: { preventDefault: () => void }) => {
-
     event.preventDefault();
     if (!selectedUnion) {
-      message.warning(' ইউনিয়ন বাছাই করুন!')
-      return
+      message.warning(" ইউনিয়ন বাছাই করুন!");
+      return;
     }
 
-
-    const url = `https://api.uniontax.gov.bd/payment/report/download?union=${smallUnion}&from=${formData.fromDate}&to=${formData.toDate}&sonod_type=${formData.sonod}`;
-    window.open(url, '_blank');
+    const url = `https://api.uniontax.gov.bd/payment/report/download?union=${smallUnion}&from=${formData?.fromDate}&to=${formData?.toDate}&sonod_type=${formData?.sonod}`;
+    window.open(url, "_blank");
   };
-
-
 
   return (
     <div>
       <Breadcrumbs current="প্রতিবেদন" />
-
-
-
 
       <form onSubmit={handleSubmit}>
         <div className="row mx-auto mb-4">
@@ -195,13 +167,12 @@ const UnionReports = () => {
             >
               <option value="">বিভাগ নির্বাচন করুন</option>
               {divisions.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.bn_name}
+                <option key={d?.id} value={d?.id}>
+                  {d?.bn_name}
                 </option>
               ))}
             </select>
           </div>
-
 
           <div className="col-md-3">
             <label htmlFor="district">জেলা নির্বাচন করুন</label>
@@ -215,14 +186,12 @@ const UnionReports = () => {
             >
               <option value="">জেলা নির্বাচন করুন</option>
               {districts.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.bn_name}
+                <option key={d?.id} value={d?.id}>
+                  {d?.bn_name}
                 </option>
               ))}
             </select>
           </div>
-
-
 
           <div className="col-md-3">
             <label htmlFor="upazila">উপজেলা নির্বাচন করুন</label>
@@ -236,14 +205,12 @@ const UnionReports = () => {
             >
               <option value="">উপজেলা নির্বাচন করুন</option>
               {upazilas.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.bn_name}
+                <option key={u?.id} value={u?.id}>
+                  {u?.bn_name}
                 </option>
               ))}
             </select>
           </div>
-
-
 
           <div className="col-md-3">
             <label htmlFor="union">ইউনিয়ন নির্বাচন করুন</label>
@@ -256,35 +223,31 @@ const UnionReports = () => {
             >
               <option value="">ইউনিয়ন নির্বাচন করুন</option>
               {unions.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.bn_name}
+                <option key={u?.id} value={u?.id}>
+                  {u?.bn_name}
                 </option>
               ))}
             </select>
           </div>
-
-
         </div>
         <div
           className="row mx-auto"
-          style={{ alignItems: 'center', justifyContent: 'center' }}
+          style={{ alignItems: "center", justifyContent: "center" }}
         >
           <div className="form-group col-md-3 my-1">
             <select
               required
               id="sonod"
-
               className="form-control"
               onChange={handleInputChange}
-              value={formData.sonod}
+              value={formData?.sonod}
             >
-
-
               <option value="">চিহ্নিত করুন</option>
               <option value="all">সকল</option>
               <option value="holdingtax">হোল্ডিং ট্যাক্স</option>
-              {sonodInfo.map((d) => <option value={d.bnname}>{d.bnname}</option>)}
-
+              {sonodInfo.map((d) => (
+                <option value={d?.bnname}>{d?.bnname}</option>
+              ))}
             </select>
           </div>
           <div className="form-group col-md-3 my-1">
@@ -293,7 +256,7 @@ const UnionReports = () => {
               required
               className="form-control"
               onChange={handleInputChange}
-              value={formData.paymentType}
+              value={formData?.paymentType}
             >
               <option value="">চিহ্নিত করুন</option>
               <option value="all">সকল পেমেন্ট</option>
@@ -307,7 +270,7 @@ const UnionReports = () => {
               id="fromDate"
               className="form-control"
               onChange={handleInputChange}
-              value={formData.fromDate}
+              value={formData?.fromDate}
             />
           </div>
           <div className="form-group col-md-1 text-center my-2 fs-5">থেকে</div>
@@ -317,22 +280,20 @@ const UnionReports = () => {
               id="toDate"
               className="form-control"
               onChange={handleInputChange}
-              value={formData.toDate}
+              value={formData?.toDate}
             />
           </div>
           <div className="form-group col-md-3 my-1">
             <button
               type="submit"
               className="btn_main mt-3 w-100"
-              style={{ fontSize: '22px', marginLeft: '10px' }}
+              style={{ fontSize: "22px", marginLeft: "10px" }}
             >
               ডাউনলোড করুন
             </button>
           </div>
         </div>
       </form>
-
-
     </div>
   );
 };
