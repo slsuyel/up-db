@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import FormValueModal from "../ui/FormValueModal";
 import { TApplicantData } from "@/types";
+import { RootState } from "@/redux/features/store";
+import { useAppSelector } from "@/redux/features/hooks";
 // import { useSonodActionMutation } from "@/redux/api/sonod/sonodApi";
 // import { message } from "antd";
 interface SonodActionBtnProps {
@@ -11,10 +13,11 @@ interface SonodActionBtnProps {
   condition: string | undefined;
 }
 const SonodActionBtn = ({
-  // sonodName,
+  sonodName,
   item,
   condition,
 }: SonodActionBtnProps) => {
+  const user = useAppSelector((state: RootState) => state.user.user);
   // const token = localStorage.getItem("token");
   // const [sonodAction, { isLoading }] = useSonodActionMutation();
 
@@ -38,6 +41,8 @@ const SonodActionBtn = ({
   //   }
   // };
 
+
+
   return (
     <>
       <div
@@ -45,12 +50,15 @@ const SonodActionBtn = ({
         role="group"
         aria-label="Actions"
       >
-        {/* <Link
+
+        {user?.position == 'super admin' && <Link
           to={`/dashboard/sonod/${sonodName}/action/edit/${item.id}`}
           className="btn btn-info btn-sm mr-1"
         >
           এডিট করুন
-        </Link> */}
+        </Link>}
+
+
         <Link
           to={`https://api.uniontax.gov.bd/applicant/copy/download/${item.id}`}
           className="btn btn-success btn-sm mr-1"

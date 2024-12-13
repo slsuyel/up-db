@@ -248,12 +248,23 @@ const SearchFilter: React.FC = () => {
                 <td>{report.sonod_name}</td>
                 <td>
 
-                  {selectedUnion ? <Link to={`/dashboard/sonod/${report.sonod_name}/${'pending'}/${selectedUnion?.name}`}> {report.pending_count}</Link> : report.pending_count}
+                  {selectedUnion ? <Link to={`/dashboard/sonod/${report.sonod_name}/${'Pending'}/${selectedUnion?.name}`}> {report.pending_count}</Link> : report.pending_count}
+
+
 
 
                 </td>
-                <td>{report.approved_count}</td>
-                <td>{report.cancel_count}</td>
+                <td>
+                  {selectedUnion ? <Link to={`/dashboard/sonod/${report.sonod_name}/${'approved'}/${selectedUnion?.name}`}> {report.approved_count}</Link> : report.approved_count}
+
+
+
+                </td>
+                <td>
+                  {selectedUnion ? <Link to={`/dashboard/sonod/${report.sonod_name}/${'cancel'}/${selectedUnion?.name}`}> {report.cancel_count}</Link> : report.cancel_count}
+
+
+                </td>
               </tr>
             ))}
           </tbody>
