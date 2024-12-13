@@ -51,7 +51,7 @@ const SonodActionBtn = ({
         aria-label="Actions"
       >
 
-        {user?.position == 'super admin' && <Link
+        {user?.position !== 'super admin' && <Link
           to={`/dashboard/sonod/${sonodName}/action/edit/${item.id}`}
           className="btn btn-info btn-sm mr-1"
         >

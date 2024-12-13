@@ -133,6 +133,7 @@ import conditionalForm from "./conditionalForm";
 import FormValueModal from "@/components/ui/FormValueModal";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTradeInfoQuery } from "@/redux/api/user/userApi";
+import adminEditFields from "./adminEditFields";
 
 const ApplicationForm = () => {
   const { service } = useParams<{ service: string }>();
@@ -189,6 +190,7 @@ const ApplicationForm = () => {
         </div>
         <div className="form-pannel">
           <div className="row">
+            {adminEditFields()}
             {service == "উত্তরাধিকারী সনদ" && InheritanceForm(service)}
             {service == "ওয়ারিশান সনদ" && InheritanceForm(service)}
             {service == "ওয়ারিশান সনদ" && InheritanceForm(service)}

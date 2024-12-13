@@ -45,7 +45,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <Sider style={{ height: '100vh' }} theme={theme ? "light" : "dark"} breakpoint="lg" collapsedWidth="0">
+    <Sider style={{ minHeight: '100vh' }} theme={theme ? "light" : "dark"} breakpoint="lg" collapsedWidth="0">
       <div
         className="border-bottom "
         style={{
