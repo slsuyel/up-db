@@ -11,9 +11,7 @@ const SearchFilter: React.FC = () => {
   const services = useAllServices();
   const [selected, setSelected] = useState("");
   const [selectedUnion, setSelectedUnion] = useState<TUnion | null>(null);
-  const [selectedDivision, setSelectedDivision] = useState<TDivision | null>(
-    null
-  );
+  const [selectedDivision, setSelectedDivision] = useState<TDivision | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<TDistrict | null>(
     null
   );
@@ -83,6 +81,7 @@ const SearchFilter: React.FC = () => {
     setSelectedDivision(division || null);
     setSelectedDistrict(null);
     setSelectedUpazila(null);
+    setSelectedUnion(null);
   };
 
   const handleDistrictChange = (event: ChangeEvent<HTMLSelectElement>) => {
