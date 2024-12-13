@@ -166,7 +166,7 @@ const UnionReports = () => {
               onChange={handleDivisionChange}
             >
               <option value="">বিভাগ নির্বাচন করুন</option>
-              {divisions.map((d) => (
+              {divisions?.map((d) => (
                 <option key={d?.id} value={d?.id}>
                   {d?.bn_name}
                 </option>
@@ -185,7 +185,7 @@ const UnionReports = () => {
               onChange={handleDistrictChange}
             >
               <option value="">জেলা নির্বাচন করুন</option>
-              {districts.map((d) => (
+              {districts?.map((d) => (
                 <option key={d?.id} value={d?.id}>
                   {d?.bn_name}
                 </option>
@@ -204,7 +204,7 @@ const UnionReports = () => {
               onChange={handleUpazilaChange}
             >
               <option value="">উপজেলা নির্বাচন করুন</option>
-              {upazilas.map((u) => (
+              {upazilas?.map((u) => (
                 <option key={u?.id} value={u?.id}>
                   {u?.bn_name}
                 </option>
@@ -222,7 +222,7 @@ const UnionReports = () => {
               onChange={handleUnionChange}
             >
               <option value="">ইউনিয়ন নির্বাচন করুন</option>
-              {unions.map((u) => (
+              {unions?.map((u) => (
                 <option key={u?.id} value={u?.id}>
                   {u?.bn_name}
                 </option>
@@ -245,7 +245,7 @@ const UnionReports = () => {
               <option value="">চিহ্নিত করুন</option>
               <option value="all">সকল</option>
               <option value="holdingtax">হোল্ডিং ট্যাক্স</option>
-              {sonodInfo.map((d) => (
+              {sonodInfo?.map((d) => (
                 <option value={d?.bnname}>{d?.bnname}</option>
               ))}
             </select>
