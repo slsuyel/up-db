@@ -7,6 +7,7 @@ import { TDivision } from "@/types/global";
 import { TDistrict, TUpazila } from "@/types/global";
 import { TUnion } from "@/types/global";
 import { message } from "antd";
+import useAllServices from "@/hooks/useAllServices";
 
 const UnionReports = () => {
   const user = useAppSelector((state: RootState) => state.user.user);
@@ -23,7 +24,7 @@ const UnionReports = () => {
   const [upazilas, setUpazilas] = useState<TUpazila[]>([]);
   const [unions, setUnions] = useState<TUnion[]>([]);
 
-  const sonodInfo = useAppSelector((state: RootState) => state.union.sonodList);
+  const services = useAllServices();
   const [formData, setFormData] = useState({
     sonod: "",
     paymentType: "",
@@ -242,11 +243,11 @@ const UnionReports = () => {
               onChange={handleInputChange}
               value={formData?.sonod}
             >
-              <option value="">চিহ্নিত করুন</option>
-              <option value="all">সকল</option>
-              <option value="holdingtax">হোল্ডিং ট্যাক্স</option>
-              {sonodInfo?.map((d) => (
-                <option value={d?.bnname}>{d?.bnname}</option>
+              <option value="">সেবা নির্বাচন করুন</option>
+              {services?.map((d) => (
+                <option key={d.title} value={d.title}>
+                  {d.title}
+                </option>
               ))}
             </select>
           </div>
