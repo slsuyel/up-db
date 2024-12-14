@@ -238,6 +238,8 @@ const SearchFilter: React.FC = () => {
             onChange={(e) => setSelected(e.target.value)}
           >
             <option value="">সেবা নির্বাচন করুন</option>
+            {/* <option value="all">সকল</option> */}
+            <option value="holdingtax">হোল্ডিং ট্যাক্স</option>
             {services?.map((d) => (
               <option key={d.title} value={d.title}>
                 {d.title}
