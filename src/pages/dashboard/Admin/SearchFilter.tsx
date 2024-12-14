@@ -16,7 +16,9 @@ const SearchFilter: React.FC = () => {
   const services = useAllServices();
   const [selected, setSelected] = useState("");
   const [selectedUnion, setSelectedUnion] = useState<TUnion | null>(null);
-  const [selectedDivision, setSelectedDivision] = useState<TDivision | null>(null);
+  const [selectedDivision, setSelectedDivision] = useState<TDivision | null>(
+    null
+  );
   const [selectedDistrict, setSelectedDistrict] = useState<TDistrict | null>(
     null
   );
@@ -131,10 +133,9 @@ const SearchFilter: React.FC = () => {
 
   const handleSearchClick = async () => {
     if (!selectedDivision?.name) {
-      message.warning('বিভাগ নির্বাচন করুন')
-      return
+      message.warning("বিভাগ নির্বাচন করুন");
+      return;
     }
-
 
     const data = {
       division_name: selectedDivision?.name,
@@ -257,23 +258,23 @@ const SearchFilter: React.FC = () => {
 
       <div className=" w-100"> {isLoading && <Spinner />}</div>
 
-
       <div className=" my-3 d-flex justify-content-end text-white">
-        {admin?.sonod_reports.length >= 1 && <Link
-          target="_blank"
-          to={`https://api.uniontax.gov.bd/download/reports/get-reports${selectedDivision ? `?division_name=${selectedDivision.name}` : ''
-            }${selectedDistrict ? `&district_name=${selectedDistrict.name}` : ''
-            }${selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ''
-            }${selectedUnion ? `&union_name=${selectedUnion.name}` : ''
-            }${selected ? `&sonod_name=${selected}` : ''
-            }`}
-          className="btn btn-info text-white"
-        >
-          প্রতিবেদন ডাউনলোড করুন
-        </Link>
-        }
+        {admin?.sonod_reports.length >= 1 && (
+          <Link
+            target="_blank"
+            to={`https://api.uniontax.gov.bd/download/reports/get-reports${
+              selectedDivision ? `?division_name=${selectedDivision.name}` : ""
+            }${
+              selectedDistrict ? `&district_name=${selectedDistrict.name}` : ""
+            }${selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ""}${
+              selectedUnion ? `&union_name=${selectedUnion.name}` : ""
+            }${selected ? `&sonod_name=${selected}` : ""}`}
+            className="btn btn-info text-white"
+          >
+            প্রতিবেদন ডাউনলোড করুন
+          </Link>
+        )}
       </div>
-
 
       {admin?.totals && <Summary data={admin.totals} isLoading={isLoading} />}
 
@@ -283,12 +284,12 @@ const SearchFilter: React.FC = () => {
             {selectedUnion?.bn_name
               ? `${selectedUnion.bn_name} ইউনিয়নের সনদের প্রতিবেদন`
               : selectedUpazila?.bn_name
-                ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
-                : selectedDistrict?.bn_name
-                  ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
-                  : selectedDivision?.bn_name
-                    ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের সনদের প্রতিবেদন`
-                    : "সনদের প্রতিবেদন"}
+              ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
+              : selectedDistrict?.bn_name
+              ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
+              : selectedDivision?.bn_name
+              ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের সনদের প্রতিবেদন`
+              : "সনদের প্রতিবেদন"}
           </h6>
         )}
 
@@ -299,6 +300,7 @@ const SearchFilter: React.FC = () => {
               <th> নতুন আবেদন </th>
               <th>অনুমোদিত আবেদন</th>
               <th>বাতিল</th>
+              {!selectedUnion && <th>বিস্তারিত</th>}
             </tr>
           </thead>
           <tbody>
@@ -306,24 +308,70 @@ const SearchFilter: React.FC = () => {
               <tr key={index}>
                 <td>{report.sonod_name}</td>
                 <td>
-
-                  {selectedUnion ? <Link to={`/dashboard/sonod/${report.sonod_name}/${'Pending'}/${selectedUnion?.name}`}> {report.pending_count}</Link> : report.pending_count}
-
-
-
-
+                  {selectedUnion ? (
+                    <Link
+                      to={`/dashboard/sonod/${report.sonod_name}/${"Pending"}/${
+                        selectedUnion?.name
+                      }`}
+                    >
+                      {" "}
+                      {report.pending_count}
+                    </Link>
+                  ) : (
+                    report.pending_count
+                  )}
                 </td>
                 <td>
-                  {selectedUnion ? <Link to={`/dashboard/sonod/${report.sonod_name}/${'approved'}/${selectedUnion?.name}`}> {report.approved_count}</Link> : report.approved_count}
-
-
-
+                  {selectedUnion ? (
+                    <Link
+                      to={`/dashboard/sonod/${
+                        report.sonod_name
+                      }/${"approved"}/${selectedUnion?.name}`}
+                    >
+                      {" "}
+                      {report.approved_count}
+                    </Link>
+                  ) : (
+                    report.approved_count
+                  )}
                 </td>
                 <td>
-                  {selectedUnion ? <Link to={`/dashboard/sonod/${report.sonod_name}/${'cancel'}/${selectedUnion?.name}`}> {report.cancel_count}</Link> : report.cancel_count}
-
-
+                  {selectedUnion ? (
+                    <Link
+                      to={`/dashboard/sonod/${report.sonod_name}/${"cancel"}/${
+                        selectedUnion?.name
+                      }`}
+                    >
+                      {" "}
+                      {report.cancel_count}
+                    </Link>
+                  ) : (
+                    report.cancel_count
+                  )}
                 </td>
+                {!selectedUnion && (
+                  <td>
+                    <a
+                      href={`https://api.uniontax.gov.bd/download/reports/get-reports?${
+                        selectedDivision?.name
+                          ? `division_name=${selectedDivision.name}&`
+                          : ""
+                      }${
+                        selectedDistrict?.name
+                          ? `district_name=${selectedDistrict.name}&`
+                          : ""
+                      }${
+                        selectedUpazila?.name
+                          ? `upazila_name=${selectedUpazila.name}&`
+                          : ""
+                      }${`sonod_name=${report.sonod_name}&`}detials=1`}
+                      target="_blank"
+                      className="btn btn-sm btn-info"
+                    >
+                      <i className="fa-solid fa-download"></i> দেখুন
+                    </a>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -335,12 +383,12 @@ const SearchFilter: React.FC = () => {
             {selectedUnion?.bn_name
               ? `${selectedUnion.bn_name} ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
               : selectedUpazila?.bn_name
-                ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-                : selectedDistrict?.bn_name
-                  ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-                  : selectedDivision?.bn_name
-                    ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-                    : "আদায়কৃত ফি এর প্রতিবেদন"}
+              ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+              : selectedDistrict?.bn_name
+              ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+              : selectedDivision?.bn_name
+              ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+              : "আদায়কৃত ফি এর প্রতিবেদন"}
           </h6>
         )}
 
