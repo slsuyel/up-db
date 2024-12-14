@@ -368,7 +368,8 @@ const SearchFilter: React.FC = () => {
                       target="_blank"
                       className="btn btn-sm btn-info"
                     >
-                      <i className="fa-solid fa-download"></i> দেখুন
+                      <i className="fa-solid fa-download text-white"></i>{" "}
+                      ডাউনলোড
                     </a>
                   </td>
                 )}
