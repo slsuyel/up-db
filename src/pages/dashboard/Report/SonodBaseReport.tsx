@@ -1,20 +1,20 @@
-import useAllServices from "@/hooks/useAllServices";
 import { useAdminReportMutation } from "@/redux/api/auth/authApi";
 import { TAdminData, TDistrict, TDivision, TUnion, TUpazila } from "@/types";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
-import Summary from "./Summary";
-import { Link } from "react-router-dom";
+
+import { Link, useParams } from "react-router-dom";
 import { message } from "antd";
 import { useAppSelector } from "@/redux/features/hooks";
 import { RootState } from "@/redux/features/store";
 import Breadcrumbs from "@/components/reusable/Breadcrumbs";
 
-const SearchFilter: React.FC = () => {
+const SonodBaseReport: React.FC = () => {
+  const { service } = useParams();
+  console.log(service);
+
   const user = useAppSelector((state: RootState) => state.user.user);
   const token = localStorage.getItem("token");
-  const services = useAllServices();
-  const [selected, setSelected] = useState("");
   const [selectedUnion, setSelectedUnion] = useState<TUnion | null>(null);
   const [selectedDivision, setSelectedDivision] = useState<TDivision | null>(
     null
@@ -107,6 +107,10 @@ const SearchFilter: React.FC = () => {
     }
   }, [selectedUpazila]);
 
+  //   useEffect(() => {
+  //     handleSearchClick();
+  //   }, [service, handleSearchClick]);
+
   const handleDivisionChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const division = divisions.find((d) => d.id === event.target.value);
     setSelectedDivision(division || null);
@@ -131,7 +135,7 @@ const SearchFilter: React.FC = () => {
     setSelectedUnion(union || null);
   };
 
-  const handleSearchClick = async () => {
+  const handleSearchClick = useCallback(async () => {
     if (!selectedDivision?.name) {
       message.warning("বিভাগ নির্বাচন করুন");
       return;
@@ -142,16 +146,28 @@ const SearchFilter: React.FC = () => {
       district_name: selectedDistrict?.name,
       upazila_name: selectedUpazila?.name,
       union_name: selectedUnion?.name,
-      sonod_name: selected,
+      sonod_name: service,
     };
     await adminReport({ data, token }).unwrap();
-  };
+  }, [
+    selectedDivision,
+    selectedDistrict,
+    selectedUpazila,
+    selectedUnion,
+    service,
+    adminReport,
+    token,
+  ]);
+
+  useEffect(() => {
+    handleSearchClick();
+  }, [service, handleSearchClick]);
 
   const admin: TAdminData = data?.data;
 
   return (
     <>
-      <Breadcrumbs current=" সকল প্রতিবেদন" />
+      <Breadcrumbs current={` ${service} প্রতিবেদন`} />
       <div className="row mx-auto">
         <div className="col-md-2">
           <label htmlFor="division">বিভাগ নির্বাচন করুন</label>
@@ -230,7 +246,7 @@ const SearchFilter: React.FC = () => {
           </div>
         )}
 
-        <div className="col-md-2">
+        {/* <div className="col-md-2">
           <label htmlFor="service">সেবা নির্বাচন করুন</label>
           <select
             id="service"
@@ -239,7 +255,6 @@ const SearchFilter: React.FC = () => {
             onChange={(e) => setSelected(e.target.value)}
           >
             <option value="">সেবা নির্বাচন করুন</option>
-            {/* <option value="all">সকল</option> */}
             <option value="holdingtax">হোল্ডিং ট্যাক্স</option>
             {services?.map((d) => (
               <option key={d.title} value={d.title}>
@@ -247,7 +262,7 @@ const SearchFilter: React.FC = () => {
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         <div className="col-md-2">
           <button onClick={handleSearchClick} className="btn btn-primary mt-4">
@@ -256,7 +271,7 @@ const SearchFilter: React.FC = () => {
         </div>
       </div>
 
-      <div className=" w-100"> {isLoading && <Spinner />}</div>
+      <div className=" w-100 text-center my-5"> {isLoading && <Spinner />}</div>
 
       <div className=" my-3 d-flex justify-content-end text-white">
         {admin?.sonod_reports.length >= 1 && (
@@ -268,7 +283,7 @@ const SearchFilter: React.FC = () => {
               selectedDistrict ? `&district_name=${selectedDistrict.name}` : ""
             }${selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ""}${
               selectedUnion ? `&union_name=${selectedUnion.name}` : ""
-            }${selected ? `&sonod_name=${selected}` : ""}&token=${token}`}
+            }${service ? `&sonod_name=${service}` : ""}&token=${token}`}
             className="btn btn-info text-white"
           >
             প্রতিবেদন ডাউনলোড করুন
@@ -276,7 +291,7 @@ const SearchFilter: React.FC = () => {
         )}
       </div>
 
-      {admin?.totals && <Summary data={admin.totals} isLoading={isLoading} />}
+      {/* {admin?.totals && <Summary data={admin.totals} isLoading={isLoading} />} */}
 
       <div className=" row mx-auto mt-4">
         {admin?.sonod_reports && (
@@ -416,4 +431,4 @@ const SearchFilter: React.FC = () => {
   );
 };
 
-export default SearchFilter;
+export default SonodBaseReport;

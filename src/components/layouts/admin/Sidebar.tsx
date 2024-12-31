@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import useAllServices from "@/hooks/useAllServices";
 import { Badge, Layout, Menu } from "antd";
 import { Link } from "react-router-dom";
 
@@ -28,7 +29,7 @@ type SidebarItemWithoutSubmenu = SidebarItemBase & {
 type SidebarItem = SidebarItemWithSubmenu | SidebarItemWithoutSubmenu;
 
 const Sidebar = () => {
-
+  const services = useAllServices();
   const sidebarItems: SidebarItem[] = [
     {
       key: "dashboard",
@@ -38,14 +39,19 @@ const Sidebar = () => {
     },
     { key: "reports", title: "লেনদেনের প্রতিবেদন ", slug: "/reports" },
     { key: "search", title: "সকল প্রতিবেদন", slug: "/up-search" },
-
-
-
-
+    ...services.map((service, index) => ({
+      key: `service-${index}`,
+      title: service.title,
+      slug: `/sonod-base-report/${service.title}`,
+    })),
   ];
-
   return (
-    <Sider style={{ minHeight: '100vh' }} theme={theme ? "light" : "dark"} breakpoint="lg" collapsedWidth="0">
+    <Sider
+      style={{ minHeight: "100vh" }}
+      theme={theme ? "light" : "dark"}
+      breakpoint="lg"
+      collapsedWidth="0"
+    >
       <div
         className="border-bottom "
         style={{

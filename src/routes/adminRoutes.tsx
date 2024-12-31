@@ -1,64 +1,69 @@
-import UnderConstruction from '@/components/reusable/UnderConstruction';
-import Dhome from '@/pages/dashboard/Admin/Dhome';
-import SearchFilter from '@/pages/dashboard/Admin/SearchFilter';
-import HoldingAdd from '@/pages/dashboard/holding/HoldingAdd';
-import HoldingShow from '@/pages/dashboard/holding/HoldingShow';
-import HoldingTax from '@/pages/dashboard/holding/HoldingTax';
-import SingleHolding from '@/pages/dashboard/holding/SingleHolding';
+import UnderConstruction from "@/components/reusable/UnderConstruction";
+import Dhome from "@/pages/dashboard/Admin/Dhome";
+import SearchFilter from "@/pages/dashboard/Admin/SearchFilter";
+import HoldingAdd from "@/pages/dashboard/holding/HoldingAdd";
+import HoldingShow from "@/pages/dashboard/holding/HoldingShow";
+import HoldingTax from "@/pages/dashboard/holding/HoldingTax";
+import SingleHolding from "@/pages/dashboard/holding/SingleHolding";
+import SonodBaseReport from "@/pages/dashboard/Report/SonodBaseReport";
 
-import SonodFee from '@/pages/dashboard/SonodFee';
-import EditSonod from '@/pages/dashboard/SonodManagement/EditSonod';
-import SonodManagement from '@/pages/dashboard/SonodManagement/SonodManagement';
-import UnionProfile from '@/pages/dashboard/UnionProfile';
-import UnionReports from '@/pages/dashboard/UnionReports';
+import SonodFee from "@/pages/dashboard/SonodFee";
+import EditSonod from "@/pages/dashboard/SonodManagement/EditSonod";
+import SonodManagement from "@/pages/dashboard/SonodManagement/SonodManagement";
+import UnionProfile from "@/pages/dashboard/UnionProfile";
+import UnionReports from "@/pages/dashboard/UnionReports";
 
 export const adminRoutes = [
   {
-    path: '',
+    path: "",
     element: <Dhome />,
   },
   {
-    path: 'reports',
+    path: "reports",
     element: <UnionReports />,
   },
   {
-    path: 'union/profile',
+    path: "union/profile",
     element: <UnionProfile />,
   },
   {
-    path: 'up-search',
+    path: "up-search",
     element: <SearchFilter />,
   },
   {
-    path: 'holding/tax/',
+    path: "sonod-base-report/:service",
+    element: <SonodBaseReport />,
+  },
+  {
+    path: "holding/tax/",
     element: <HoldingTax />,
   },
   {
-    path: '/dashboard/holding/tax/list/:word',
+    path: "/dashboard/holding/tax/list/:word",
     element: <HoldingShow />,
   },
   {
-    path: '/dashboard/holding/list/add/:word',
+    path: "/dashboard/holding/list/add/:word",
     element: <HoldingAdd />,
   },
   {
-    path: '/dashboard/holding/list/view/:id',
+    path: "/dashboard/holding/list/view/:id",
     element: <SingleHolding />,
   },
   {
-    path: 'sonod/fee',
+    path: "sonod/fee",
     element: <SonodFee />,
   },
   {
-    path: 'sonod/:sonodName/:condition/:union',
+    path: "sonod/:sonodName/:condition/:union",
     element: <SonodManagement />,
   },
   {
-    path: 'sonod/:service/action/edit/:id',
+    path: "sonod/:service/action/edit/:id",
     element: <EditSonod />,
   },
   {
-    path: 'settings',
+    path: "settings",
     element: <UnderConstruction />,
   },
 ];

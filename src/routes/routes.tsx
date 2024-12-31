@@ -29,51 +29,6 @@ const router = createBrowserRouter([
         path: "/",
         element: <Login />,
       },
-      // {
-      //   path: "/about",
-      //   element: <About />,
-      // },
-      // {
-      //   path: "/sonod/search",
-      //   element: <SonodSearch />,
-      // },
-      // {
-      //   path: "/notice",
-      //   element: <Notice />,
-      // },
-      // {
-      //   path: "/tenders",
-      //   element: <Tenders />,
-      // },
-      // {
-      //   path: "/contact",
-      //   element: <Contact />,
-      // },
-      // {
-      //   path: "/holding/tax",
-      //   element: <Holding />,
-      // },
-      // {
-      //   path: "/citizens_corner",
-      //   element: <CitizenCorner />,
-      // },
-      // {
-      //   path: "/login",
-      //   element: <Login />,
-      // },
-      // {
-      //   path: "/reset-pass",
-      //   element: <ResetPassword />,
-      // },
-      // {
-      //   path: "/payment-success",
-      //   element: <PaymentSuccessPage />,
-      // },
-
-      // {
-      //   path: "/application/:service",
-      //   element: <ApplicationForm />,
-      // },
     ],
   },
 
