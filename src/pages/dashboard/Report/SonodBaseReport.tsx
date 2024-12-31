@@ -4,7 +4,7 @@ import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 
 import { Link, useParams } from "react-router-dom";
-import { message } from "antd";
+// import { message } from "antd";
 import { useAppSelector } from "@/redux/features/hooks";
 import { RootState } from "@/redux/features/store";
 import Breadcrumbs from "@/components/reusable/Breadcrumbs";
@@ -137,7 +137,7 @@ const SonodBaseReport: React.FC = () => {
 
   const handleSearchClick = useCallback(async () => {
     if (!selectedDivision?.name) {
-      message.warning("বিভাগ নির্বাচন করুন");
+      //   message.warning("বিভাগ নির্বাচন করুন");
       return;
     }
 
