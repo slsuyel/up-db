@@ -236,7 +236,7 @@ const PaymentFailed = () => {
             >
               <option value="">ইউনিয়ন নির্বাচন করুন</option>
               {unions.map((u) => (
-                <option key={u.id} value={u.bn_name}>
+                <option key={u.id} value={u.name}>
                   {u.bn_name}
                 </option>
               ))}
