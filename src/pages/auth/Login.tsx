@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Input, message } from "antd";
+import { Checkbox, Input, message } from "antd";
 
 import { useUserLoginMutation } from "@/redux/api/auth/authApi";
 
@@ -13,6 +13,16 @@ const Login = () => {
   const from = location.state?.from?.pathname || "/dashboard";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+
+  // Check if there's a saved email in localStorage when the component mounts
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
@@ -20,10 +30,14 @@ const Login = () => {
       const res = await userLogin({ email, password }).unwrap();
       if (res.status_code == 200) {
         localStorage.setItem("token", res.data.token);
+        if (rememberMe) {
+          localStorage.setItem("rememberedEmail", email);
+        } else {
+          localStorage.removeItem("rememberedEmail");
+        }
         navigate(from);
-
       } else if (res.status_code == 401) {
-        message.error('Unauthorized access')
+        message.error("Unauthorized access");
         console.error("Unauthorized access");
       } else {
         console.error("Login failed");
@@ -44,11 +58,11 @@ const Login = () => {
                   className="fs-5 my-1 text-secondary"
                   htmlFor="loginEmail"
                 >
-                  Email
+                  ইমেইল
                 </label>
                 <Input
                   id="loginEmail"
-                  placeholder="Enter Your Email"
+                  placeholder="আপনার ইমেইল লিখুন"
                   style={{ height: 35 }}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -59,23 +73,28 @@ const Login = () => {
                   className="fs-5 my-1 text-secondary"
                   htmlFor="loginPassword"
                 >
-                  Password
+                  পাসওয়ার্ড
                 </label>
                 <Input.Password
+                  className=""
                   id="loginPassword"
-                  placeholder="Enter Password"
+                  placeholder="পাসওয়ার্ড লিখুন"
                   style={{ height: 35 }}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               <div className="d-flex justify-content-between mb-3">
-                {/* <div className="form-group ">
-                  <Checkbox id="rememberMe" className="text-color">
-                    Remember me
+                <div className="form-group ">
+                  <Checkbox
+                    id="rememberMe"
+                    className="text-color"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  >
+                    মনে রাখুন
                   </Checkbox>
-                </div> */}
-
+                </div>
               </div>
               <div className="form-group">
                 <button
@@ -83,14 +102,15 @@ const Login = () => {
                   type="submit"
                   className="border-1 btn_main w-100"
                 >
-                  {isLoading ? "Login ..." : "Login"}
+                  {isLoading ? "লগইন হচ্ছে..." : "লগইন"}
                 </button>
               </div>
             </form>
-            <div className="text-center mt-5"><img width="50px" src="/bangladesh-govt.png" alt="" /> <h4 style={{ margin: '10px 0px 0px' }}>স্মার্ট বাংলাদেশ</h4>
+            <div className="text-center mt-5">
+              <img width="50px" src="/bangladesh-govt.png" alt="" />{" "}
+              <h4 style={{ margin: "10px 0px 0px" }}>স্মার্ট বাংলাদেশ</h4>
               ক্যাশ লেস , পেপার লেস সেবা সিস্টেম
             </div>
-
           </div>
         </div>
       </div>

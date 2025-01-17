@@ -369,3 +369,6 @@ line-height: 18px;
 .sssssssssdgsfdg .ant-space-item{
   width: 40%;
 }
+.form-control, .ant-input {
+  font-family: Kalpurush, sans-serif;
+}

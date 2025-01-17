@@ -26,20 +26,14 @@ const SummaryItem = ({
   );
 };
 
-
-
-const Summary = ({ data, isLoading }: { data: any, isLoading: boolean }) => {
-
-
+const Summary = ({ data, isLoading }: { data: any; isLoading: boolean }) => {
   if (isLoading) {
     return <Spinner />;
   }
 
   const all = data;
 
-
   console.log(all);
-
 
   const summaryItems = [
     {
