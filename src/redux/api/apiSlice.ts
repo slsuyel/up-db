@@ -14,6 +14,7 @@ const apiSlice = createApi({
     "profileUpdate",
     "sonod-action",
     "holding",
+    "holding_pay",
   ],
 });
 

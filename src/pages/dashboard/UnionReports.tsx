@@ -181,9 +181,9 @@ const UnionReports = () => {
             <label htmlFor="district">জেলা নির্বাচন করুন</label>
             <select
               required
+              disabled={!!user?.district_name}
               id="district"
               className="form-control"
-              disabled={!!user?.district_name}
               value={selectedDistrict?.id || ""}
               onChange={handleDistrictChange}
             >

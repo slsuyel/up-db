@@ -281,31 +281,61 @@ export interface TSonodName {
   updated_at: string | null;
 }
 
-
-
 export interface TAdminData {
-  sonod_reports:   SonodReport[];
+  sonod_reports: SonodReport[];
   payment_reports: PaymentReport[];
-  totals:          Totals;
+  totals: Totals;
 }
 
 export interface PaymentReport {
-  sonod_type:     string;
+  sonod_type: string;
   total_payments: number;
-  total_amount:   string;
+  total_amount: string;
 }
 
 export interface SonodReport {
-  sonod_name:     string;
-  pending_count:  number;
+  sonod_name: string;
+  pending_count: number;
   approved_count: number;
-  cancel_count:   number;
+  cancel_count: number;
 }
 
 export interface Totals {
-  total_pending:  number;
+  total_pending: number;
   total_approved: number;
-  total_cancel:   number;
+  total_cancel: number;
   total_payments: number;
-  total_amount:   number;
+  total_amount: number;
+}
+export interface TPaymentFailed {
+  id: number;
+  sonodId: string;
+  union: string;
+  trxId: string;
+  sonod_type: string;
+  date: string;
+  method: string;
+  sonods: any;
+  holding_tax: THoldingTax;
+  tax: TTax;
+}
+
+export interface THoldingTax {
+  id: number;
+  maliker_name: string;
+  gramer_name: string;
+  mobile_no: string;
+  holding_no: string;
+}
+
+export interface TTax {
+  id: number;
+  holdingTax_id: string;
+  year: string;
+  price: string;
+  payYear: string | null;
+  payOB: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
 }

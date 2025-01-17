@@ -5,6 +5,7 @@ import HoldingAdd from "@/pages/dashboard/holding/HoldingAdd";
 import HoldingShow from "@/pages/dashboard/holding/HoldingShow";
 import HoldingTax from "@/pages/dashboard/holding/HoldingTax";
 import SingleHolding from "@/pages/dashboard/holding/SingleHolding";
+import PaymentFailed from "@/pages/dashboard/Report/PaymentFailed";
 import SonodBaseReport from "@/pages/dashboard/Report/SonodBaseReport";
 
 import SonodFee from "@/pages/dashboard/SonodFee";
@@ -21,6 +22,10 @@ export const adminRoutes = [
   {
     path: "reports",
     element: <UnionReports />,
+  },
+  {
+    path: "payment-failed",
+    element: <PaymentFailed />,
   },
   {
     path: "union/profile",
