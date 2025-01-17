@@ -286,7 +286,6 @@ const PaymentFailed = () => {
           <table className="table table-bordered table-hover">
             <thead className="thead-dark">
               <tr>
-                <th>আইডি</th>
                 <th>সনদ আইডি</th>
                 <th>ইউনিয়ন</th>
                 <th>লেনদেন আইডি</th>
@@ -310,7 +309,6 @@ const PaymentFailed = () => {
               ) : failedResult?.length > 0 ? (
                 failedResult.map((item) => (
                   <tr key={item.id}>
-                    <td>{item.id}</td>
                     <td>{item.sonodId}</td>
                     <td>{item.union}</td>
                     <td>{item.trxId}</td>
