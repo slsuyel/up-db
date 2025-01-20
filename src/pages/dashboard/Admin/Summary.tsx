@@ -1,4 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import allApplications from "/images/all-application.png";
+import approvedApplications from "/images/approved-application.png";
+import canceledApplications from "/images/cancel-application.png";
+import newApplications from "/images/new-application.png";
+import totalFees from "/images/total-fees.png";
 
 import { Spinner } from "react-bootstrap";
 
@@ -12,10 +17,14 @@ const SummaryItem = ({
   value: number;
 }) => {
   return (
-    <div className="col-md-3 my-1 ">
-      <div className="border-0 card hov-card mb-2 py-3 shadow-sm">
-        <div className="card-body d-flex align-item-center justify-content-around">
-          <i className={`p-3 rounded-circle my-auto ${icon} fs-1`}></i>
+    <div className="col-md-3 my-2">
+      <div className="border-0 card h-100 mb-2 py-2 shadow hover-effect">
+        <div className="card-body d-flex align-items-center justify-content-around">
+          <img
+            src={icon}
+            alt={title}
+            style={{ width: "70px", height: "70px" }}
+          />
           <div className="text-end">
             <h5 className="card-title fw-bold ">{title}</h5>
             <p className="card-text fs-4 mb-0">{value}</p>
@@ -37,27 +46,27 @@ const Summary = ({ data, isLoading }: { data: any; isLoading: boolean }) => {
 
   const summaryItems = [
     {
-      icon: "fa-solid fa-file-contract",
+      icon: allApplications,
       title: "মোট আবেদন",
       value: all.total_pending + all.total_cancel + all.total_approved,
     },
     {
-      icon: "fa-solid fa-file-pen",
+      icon: newApplications,
       title: "নতুন আবেদন",
       value: all.total_pending,
     },
     {
-      icon: "fa-solid fa-file-circle-check",
+      icon: approvedApplications,
       title: "ইস্যুকৃত সনদ",
       value: all.total_approved,
     },
     {
-      icon: "fa-solid fa-file-excel",
+      icon: canceledApplications,
       title: "বাতিলকৃত আবেদন",
       value: all.total_cancel,
     },
     {
-      icon: "fa-solid fa-bangladeshi-taka-sign",
+      icon: totalFees,
       title: "মোট আদায়কৃত ফি",
       value: all.total_amount,
     },

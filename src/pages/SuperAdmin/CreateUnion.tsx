@@ -99,9 +99,23 @@ const CreateUnion = () => {
     if (selectedUnion) {
       form.setFieldsValue({
         short_name_e: selectedUnion.name.replace(/\s+/g, "").toLowerCase(),
-        district: selectedDistrict?.name,
-        thana: selectedUpazila?.name,
+        u_code: "123456",
+        district: selectedDistrict?.name || "",
+        thana: selectedUpazila?.name || "",
         payment_type: "Online",
+        defaultColor: "#000000",
+        AKPAY_MER_PASS_KEY: "default_pass_key",
+        AKPAY_MER_REG_ID: "default_reg_id",
+
+        chairman_name: "চেয়ারম্যানের নাম",
+        chairman_email: "chairman@example.com",
+        chairman_phone: "01234567890",
+        chairman_password: "chairman_password",
+
+        secretary_name: "সেক্রেটারির নাম",
+        secretary_email: "secretary@example.com",
+        secretary_phone: "01234567891",
+        secretary_password: "secretary_password",
       });
     }
   }, [selectedUnion, form, selectedDistrict?.name, selectedUpazila?.name]);
