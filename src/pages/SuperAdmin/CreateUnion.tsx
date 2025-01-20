@@ -7,6 +7,25 @@ import { Form, Input, Button } from "antd";
 import Breadcrumbs from "@/components/reusable/Breadcrumbs";
 import { useCreateUnionMutation } from "@/redux/api/auth/authApi";
 
+interface TUnionDetails {
+  short_name_e: string;
+  u_code: string;
+  district: string;
+  thana: string;
+  payment_type: string;
+  defaultColor: string;
+  AKPAY_MER_PASS_KEY: string;
+  AKPAY_MER_REG_ID: string;
+  chairman_name: string;
+  chairman_email: string;
+  chairman_phone: string;
+  chairman_password: string;
+  secretary_name: string;
+  secretary_email: string;
+  secretary_phone: string;
+  secretary_password: string;
+}
+
 const CreateUnion = () => {
   const [createUnion, { isLoading }] = useCreateUnionMutation();
   const [selectedUnion, setSelectedUnion] = useState<TUnion | null>(null);
@@ -26,15 +45,7 @@ const CreateUnion = () => {
   useEffect(() => {
     fetch("/divisions.json")
       .then((res) => res.json())
-      .then((data: TDivision[]) => {
-        setDivisions(data);
-        // if (user?.division_name) {
-        //   const userDivision = data.find((d) => d?.name === user.division_name);
-        //   if (userDivision) {
-        //     setSelectedDivision(userDivision);
-        //   }
-        // }
-      })
+      .then((data: TDivision[]) => setDivisions(data))
       .catch((error) => console.error("Error fetching divisions data:", error));
   }, []);
 
@@ -47,14 +58,6 @@ const CreateUnion = () => {
             (d) => d?.division_id === selectedDivision.id
           );
           setDistricts(filteredDistricts);
-          //   if (user?.district_name) {
-          //     const userDistrict = filteredDistricts.find(
-          //       (d) => d?.name === user.district_name
-          //     );
-          //     if (userDistrict) {
-          //       setSelectedDistrict(userDistrict);
-          //     }
-          //   }
         })
         .catch((error) =>
           console.error("Error fetching districts data:", error)
@@ -71,14 +74,6 @@ const CreateUnion = () => {
             (upazila) => upazila.district_id === selectedDistrict.id
           );
           setUpazilas(filteredUpazilas);
-          //   if (user?.upazila_name) {
-          //     const userUpazila = filteredUpazilas.find(
-          //       (u) => u?.name === user.upazila_name
-          //     );
-          //     if (userUpazila) {
-          //       setSelectedUpazila(userUpazila);
-          //     }
-          //   }
         })
         .catch((error) =>
           console.error("Error fetching upazilas data:", error)
@@ -104,9 +99,12 @@ const CreateUnion = () => {
     if (selectedUnion) {
       form.setFieldsValue({
         short_name_e: selectedUnion.name.replace(/\s+/g, "").toLowerCase(),
+        district: selectedDistrict?.name,
+        thana: selectedUpazila?.name,
+        payment_type: "Online",
       });
     }
-  }, [selectedUnion, form]);
+  }, [selectedUnion, form, selectedDistrict?.name, selectedUpazila?.name]);
 
   const handleDivisionChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const division = divisions.find((d) => d.id === event.target.value);
@@ -132,7 +130,7 @@ const CreateUnion = () => {
     setSelectedUnion(union || null);
   };
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: TUnionDetails) => {
     const res = await createUnion({
       data: values,
       token: localStorage.getItem("token"),
@@ -161,266 +159,290 @@ const CreateUnion = () => {
           </select>
         </div>
 
-        {selectedDivision && (
-          <div className="col-md-2">
-            <label htmlFor="district">জেলা নির্বাচন করুন</label>
-            <select
-              id="district"
-              className="searchFrom form-control"
-              value={selectedDistrict?.id || ""}
-              onChange={handleDistrictChange}
-            >
-              <option value="">জেলা নির্বাচন করুন</option>
-              {districts.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.bn_name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        <div className="col-md-2">
+          <label htmlFor="district">জেলা নির্বাচন করুন</label>
+          <select
+            id="district"
+            className="searchFrom form-control"
+            value={selectedDistrict?.id || ""}
+            onChange={handleDistrictChange}
+          >
+            <option value="">জেলা নির্বাচন করুন</option>
+            {districts.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.bn_name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        {selectedDistrict && (
-          <div className="col-md-2">
-            <label htmlFor="upazila">উপজেলা নির্বাচন করুন</label>
-            <select
-              id="upazila"
-              className="searchFrom form-control"
-              value={selectedUpazila?.id || ""}
-              onChange={handleUpazilaChange}
-            >
-              <option value="">উপজেলা নির্বাচন করুন</option>
-              {upazilas.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.bn_name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        <div className="col-md-2">
+          <label htmlFor="upazila">উপজেলা নির্বাচন করুন</label>
+          <select
+            id="upazila"
+            className="searchFrom form-control"
+            value={selectedUpazila?.id || ""}
+            onChange={handleUpazilaChange}
+          >
+            <option value="">উপজেলা নির্বাচন করুন</option>
+            {upazilas.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.bn_name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        {selectedUpazila && (
-          <div className="col-md-2">
-            <label htmlFor="union">ইউনিয়ন নির্বাচন করুন</label>
-            <select
-              id="union"
-              className="searchFrom form-control"
-              value={selectedUnion?.id || ""}
-              onChange={handleUnionChange}
-            >
-              <option value="">ইউনিয়ন নির্বাচন করুন</option>
-              {unions.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.bn_name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        <div className="col-md-2">
+          <label htmlFor="union">ইউনিয়ন নির্বাচন করুন</label>
+          <select
+            id="union"
+            className="searchFrom form-control"
+            value={selectedUnion?.id || ""}
+            onChange={handleUnionChange}
+          >
+            <option value="">ইউনিয়ন নির্বাচন করুন</option>
+            {unions.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.bn_name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <div>
-        <Form
-          className=" row "
-          form={form}
-          name="my_form"
-          onFinish={onFinish}
-          layout="vertical"
-        >
+      <Form
+        form={form}
+        name="my_form"
+        onFinish={onFinish}
+        layout="vertical"
+        className="mt-4"
+      >
+        <div className="row">
           {/* Union Details */}
-          <fieldset className="col-md-6 my-2">
-            <legend>Union Details</legend>
-            <Form.Item
-              className="mb-1"
-              label="Short Name English"
-              name="short_name_e"
-              rules={[
-                { required: true, message: "Please input the short name!" },
-              ]}
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
+          <div className="col-md-6">
+            <fieldset className="border p-3 rounded">
+              <legend className="w-auto px-2">ইউনিয়নের বিবরণ</legend>
+              <Form.Item
+                className="mb-3"
+                label="সংক্ষিপ্ত নাম (ইংরেজি)"
+                name="short_name_e"
+                rules={[
+                  {
+                    required: true,
+                    message: "দয়া করে সংক্ষিপ্ত নাম ইনপুট করুন!",
+                  },
+                ]}
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
 
-            <Form.Item
-              className="mb-1"
-              label="U Code"
-              name="u_code"
-              rules={[{ required: true, message: "Please input the U Code!" }]}
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
+              <Form.Item
+                className="mb-3"
+                label="ইউনিয়ন কোড"
+                name="u_code"
+                rules={[
+                  {
+                    required: true,
+                    message: "দয়া করে ইউনিয়ন কোড ইনপুট করুন!",
+                  },
+                ]}
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
 
-            <Form.Item
-              className="mb-1"
-              label="District"
-              name="district"
-              rules={[
-                { required: true, message: "Please input the district!" },
-              ]}
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
+              <Form.Item
+                className="mb-3"
+                label="জেলা"
+                name="district"
+                rules={[
+                  { required: true, message: "দয়া করে জেলা ইনপুট করুন!" },
+                ]}
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
 
-            <Form.Item
-              className="mb-1"
-              label="Thana"
-              name="thana"
-              rules={[{ required: true, message: "Please input the thana!" }]}
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
+              <Form.Item
+                className="mb-3"
+                label="থানা"
+                name="thana"
+                rules={[
+                  { required: true, message: "দয়া করে থানা ইনপুট করুন!" },
+                ]}
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
 
-            <Form.Item
-              className="mb-1"
-              label="Payment Type"
-              name="payment_type"
-              rules={[
-                { required: true, message: "Please input the payment type!" },
-              ]}
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
+              <Form.Item
+                className="mb-3"
+                label="পেমেন্ট টাইপ"
+                name="payment_type"
+                rules={[
+                  {
+                    required: true,
+                    message: "দয়া করে পেমেন্ট টাইপ ইনপুট করুন!",
+                  },
+                ]}
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
 
-            <Form.Item
-              className="mb-1"
-              label="Default Color"
-              name="defaultColor"
-              rules={[
-                { required: true, message: "Please input the default color!" },
-              ]}
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
+              <Form.Item
+                className="mb-3"
+                label="ডিফল্ট রং"
+                name="defaultColor"
+                rules={[
+                  { required: true, message: "দয়া করে ডিফল্ট রং ইনপুট করুন!" },
+                ]}
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
 
-            <Form.Item
-              className="mb-1"
-              label="AKPAY MER PASS KEY"
-              name="AKPAY_MER_PASS_KEY"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input the AKPAY MER PASS KEY!",
-                },
-              ]}
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
+              <Form.Item
+                className="mb-3"
+                label="AKPAY_MER_PASS_KEY"
+                name="AKPAY_MER_PASS_KEY"
+                rules={[
+                  {
+                    required: true,
+                    message: "দয়া করে AKPAY_MER_PASS_KEY কী ইনপুট করুন!",
+                  },
+                ]}
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
 
-            <Form.Item
-              className="mb-1"
-              label="AKPAY MER REG ID"
-              name="AKPAY_MER_REG_ID"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input the AKPAY MER REG ID!",
-                },
-              ]}
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
-          </fieldset>
+              <Form.Item
+                className="mb-3"
+                label="AKPAY_MER_REG_ID"
+                name="AKPAY_MER_REG_ID"
+                rules={[
+                  {
+                    required: true,
+                    message: "দয়া করে AKPAY_MER_REG_ID ইনপুট করুন!",
+                  },
+                ]}
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
+            </fieldset>
+          </div>
 
-          {/* Chairman Details */}
-          <fieldset className="col-md-6 my-2">
-            <legend>Chairman Details</legend>
-            <Form.Item
-              className="mb-1"
-              label="Chairman Name"
-              name="chairman_name"
-              rules={[
-                { required: true, message: "Please input the chairman name!" },
-              ]}
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
+          {/* Chairman and Secretary Details */}
+          <div className="col-md-6">
+            <fieldset className="border p-3 rounded">
+              <legend className="w-auto px-2">চেয়ারম্যানের বিবরণ</legend>
+              <Form.Item
+                className="mb-3"
+                label="চেয়ারম্যানের নাম"
+                name="chairman_name"
+                rules={[
+                  {
+                    required: true,
+                    message: "দয়া করে চেয়ারম্যানের নাম ইনপুট করুন!",
+                  },
+                ]}
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
 
-            <Form.Item
-              className="mb-1"
-              label="Chairman Email"
-              name="chairman_email"
-              rules={[
-                { required: true, message: "Please input the chairman email!" },
-              ]}
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
+              <Form.Item
+                className="mb-3"
+                label="চেয়ারম্যানের ইমেইল"
+                name="chairman_email"
+                rules={[
+                  {
+                    required: true,
+                    message: "দয়া করে চেয়ারম্যানের ইমেইল ইনপুট করুন!",
+                  },
+                ]}
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
 
-            <Form.Item
-              className="mb-1"
-              label="Chairman Phone"
-              name="chairman_phone"
-              rules={[
-                { required: true, message: "Please input the chairman phone!" },
-              ]}
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
+              <Form.Item
+                className="mb-3"
+                label="চেয়ারম্যানের ফোন"
+                name="chairman_phone"
+                rules={[
+                  {
+                    required: true,
+                    message: "দয়া করে চেয়ারম্যানের ফোন ইনপুট করুন!",
+                  },
+                ]}
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
 
-            <Form.Item
-              className="mb-1"
-              label="Chairman Password"
-              name="chairman_password"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input the chairman password!",
-                },
-              ]}
-            >
-              <Input.Password style={{ height: 36 }} />
-            </Form.Item>
-          </fieldset>
+              <Form.Item
+                className="mb-3"
+                label="চেয়ারম্যানের পাসওয়ার্ড"
+                name="chairman_password"
+                rules={[
+                  {
+                    required: true,
+                    message: "দয়া করে চেয়ারম্যানের পাসওয়ার্ড ইনপুট করুন!",
+                  },
+                ]}
+              >
+                <Input.Password style={{ height: 36 }} />
+              </Form.Item>
+            </fieldset>
 
-          {/* Secretary Details */}
-          <fieldset className="col-md-6 my-2">
-            <legend>Secretary Details</legend>
-            <Form.Item
-              className="mb-1"
-              label="Secretary Name"
-              name="secretary_name"
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
+            <fieldset className="border p-3 rounded mt-4">
+              <legend className="w-auto px-2">সেক্রেটারির বিবরণ</legend>
+              <Form.Item
+                className="mb-3"
+                label="সেক্রেটারির নাম"
+                name="secretary_name"
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
 
-            <Form.Item
-              className="mb-1"
-              label="Secretary Email"
-              name="secretary_email"
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
+              <Form.Item
+                className="mb-3"
+                label="সেক্রেটারির ইমেইল"
+                name="secretary_email"
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
 
-            <Form.Item
-              className="mb-1"
-              label="Secretary Phone"
-              name="secretary_phone"
-            >
-              <Input style={{ height: 36 }} />
-            </Form.Item>
+              <Form.Item
+                className="mb-3"
+                label="সেক্রেটারির ফোন"
+                name="secretary_phone"
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
 
-            <Form.Item
-              className="mb-1"
-              label="Secretary Password"
-              name="secretary_password"
-            >
-              <Input.Password style={{ height: 36 }} />
-            </Form.Item>
-          </fieldset>
+              <Form.Item
+                className="mb-3"
+                label="সেক্রেটারির পাসওয়ার্ড"
+                name="secretary_password"
+              >
+                <Input.Password style={{ height: 36 }} />
+              </Form.Item>
+            </fieldset>
+          </div>
+        </div>
 
-          {/* Submit Button */}
-          <Form.Item className="mb-1">
-            <Button
-              loading={isLoading}
-              disabled={isLoading}
-              type="primary"
-              htmlType="submit"
-            >
-              Submit
-            </Button>
-          </Form.Item>
-        </Form>
-      </div>
+        {/* Submit Button */}
+        <div className="row mt-4">
+          <div className="col-md-12 text-center">
+            <Form.Item>
+              <Button
+                loading={isLoading}
+                disabled={isLoading}
+                type="primary"
+                htmlType="submit"
+                size="large"
+              >
+                জমা দিন
+              </Button>
+            </Form.Item>
+          </div>
+        </div>
+      </Form>
     </div>
   );
 };
