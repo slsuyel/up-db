@@ -4,8 +4,7 @@
   font-family: 'Kalpurush', "Nunito Sans", serif;
 }
 body {
-  font-family: 'Kalpurush', sans-serif;
-  font-size: medium;
+  font-family: 'Kalpurush', "Nunito Sans", serif;
 }
 
 * {
@@ -378,5 +377,5 @@ line-height: 18px;
   width: 40%;
 }
 .form-control, .ant-input {
-  font-family: Kalpurush, sans-serif;
+  font-family: 'Kalpurush', "Nunito Sans", serif;
 }

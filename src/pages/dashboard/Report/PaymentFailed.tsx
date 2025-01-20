@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Breadcrumbs from "@/components/reusable/Breadcrumbs";
 import useAllServices from "@/hooks/useAllServices";
 import { useAppSelector } from "@/redux/features/hooks";
 import {
@@ -179,9 +180,9 @@ const PaymentFailed = () => {
   };
 
   return (
-    <div className="card p-3 border-0">
-      <div className=" mt-5">
-        <h4>পেমেন্ট ফেইল্ড তালিকাঃ</h4>
+    <div className="bg-white p-3 rounded">
+      <Breadcrumbs current="পেমেন্ট ফেইল্ড তালিকাঃ" />
+      <div className="">
         <div className="row ">
           <div className="form-group col-md-3 my-1">
             <select
@@ -314,7 +315,11 @@ const PaymentFailed = () => {
                     <td>{item.union}</td>
                     <td>{item.trxId}</td>
                     <td>{item.sonod_type}</td>
-                    <td>{item.date}</td>
+                    <td>
+                      {/* {item.date} */}
+
+                      {new Date(item?.date).toLocaleString()}
+                    </td>
                     <td>{item.method}</td>
 
                     {item?.holding_tax ? (

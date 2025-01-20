@@ -13,7 +13,6 @@ function handleProfileClick() {
 // Define the onClick handler for Logout click
 
 const Navbar = () => {
-
   const user = useAppSelector((state: RootState) => state.user.user);
 
   const items = [
@@ -25,7 +24,7 @@ const Navbar = () => {
     },
     {
       label: "Log Out",
-      key: "2", // Use a unique key for each menu item
+      key: "2",
       icon: <LogoutOutlined />,
       onClick: handleLogoutClick,
     },

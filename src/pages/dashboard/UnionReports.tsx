@@ -153,7 +153,7 @@ const UnionReports = () => {
   console.log(services);
 
   return (
-    <div>
+    <div className="bg-white p-3 rounded">
       <Breadcrumbs current="লেনদেনের প্রতিবেদন" />
 
       <form onSubmit={handleSubmit}>

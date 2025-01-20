@@ -150,7 +150,7 @@ const SearchFilter: React.FC = () => {
   const admin: TAdminData = data?.data;
 
   return (
-    <>
+    <div className="bg-white p-3 rounded">
       <Breadcrumbs current=" সকল প্রতিবেদন" />
       <div className="row mx-auto">
         <div className="col-md-2">
@@ -412,7 +412,7 @@ const SearchFilter: React.FC = () => {
           </tbody>
         </table>
       </div>
-    </>
+    </div>
   );
 };
 

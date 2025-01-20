@@ -166,7 +166,7 @@ const SonodBaseReport: React.FC = () => {
   const admin: TAdminData = data?.data;
 
   return (
-    <>
+    <div className="bg-white p-3 rounded">
       <Breadcrumbs current={` ${service} প্রতিবেদন`} />
       <div className="row mx-auto">
         <div className="col-md-2">
@@ -427,7 +427,7 @@ const SonodBaseReport: React.FC = () => {
           </tbody>
         </table>
       </div>
-    </>
+    </div>
   );
 };
 
