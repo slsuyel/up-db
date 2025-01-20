@@ -30,7 +30,6 @@ const authApi = apiSlice.injectEndpoints({
           authorization: `Bearer ${token}`,
         },
         body: data,
-
       }),
       invalidatesTags: ["profileCreate"] as any,
     }),
@@ -104,6 +103,14 @@ const authApi = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    createUnion: builder.mutation({
+      query: ({ token, data }) => ({
+        url: `/admin/create-union`,
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -118,7 +125,6 @@ export const {
   useUpdateProfileMutation,
   useResetPassLinkMutation,
   useChangePasswordMutation,
-  useAdminReportMutation
+  useAdminReportMutation,
+  useCreateUnionMutation,
 } = authApi;
-
-

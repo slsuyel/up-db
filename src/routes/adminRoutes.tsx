@@ -13,6 +13,7 @@ import EditSonod from "@/pages/dashboard/SonodManagement/EditSonod";
 import SonodManagement from "@/pages/dashboard/SonodManagement/SonodManagement";
 import UnionProfile from "@/pages/dashboard/UnionProfile";
 import UnionReports from "@/pages/dashboard/UnionReports";
+import CreateUnion from "@/pages/SuperAdmin/CreateUnion";
 
 export const adminRoutes = [
   {
@@ -30,6 +31,10 @@ export const adminRoutes = [
   {
     path: "union/profile",
     element: <UnionProfile />,
+  },
+  {
+    path: "create-union",
+    element: <CreateUnion />,
   },
   {
     path: "up-search",

@@ -38,6 +38,7 @@ const Sidebar = () => {
       pendingCount: 0,
     },
     { key: "reports", title: "লেনদেনের প্রতিবেদন ", slug: "/reports" },
+    { key: "union-create", title: "ইউনিয়ন তৈরি", slug: "/create-union" },
     { key: "payment-failed", title: "পেমেন্ট ফেইল্ড", slug: "/payment-failed" },
     { key: "search", title: "সকল প্রতিবেদন", slug: "/up-search" },
     ...services.map((service, index) => ({
