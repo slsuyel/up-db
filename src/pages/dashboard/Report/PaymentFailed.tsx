@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import useAllServices from "@/hooks/useAllServices";
 import { useAppSelector } from "@/redux/features/hooks";
 import {
   useCallipnMutation,
@@ -18,11 +19,11 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 
 const PaymentFailed = () => {
+  const services = useAllServices();
   const [callIpn, { isLoading: chckingIpn }] = useCallipnMutation();
   const [paymentData, setPaymentData] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingTrxId, setLoadingTrxId] = useState<string | null>(null);
-  const sonodInfo = useAppSelector((state: RootState) => state.union.sonodList);
   const [checkPayment] = useCheckPaymentMutation();
   const [selectedService, setSelectedService] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
@@ -253,9 +254,9 @@ const PaymentFailed = () => {
               <option value="">চিহ্নিত করুন</option>
               <option value="all">সকল</option>
               <option value="holdingtax">হোল্ডিং ট্যাক্স</option>
-              {sonodInfo.map((d) => (
-                <option key={d.id} value={d.bnname}>
-                  {d.bnname}
+              {services.map((d) => (
+                <option key={d.title} value={d.title}>
+                  {d.title}
                 </option>
               ))}
             </select>

@@ -5,8 +5,10 @@ import { TUnion } from "@/types/global";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Form, Input, Button } from "antd";
 import Breadcrumbs from "@/components/reusable/Breadcrumbs";
+import { useCreateUnionMutation } from "@/redux/api/auth/authApi";
 
 const CreateUnion = () => {
+  const [createUnion, { isLoading }] = useCreateUnionMutation();
   const [selectedUnion, setSelectedUnion] = useState<TUnion | null>(null);
   const [selectedDivision, setSelectedDivision] = useState<TDivision | null>(
     null
@@ -130,8 +132,12 @@ const CreateUnion = () => {
     setSelectedUnion(union || null);
   };
 
-  const onFinish = (values: any) => {
-    console.log("Received values:", values);
+  const onFinish = async (values: any) => {
+    const res = await createUnion({
+      data: values,
+      token: localStorage.getItem("token"),
+    }).unwrap();
+    console.log(res);
   };
 
   return (
@@ -222,7 +228,7 @@ const CreateUnion = () => {
           layout="vertical"
         >
           {/* Union Details */}
-          <fieldset className="col-md-6">
+          <fieldset className="col-md-6 my-2">
             <legend>Union Details</legend>
             <Form.Item
               className="mb-1"
@@ -316,7 +322,7 @@ const CreateUnion = () => {
           </fieldset>
 
           {/* Chairman Details */}
-          <fieldset className="col-md-6">
+          <fieldset className="col-md-6 my-2">
             <legend>Chairman Details</legend>
             <Form.Item
               className="mb-1"
@@ -367,7 +373,7 @@ const CreateUnion = () => {
           </fieldset>
 
           {/* Secretary Details */}
-          <fieldset className="col-md-6">
+          <fieldset className="col-md-6 my-2">
             <legend>Secretary Details</legend>
             <Form.Item
               className="mb-1"
@@ -404,7 +410,12 @@ const CreateUnion = () => {
 
           {/* Submit Button */}
           <Form.Item className="mb-1">
-            <Button type="primary" htmlType="submit">
+            <Button
+              loading={isLoading}
+              disabled={isLoading}
+              type="primary"
+              htmlType="submit"
+            >
               Submit
             </Button>
           </Form.Item>
