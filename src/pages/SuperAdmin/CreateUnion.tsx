@@ -6,6 +6,9 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { Form, Input, Button } from "antd";
 import Breadcrumbs from "@/components/reusable/Breadcrumbs";
 import { useCreateUnionMutation } from "@/redux/api/auth/authApi";
+import { useAppSelector } from "@/redux/features/hooks";
+import { RootState } from "@/redux/features/store";
+import { useNavigate } from "react-router-dom";
 
 interface TUnionDetails {
   short_name_e: string;
@@ -27,6 +30,15 @@ interface TUnionDetails {
 }
 
 const CreateUnion = () => {
+  const navigate = useNavigate();
+  const user = useAppSelector((state: RootState) => state.user.user);
+
+  useEffect(() => {
+    if (user?.position !== "Super Admin") {
+      navigate("/");
+    }
+  }, [navigate, user]);
+
   const [createUnion, { isLoading }] = useCreateUnionMutation();
   const [selectedUnion, setSelectedUnion] = useState<TUnion | null>(null);
   const [selectedDivision, setSelectedDivision] = useState<TDivision | null>(
@@ -243,7 +255,7 @@ const CreateUnion = () => {
                 name="short_name_e"
                 rules={[
                   {
-                    required: true,
+                    required: false,
                     message: "দয়া করে সংক্ষিপ্ত নাম ইনপুট করুন!",
                   },
                 ]}
@@ -257,7 +269,7 @@ const CreateUnion = () => {
                 name="u_code"
                 rules={[
                   {
-                    required: true,
+                    required: false,
                     message: "দয়া করে ইউনিয়ন কোড ইনপুট করুন!",
                   },
                 ]}
@@ -270,7 +282,7 @@ const CreateUnion = () => {
                 label="জেলা"
                 name="district"
                 rules={[
-                  { required: true, message: "দয়া করে জেলা ইনপুট করুন!" },
+                  { required: false, message: "দয়া করে জেলা ইনপুট করুন!" },
                 ]}
               >
                 <Input style={{ height: 36 }} />
@@ -281,7 +293,7 @@ const CreateUnion = () => {
                 label="থানা"
                 name="thana"
                 rules={[
-                  { required: true, message: "দয়া করে থানা ইনপুট করুন!" },
+                  { required: false, message: "দয়া করে থানা ইনপুট করুন!" },
                 ]}
               >
                 <Input style={{ height: 36 }} />
@@ -293,7 +305,7 @@ const CreateUnion = () => {
                 name="payment_type"
                 rules={[
                   {
-                    required: true,
+                    required: false,
                     message: "দয়া করে পেমেন্ট টাইপ ইনপুট করুন!",
                   },
                 ]}
@@ -306,7 +318,10 @@ const CreateUnion = () => {
                 label="ডিফল্ট রং"
                 name="defaultColor"
                 rules={[
-                  { required: true, message: "দয়া করে ডিফল্ট রং ইনপুট করুন!" },
+                  {
+                    required: false,
+                    message: "দয়া করে ডিফল্ট রং ইনপুট করুন!",
+                  },
                 ]}
               >
                 <Input style={{ height: 36 }} />
@@ -318,7 +333,7 @@ const CreateUnion = () => {
                 name="AKPAY_MER_PASS_KEY"
                 rules={[
                   {
-                    required: true,
+                    required: false,
                     message: "দয়া করে AKPAY_MER_PASS_KEY কী ইনপুট করুন!",
                   },
                 ]}
@@ -332,7 +347,7 @@ const CreateUnion = () => {
                 name="AKPAY_MER_REG_ID"
                 rules={[
                   {
-                    required: true,
+                    required: false,
                     message: "দয়া করে AKPAY_MER_REG_ID ইনপুট করুন!",
                   },
                 ]}
@@ -352,7 +367,7 @@ const CreateUnion = () => {
                 name="chairman_name"
                 rules={[
                   {
-                    required: true,
+                    required: false,
                     message: "দয়া করে চেয়ারম্যানের নাম ইনপুট করুন!",
                   },
                 ]}
@@ -366,7 +381,7 @@ const CreateUnion = () => {
                 name="chairman_email"
                 rules={[
                   {
-                    required: true,
+                    required: false,
                     message: "দয়া করে চেয়ারম্যানের ইমেইল ইনপুট করুন!",
                   },
                 ]}
@@ -380,7 +395,7 @@ const CreateUnion = () => {
                 name="chairman_phone"
                 rules={[
                   {
-                    required: true,
+                    required: false,
                     message: "দয়া করে চেয়ারম্যানের ফোন ইনপুট করুন!",
                   },
                 ]}
@@ -394,7 +409,7 @@ const CreateUnion = () => {
                 name="chairman_password"
                 rules={[
                   {
-                    required: true,
+                    required: false,
                     message: "দয়া করে চেয়ারম্যানের পাসওয়ার্ড ইনপুট করুন!",
                   },
                 ]}

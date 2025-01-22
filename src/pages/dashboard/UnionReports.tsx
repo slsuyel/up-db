@@ -38,7 +38,9 @@ const UnionReports = () => {
       .then((data: TDivision[]) => {
         setDivisions(data);
         if (user?.division_name) {
-          const userDivision = data.find((d) => d?.name === user.division_name);
+          const userDivision = data.find(
+            (d) => d?.name === user?.division_name
+          );
           if (userDivision) {
             setSelectedDivision(userDivision);
           }
@@ -58,7 +60,7 @@ const UnionReports = () => {
           setDistricts(filteredDistricts);
           if (user?.district_name) {
             const userDistrict = filteredDistricts.find(
-              (d) => d?.name === user.district_name
+              (d) => d?.name === user?.district_name
             );
             if (userDistrict) {
               setSelectedDistrict(userDistrict);
@@ -82,7 +84,7 @@ const UnionReports = () => {
           setUpazilas(filteredUpazilas);
           if (user?.upazila_name) {
             const userUpazila = filteredUpazilas.find(
-              (u) => u?.name === user.upazila_name
+              (u) => u?.name === user?.upazila_name
             );
             if (userUpazila) {
               setSelectedUpazila(userUpazila);

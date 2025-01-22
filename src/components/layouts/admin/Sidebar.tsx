@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import useAllServices from "@/hooks/useAllServices";
+import { useAppSelector } from "@/redux/features/hooks";
+import { RootState } from "@/redux/features/store";
 import { Badge, Layout, Menu } from "antd";
 import { Link } from "react-router-dom";
 
@@ -29,6 +31,8 @@ type SidebarItemWithoutSubmenu = SidebarItemBase & {
 type SidebarItem = SidebarItemWithSubmenu | SidebarItemWithoutSubmenu;
 
 const Sidebar = () => {
+  const user = useAppSelector((state: RootState) => state.user.user);
+
   const services = useAllServices();
   const sidebarItems: SidebarItem[] = [
     {
@@ -37,8 +41,10 @@ const Sidebar = () => {
       slug: "",
       pendingCount: 0,
     },
-    { key: "reports", title: "লেনদেনের প্রতিবেদন ", slug: "/reports" },
-    { key: "union-create", title: "ইউনিয়ন তৈরি", slug: "/create-union" },
+    { key: "reports", title: "লেনদেনের প্রতিবেদন", slug: "/reports" },
+    ...(user?.position === "Super Admin"
+      ? [{ key: "union-create", title: "ইউনিয়ন তৈরি", slug: "/create-union" }]
+      : []),
     { key: "payment-failed", title: "পেমেন্ট ফেইল্ড", slug: "/payment-failed" },
     { key: "search", title: "সকল প্রতিবেদন", slug: "/up-search" },
     ...services.map((service, index) => ({
@@ -47,6 +53,7 @@ const Sidebar = () => {
       slug: `/sonod-base-report/${service.title}`,
     })),
   ];
+
   return (
     <Sider
       style={{ minHeight: "100vh" }}
