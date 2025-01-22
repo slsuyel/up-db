@@ -333,26 +333,25 @@ const CreateUnion = () => {
 
               <Form.Item
                 className="mb-3"
-                label="AKPAY_MER_PASS_KEY"
-                name="AKPAY_MER_PASS_KEY"
-                rules={[
-                  {
-                    required: false,
-                    message: "দয়া করে AKPAY_MER_PASS_KEY কী ইনপুট করুন!",
-                  },
-                ]}
-              >
-                <Input style={{ height: 36 }} />
-              </Form.Item>
-
-              <Form.Item
-                className="mb-3"
                 label="AKPAY_MER_REG_ID"
                 name="AKPAY_MER_REG_ID"
                 rules={[
                   {
                     required: false,
                     message: "দয়া করে AKPAY_MER_REG_ID ইনপুট করুন!",
+                  },
+                ]}
+              >
+                <Input style={{ height: 36 }} />
+              </Form.Item>
+              <Form.Item
+                className="mb-3"
+                label="AKPAY_MER_PASS_KEY"
+                name="AKPAY_MER_PASS_KEY"
+                rules={[
+                  {
+                    required: false,
+                    message: "দয়া করে AKPAY_MER_PASS_KEY কী ইনপুট করুন!",
                   },
                 ]}
               >
