@@ -3,7 +3,7 @@ import { TDistrict, TUpazila } from "@/types/global";
 import { TDivision } from "@/types/global";
 import { TUnion } from "@/types/global";
 import { ChangeEvent, useEffect, useState } from "react";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, message } from "antd";
 import Breadcrumbs from "@/components/reusable/Breadcrumbs";
 import { useCreateUnionMutation } from "@/redux/api/auth/authApi";
 import { useAppSelector } from "@/redux/features/hooks";
@@ -114,20 +114,12 @@ const CreateUnion = () => {
         u_code: "123456",
         district: selectedDistrict?.name || "",
         thana: selectedUpazila?.name || "",
-        payment_type: "Online",
-        defaultColor: "#000000",
-        AKPAY_MER_PASS_KEY: "default_pass_key",
-        AKPAY_MER_REG_ID: "default_reg_id",
-
+        payment_type: "Prepaid",
+        defaultColor: "green",
         chairman_name: "চেয়ারম্যানের নাম",
-        chairman_email: "chairman@example.com",
         chairman_phone: "01234567890",
-        chairman_password: "chairman_password",
-
         secretary_name: "সেক্রেটারির নাম",
-        secretary_email: "secretary@example.com",
         secretary_phone: "01234567891",
-        secretary_password: "secretary_password",
       });
     }
   }, [selectedUnion, form, selectedDistrict?.name, selectedUpazila?.name]);
@@ -157,11 +149,23 @@ const CreateUnion = () => {
   };
 
   const onFinish = async (values: TUnionDetails) => {
-    const res = await createUnion({
-      data: values,
-      token: localStorage.getItem("token"),
-    }).unwrap();
-    console.log(res);
+    try {
+      const res = await createUnion({
+        data: values,
+        token: localStorage.getItem("token"),
+      }).unwrap();
+      if (res.status_code === 201) {
+        message.success("Union created successfully!");
+      } else {
+        message.error(
+          `Failed to create union: ${res.message || "Unknown error"}`
+        );
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error?.data?.message || error?.message || "An error occurred";
+      message.error(`Error: ${errorMessage}`);
+    }
   };
 
   return (
