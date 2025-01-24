@@ -13,8 +13,7 @@ import EditSonod from "@/pages/dashboard/SonodManagement/EditSonod";
 import SonodManagement from "@/pages/dashboard/SonodManagement/SonodManagement";
 import UnionProfile from "@/pages/dashboard/UnionProfile";
 import UnionReports from "@/pages/dashboard/UnionReports";
-import CreateUnion from "@/pages/SuperAdmin/CreateUnion";
-import UnionCreateByUpazila from "@/pages/SuperAdmin/UnionCreateByUpazila";
+import UnionCreateTab from "@/pages/SuperAdmin/UnionManage/UnionCreateTab";
 
 export const adminRoutes = [
   {
@@ -35,7 +34,7 @@ export const adminRoutes = [
   },
   {
     path: "create-union",
-    element: <UnionCreateByUpazila />,
+    element: <UnionCreateTab />,
   },
   {
     path: "up-search",

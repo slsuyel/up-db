@@ -4,7 +4,7 @@ import { TDivision } from "@/types/global";
 import { TUnion } from "@/types/global";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Form, Input, Button, message } from "antd";
-import Breadcrumbs from "@/components/reusable/Breadcrumbs";
+
 import { useCreateUnionMutation } from "@/redux/api/auth/authApi";
 import { useAppSelector } from "@/redux/features/hooks";
 import { RootState } from "@/redux/features/store";
@@ -169,8 +169,7 @@ const CreateUnion = () => {
   };
 
   return (
-    <div className="bg-white p-3 rounded">
-      <Breadcrumbs current="ইউনিয়ন তৈরি করুন" />
+    <>
       <div className="row mx-auto">
         <div className="col-md-2">
           <label htmlFor="division">বিভাগ নির্বাচন করুন</label>
@@ -475,7 +474,7 @@ const CreateUnion = () => {
           </div>
         </div>
       </Form>
-    </div>
+    </>
   );
 };
 

@@ -426,7 +426,7 @@ import { TDistrict, TUpazila } from "@/types/global";
 import { TDivision } from "@/types/global";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Button, Form, Input, message, Modal } from "antd";
-import Breadcrumbs from "@/components/reusable/Breadcrumbs";
+
 import {
   useCreateUnionByUpazilaMutation,
   useShowUnionByUpazilaMutation,
@@ -681,8 +681,7 @@ const UnionCreateByUpazila = () => {
   }, [selectedUnion, form]);
 
   return (
-    <div className="bg-white p-3 rounded">
-      <Breadcrumbs current="ইউনিয়ন তৈরি করুন: উপজেলা ভিত্তিক" />
+    <>
       <div className="row ">
         <div className="my-1 col-md-2">
           <label htmlFor="division">বিভাগ নির্বাচন করুন</label>
@@ -785,7 +784,7 @@ const UnionCreateByUpazila = () => {
               <th>Union Code</th>
               <th>AKPAY_MER_REG_ID</th>
               <th>AKPAY_MER_PASS_KEY</th>
-              <th>Action</th>
+              <th colSpan={2}>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -798,7 +797,12 @@ const UnionCreateByUpazila = () => {
                 <td>{union.AKPAY_MER_REG_ID}</td>
                 <td>{union.AKPAY_MER_PASS_KEY}</td>
                 <td>
-                  <button onClick={() => HandleUpManage(union.id)}>Edit</button>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => HandleUpManage(union.id)}
+                  >
+                    Edit
+                  </button>
                 </td>
                 <td>
                   <button
@@ -879,7 +883,7 @@ const UnionCreateByUpazila = () => {
           </Form>
         </Modal>
       )}
-    </div>
+    </>
   );
 };
 
