@@ -103,12 +103,35 @@ const authApi = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+
     createUnion: builder.mutation({
       query: ({ token, data }) => ({
         url: `/admin/create-union`,
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: data,
+      }),
+    }),
+    updateUnion: builder.mutation({
+      query: ({ token, data, id }) => ({
+        url: `/admin/uniouninfo/${id}`,
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: data,
+      }),
+    }),
+    createUnionByUpazila: builder.mutation({
+      query: ({ token, id }) => ({
+        url: `/admin/upazilas/${id}/create-unions`,
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    }),
+    showUnionByUpazila: builder.mutation({
+      query: ({ token, id }) => ({
+        url: `/admin/upazilas/${id}/uniouninfo`,
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
       }),
     }),
   }),
@@ -127,4 +150,7 @@ export const {
   useChangePasswordMutation,
   useAdminReportMutation,
   useCreateUnionMutation,
+  useCreateUnionByUpazilaMutation,
+  useShowUnionByUpazilaMutation,
+  useUpdateUnionMutation,
 } = authApi;

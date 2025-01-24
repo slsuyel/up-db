@@ -14,6 +14,7 @@ import SonodManagement from "@/pages/dashboard/SonodManagement/SonodManagement";
 import UnionProfile from "@/pages/dashboard/UnionProfile";
 import UnionReports from "@/pages/dashboard/UnionReports";
 import CreateUnion from "@/pages/SuperAdmin/CreateUnion";
+import UnionCreateByUpazila from "@/pages/SuperAdmin/UnionCreateByUpazila";
 
 export const adminRoutes = [
   {
@@ -34,7 +35,7 @@ export const adminRoutes = [
   },
   {
     path: "create-union",
-    element: <CreateUnion />,
+    element: <UnionCreateByUpazila />,
   },
   {
     path: "up-search",
