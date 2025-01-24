@@ -12,6 +12,7 @@ import {
 import { useAppSelector } from "@/redux/features/hooks";
 import { RootState } from "@/redux/features/store";
 import { useNavigate } from "react-router-dom";
+
 interface TUnionParishad {
   id: number;
   full_name: string;
@@ -146,6 +147,7 @@ const UnionCreateByUpazila = () => {
       message.error(`Error: ${errorMessage}`);
     }
   };
+
   const HandleShowUnions = async () => {
     try {
       const res = await showUnionByUpazila({
@@ -169,9 +171,8 @@ const UnionCreateByUpazila = () => {
 
   const allUp: TUnionParishad[] = data?.data || [];
 
-  const HandleUpEkpayCreadintial = (union: TUnionParishad) => {
-    setSelectedUnion(union); // Store the selected union data
-    setEkpayEditModal(true);
+  const HandleUpEkpayCreadintial = () => {
+    setEkpayEditModal(true); // Open the modal
   };
 
   const HandleUpManage = (id: number) => {
@@ -190,6 +191,7 @@ const UnionCreateByUpazila = () => {
 
       if (res.status_code == 200) {
         message.success(`Union information updated successfully`);
+        await HandleShowUnions();
       }
       setEkpayEditModal(false);
     } catch (error) {
@@ -204,11 +206,22 @@ const UnionCreateByUpazila = () => {
     setSelectedUnion(null); // Clear the selected union data
   };
 
+  // Update form fields when selectedUnion changes
+  useEffect(() => {
+    if (selectedUnion) {
+      form.setFieldsValue({
+        AKPAY_MER_REG_ID: selectedUnion.AKPAY_MER_REG_ID,
+        AKPAY_MER_PASS_KEY: selectedUnion.AKPAY_MER_PASS_KEY,
+        u_code: selectedUnion.u_code,
+      });
+    }
+  }, [selectedUnion, form]);
+
   return (
     <div className="bg-white p-3 rounded">
       <Breadcrumbs current="ইউনিয়ন তৈরি করুন: উপজেলা ভিত্তিক" />
-      <div className="row mx-auto">
-        <div className="col-md-2">
+      <div className="row ">
+        <div className="my-1 col-md-2">
           <label htmlFor="division">বিভাগ নির্বাচন করুন</label>
           <select
             id="division"
@@ -225,7 +238,7 @@ const UnionCreateByUpazila = () => {
           </select>
         </div>
 
-        <div className="col-md-2">
+        <div className="my-1 col-md-2">
           <label htmlFor="district">জেলা নির্বাচন করুন</label>
           <select
             id="district"
@@ -242,7 +255,7 @@ const UnionCreateByUpazila = () => {
           </select>
         </div>
 
-        <div className="col-md-2">
+        <div className="my-1 col-md-2">
           <label htmlFor="upazila">উপজেলা নির্বাচন করুন</label>
           <select
             id="upazila"
@@ -259,31 +272,42 @@ const UnionCreateByUpazila = () => {
           </select>
         </div>
         {selectedUpazila && (
-          <div className="col-md-4">
+          <div className="my-1 col-md-4 d-flex flex-column">
             <label htmlFor="">
               {selectedUpazila?.bn_name} উপজেলার ইউনিয়ন তৈরি করুন
             </label>
-            <Button
-              loading={isLoading}
-              disabled={isLoading}
-              onClick={HandleCreateUnions}
-            >
-              Create Unions
-            </Button>
+            <div>
+              <Button
+                className=""
+                type="primary"
+                danger
+                loading={isLoading}
+                disabled={isLoading}
+                onClick={HandleCreateUnions}
+              >
+                Create Unions
+              </Button>
+            </div>
           </div>
         )}
+      </div>
+
+      <div className="my-3">
         {selectedUpazila && (
-          <div className="col-md-4">
+          <div className="d-flex flex-column">
             <label htmlFor="">
               {selectedUpazila?.bn_name} উপজেলার ইউনিয়ন দেখুন
             </label>
-            <Button
-              loading={showing}
-              disabled={showing}
-              onClick={HandleShowUnions}
-            >
-              Show Unions
-            </Button>
+            <div>
+              <Button
+                type="primary"
+                loading={showing}
+                disabled={showing}
+                onClick={HandleShowUnions}
+              >
+                Show Unions
+              </Button>
+            </div>
           </div>
         )}
       </div>
@@ -293,7 +317,6 @@ const UnionCreateByUpazila = () => {
           <thead>
             <tr>
               <th>Full Name</th>
-
               <th>Thana</th>
               <th>District</th>
               <th>Union Code</th>
@@ -317,7 +340,10 @@ const UnionCreateByUpazila = () => {
                 <td>
                   <button
                     className="btn btn-info btn-sm"
-                    onClick={() => HandleUpEkpayCreadintial(union)}
+                    onClick={() => {
+                      setSelectedUnion(union);
+                      HandleUpEkpayCreadintial();
+                    }}
                   >
                     একপে সেটিং
                   </button>
@@ -330,7 +356,7 @@ const UnionCreateByUpazila = () => {
 
       {ekpayEditModal && (
         <Modal
-          title="Edit Merchant Details"
+          title={`${selectedUnion?.full_name} এর তথ্য আপডেট`}
           open={ekpayEditModal}
           onOk={handleSubmit}
           onCancel={handleCancel}
@@ -352,8 +378,9 @@ const UnionCreateByUpazila = () => {
             form={form}
             layout="vertical"
             initialValues={{
-              AKPAY_MER_REG_ID: selectedUnion?.AKPAY_MER_REG_ID || "", // Set initial value
-              AKPAY_MER_PASS_KEY: selectedUnion?.AKPAY_MER_PASS_KEY || "", // Set initial value
+              AKPAY_MER_REG_ID: selectedUnion?.AKPAY_MER_REG_ID || "",
+              AKPAY_MER_PASS_KEY: selectedUnion?.AKPAY_MER_PASS_KEY || "",
+              u_code: selectedUnion?.u_code || "",
             }}
           >
             <Form.Item
@@ -382,6 +409,9 @@ const UnionCreateByUpazila = () => {
               ]}
             >
               <Input placeholder="Enter Merchant Pass Key" />
+            </Form.Item>
+            <Form.Item className="my-1" name="u_code" label="Union Code">
+              <Input placeholder="Enter Union Code" />
             </Form.Item>
           </Form>
         </Modal>
