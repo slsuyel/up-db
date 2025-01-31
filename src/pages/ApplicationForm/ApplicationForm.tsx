@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Form, Button, message } from "antd";
+import { Form, Button } from "antd";
 import addressFields from "./addressFields";
 import attachmentForm from "./attachmentForm";
 
@@ -17,8 +17,11 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTradeInfoQuery } from "@/redux/api/user/userApi";
 import adminEditFields from "./adminEditFields";
 import { TApplicantData } from "@/types/global";
+import { useSonodUpdateMutation } from "@/redux/api/sonod/sonodApi";
 
 const ApplicationForm = ({ user }: { user?: TApplicantData }) => {
+  const token = localStorage.getItem(" token");
+  const [sonodUpdate, { isLoading: updating }] = useSonodUpdateMutation();
   const { service } = useParams();
   const [unionName, setUnionName] = useState("uniontax");
   const { data, isLoading } = useTradeInfoQuery(unionName, {
@@ -43,10 +46,10 @@ const ApplicationForm = ({ user }: { user?: TApplicantData }) => {
 
   const onFinish = async (values: any) => {
     setUserData(values);
-
     if (isDashboard) {
-      console.log("Submitted values:", values);
-      message.success("Form submitted from dashboard successfully");
+      const res = await sonodUpdate({ data: values, id: user?.id, token });
+      console.log("Submitted values:", res);
+      // message.success("Form submitted from dashboard successfully");
     } else {
       setModalVisible(true);
     }
@@ -190,7 +193,13 @@ const ApplicationForm = ({ user }: { user?: TApplicantData }) => {
             inheritanceList(inherList, setInherList)}
 
           <div style={{ textAlign: "center" }}>
-            <Button type="primary" htmlType="submit" size="large">
+            <Button
+              loading={updating}
+              disabled={updating}
+              type="primary"
+              htmlType="submit"
+              size="large"
+            >
               সাবমিট
             </Button>
           </div>
