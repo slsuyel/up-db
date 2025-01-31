@@ -35,7 +35,6 @@ export const adminRoutes = [
     path: "create-union",
     element: <UnionCreateTab />,
   },
-
   {
     path: "up-search",
     element: <SearchFilter />,
@@ -60,12 +59,9 @@ export const adminRoutes = [
     path: "/dashboard/holding/list/view/:id",
     element: <SingleHolding />,
   },
-  // {
-  //   path: "sonod/all",
-  //   element: <SonodFee />,
-  // },
+
   {
-    path: "sonod-management",
+    path: "sonod/:sonodName/:condition/:union",
     element: <SonodManagement />,
   },
   {
