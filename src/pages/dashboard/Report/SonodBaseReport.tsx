@@ -11,7 +11,6 @@ import Breadcrumbs from "@/components/reusable/Breadcrumbs";
 
 const SonodBaseReport: React.FC = () => {
   const { service } = useParams();
-  console.log(service);
 
   const user = useAppSelector((state: RootState) => state.user.user);
   const token = localStorage.getItem("token");

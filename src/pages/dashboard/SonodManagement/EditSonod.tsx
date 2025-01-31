@@ -1,9 +1,27 @@
-import ApplicationForm from '@/pages/ApplicationForm/ApplicationForm';
+import Loader from "@/components/reusable/Loader";
+import { useSingleSonodQuery } from "@/redux/api/sonod/sonodApi";
+import ApplicationForm from "@/pages/ApplicationForm/ApplicationForm";
+import { TApplicantData } from "@/types/global";
+import { useParams } from "react-router-dom";
 
 const EditSonod = () => {
+  const { id } = useParams();
+  const token = localStorage.getItem("token");
+
+  const { data, isLoading } = useSingleSonodQuery({
+    id,
+    token,
+  });
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  const user: TApplicantData = data?.data;
+  // console.log(user);
   return (
     <>
-      <ApplicationForm />
+      <ApplicationForm user={user} />
     </>
   );
 };

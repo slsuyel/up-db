@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
-import { Breadcrumb } from 'antd';
-import { HomeOutlined } from '@ant-design/icons';
+import { Link } from "react-router-dom";
+import { Breadcrumb } from "antd";
+import { HomeOutlined } from "@ant-design/icons";
 
 interface BreadcrumbProps {
   current?: string;
@@ -8,19 +8,23 @@ interface BreadcrumbProps {
 }
 
 const Breadcrumbs = ({ page, current }: BreadcrumbProps) => {
+  const items = [
+    {
+      title: (
+        <Link to="/dashboard">
+          <HomeOutlined />
+        </Link>
+      ),
+    },
+    ...(current ? [{ title: current }] : []),
+  ];
+
   return (
     <div className="breadcrumbs-area mb-4">
       <h3>
         {page && ` ${page} ||`} {current}
       </h3>
-      <Breadcrumb separator=">">
-        <Breadcrumb.Item>
-          <Link to="/dashboard">
-            <HomeOutlined />
-          </Link>
-        </Breadcrumb.Item>
-        {current && <Breadcrumb.Item>{current}</Breadcrumb.Item>}
-      </Breadcrumb>
+      <Breadcrumb items={items} />
       <br />
     </div>
   );

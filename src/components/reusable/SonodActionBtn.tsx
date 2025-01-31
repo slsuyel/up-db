@@ -18,8 +18,6 @@ const SonodActionBtn = ({
   condition,
 }: SonodActionBtnProps) => {
   const user = useAppSelector((state: RootState) => state.user.user);
-  // const token = localStorage.getItem("token");
-  // const [sonodAction, { isLoading }] = useSonodActionMutation();
 
   const [view, setView] = useState(false);
 
@@ -30,19 +28,6 @@ const SonodActionBtn = ({
     setView(false);
   };
 
-  // const handleApproved = async () => {
-  //   try {
-  //     const response = await sonodAction({ id: item.id, token }).unwrap();
-  //     console.log("Success:", response.data.message);
-  //     message.success(` ${response.data.message}`);
-  //   } catch (err) {
-  //     console.error("Error:", err);
-  //     message.error("কিছু সমস্যা হয়েছে");
-  //   }
-  // };
-
-
-
   return (
     <>
       <div
@@ -50,14 +35,14 @@ const SonodActionBtn = ({
         role="group"
         aria-label="Actions"
       >
-
-        {user?.position == 'super_admin' && <Link
-          to={`/dashboard/sonod/${sonodName}/action/edit/${item.id}`}
-          className="btn btn-info btn-sm mr-1"
-        >
-          এডিট করুন
-        </Link>}
-
+        {user?.position == "Super Admin" && (
+          <Link
+            to={`/dashboard/sonod/${sonodName}/action/edit/${item.id}`}
+            className="btn btn-info btn-sm mr-1"
+          >
+            এডিট করুন
+          </Link>
+        )}
 
         <Link
           to={`https://api.uniontax.gov.bd/applicant/copy/download/${item.id}`}
@@ -73,15 +58,7 @@ const SonodActionBtn = ({
         >
           আবেদনপত্র দেখুন
         </button>
-        {/* {condition !== "cancel" && condition !== "approved" && (
-          <button
-            onClick={handleApproved}
-            type="button"
-            className="btn btn-success btn-sm mr-1"
-          >
-            {isLoading ? "অপেক্ষা করুন" : "অনুমোদন"}
-          </button>
-        )} */}
+
         <Link
           to={`https://api.uniontax.gov.bd/sonod/invoice/download/${item.id}`}
           className="btn btn-info btn-sm mr-1"
@@ -99,12 +76,6 @@ const SonodActionBtn = ({
             সনদ
           </Link>
         )}
-
-        {/* {condition == "new" && (
-          <button type="button" className="btn btn-danger btn-sm mr-1">
-            বাতিল করুন
-          </button>
-        )} */}
       </div>
 
       {view && (

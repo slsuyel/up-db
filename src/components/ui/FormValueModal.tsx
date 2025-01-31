@@ -1,39 +1,30 @@
 import { useSingleSonodQuery } from "@/redux/api/sonod/sonodApi";
 
-
 import { TApplicantData } from "@/types";
 
 import { Button, Modal } from "antd";
-
 
 interface FormValueModalProps {
   visible: boolean;
   data?: TApplicantData;
   onCancel: () => void;
   from?: string;
-  id?: number
+  id?: number;
 }
 
-const FormValueModal = ({
-  visible,
-  onCancel,
-  id
-}: FormValueModalProps) => {
-  const token = localStorage.getItem('token')
+const FormValueModal = ({ visible, onCancel, id }: FormValueModalProps) => {
+  const token = localStorage.getItem("token");
 
-
-
-  const { data: singleS, isLoading: getingSonod } = useSingleSonodQuery({ id, token })
-
-
+  const { data: singleS, isLoading: getingSonod } = useSingleSonodQuery({
+    id,
+    token,
+  });
 
   const handleCancel = () => {
     onCancel();
   };
 
-
-  const data: TApplicantData = !getingSonod && singleS?.data
-
+  const data: TApplicantData = !getingSonod && singleS?.data;
 
   return (
     <Modal
@@ -165,7 +156,6 @@ const FormValueModal = ({
           </div>
         </div>
         <br /> <br />
-
       </div>
     </Modal>
   );
