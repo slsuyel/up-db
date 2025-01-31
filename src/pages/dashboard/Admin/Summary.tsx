@@ -17,8 +17,8 @@ const SummaryItem = ({
   value: number;
 }) => {
   return (
-    <div className="col-md-3 my-2">
-      <div className="border-0 card h-100 mb-2 py-2 shadow hover-effect">
+    <div className="mb-2 mt-2 mb-4">
+      <div className="border-0 card h-100  py-2 shadow hover-effect">
         <div className="card-body d-flex align-items-center justify-content-around">
           <img
             src={icon}
@@ -41,8 +41,6 @@ const Summary = ({ data, isLoading }: { data: any; isLoading: boolean }) => {
   }
 
   const all = data;
-
-  console.log(all);
 
   const summaryItems = [
     {
@@ -73,7 +71,7 @@ const Summary = ({ data, isLoading }: { data: any; isLoading: boolean }) => {
   ];
 
   return (
-    <div className="row mx-auto  mt-4">
+    <div className="d-flex justify-content-around gap-2 flex-wrap">
       {summaryItems.map((item, index) => (
         <SummaryItem
           key={index}

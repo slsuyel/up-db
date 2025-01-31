@@ -58,7 +58,7 @@ const Dhome = () => {
   }
 
   return (
-    <div className="bg-white p-1 rounded">
+    <div className="bg-white p-1 vh-100 rounded">
       {admin?.totals && <Summary data={admin.totals} isLoading={isLoading} />}
     </div>
   );

@@ -42,9 +42,20 @@ const Sidebar = () => {
       pendingCount: 0,
     },
     { key: "reports", title: "লেনদেনের প্রতিবেদন", slug: "/reports" },
+
     ...(user?.position === "Super Admin"
       ? [{ key: "union-create", title: "ইউনিয়ন তৈরি", slug: "/create-union" }]
       : []),
+    ...(user?.position === "Super Admin"
+      ? [
+          {
+            key: "sonod-management",
+            title: "সনদ সম্পাদনা",
+            slug: "/sonod-management",
+          },
+        ]
+      : []),
+
     { key: "payment-failed", title: "পেমেন্ট ফেইল্ড", slug: "/payment-failed" },
     { key: "search", title: "সকল প্রতিবেদন", slug: "/up-search" },
     ...services.map((service, index) => ({

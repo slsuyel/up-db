@@ -8,7 +8,6 @@ import SingleHolding from "@/pages/dashboard/holding/SingleHolding";
 import PaymentFailed from "@/pages/dashboard/Report/PaymentFailed";
 import SonodBaseReport from "@/pages/dashboard/Report/SonodBaseReport";
 
-import SonodFee from "@/pages/dashboard/SonodFee";
 import EditSonod from "@/pages/dashboard/SonodManagement/EditSonod";
 import SonodManagement from "@/pages/dashboard/SonodManagement/SonodManagement";
 import UnionProfile from "@/pages/dashboard/UnionProfile";
@@ -36,6 +35,7 @@ export const adminRoutes = [
     path: "create-union",
     element: <UnionCreateTab />,
   },
+
   {
     path: "up-search",
     element: <SearchFilter />,
@@ -60,12 +60,12 @@ export const adminRoutes = [
     path: "/dashboard/holding/list/view/:id",
     element: <SingleHolding />,
   },
+  // {
+  //   path: "sonod/all",
+  //   element: <SonodFee />,
+  // },
   {
-    path: "sonod/fee",
-    element: <SonodFee />,
-  },
-  {
-    path: "sonod/:sonodName/:condition/:union",
+    path: "sonod-management",
     element: <SonodManagement />,
   },
   {
