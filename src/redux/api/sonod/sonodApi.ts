@@ -66,7 +66,9 @@ const sonodApi = apiSlice.injectEndpoints({
         url: `/admin/sonod/update/${id}`,
         method: "PUT",
         body: data,
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
       }),
       invalidatesTags: ["sonod-action"],
     }),

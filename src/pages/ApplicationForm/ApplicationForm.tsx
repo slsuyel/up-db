@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Form, Button } from "antd";
+import { Form, Button, message } from "antd";
 import addressFields from "./addressFields";
 import attachmentForm from "./attachmentForm";
 
@@ -20,7 +20,7 @@ import { TApplicantData } from "@/types/global";
 import { useSonodUpdateMutation } from "@/redux/api/sonod/sonodApi";
 
 const ApplicationForm = ({ user }: { user?: TApplicantData }) => {
-  const token = localStorage.getItem(" token");
+  const token = localStorage.getItem("token");
   const [sonodUpdate, { isLoading: updating }] = useSonodUpdateMutation();
   const { service } = useParams();
   const [unionName, setUnionName] = useState("uniontax");
@@ -47,9 +47,17 @@ const ApplicationForm = ({ user }: { user?: TApplicantData }) => {
   const onFinish = async (values: any) => {
     setUserData(values);
     if (isDashboard) {
-      const res = await sonodUpdate({ data: values, id: user?.id, token });
-      console.log("Submitted values:", res);
-      // message.success("Form submitted from dashboard successfully");
+      const res = await sonodUpdate({
+        data: values,
+        id: user?.id,
+        token,
+      }).unwrap();
+      if (res.error) {
+        message.error(`কোন একটা সমস্যা হয়েছে`);
+      } else {
+        message.success("Sonod updating  Successfully");
+        console.log("Sonod updated successfully:", res.data.message);
+      }
     } else {
       setModalVisible(true);
     }
