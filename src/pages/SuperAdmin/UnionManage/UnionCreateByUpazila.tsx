@@ -760,7 +760,7 @@ const UnionCreateByUpazila = () => {
             <label htmlFor="">
               {selectedUpazila?.bn_name} উপজেলার ইউনিয়ন দেখুন
             </label>
-            <div>
+            <div className="d-flex gap-2">
               <Button
                 type="primary"
                 loading={showing}
@@ -769,6 +769,15 @@ const UnionCreateByUpazila = () => {
               >
                 Show Unions
               </Button>
+
+              <a
+                className="btn btn-info btn-sm text-white"
+                href={`https://api.uniontax.gov.bd/api/upazilas/${selectedUpazila.id}/uniouninfo/pdf`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Download Pdf
+              </a>
             </div>
           </div>
         )}
