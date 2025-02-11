@@ -778,6 +778,14 @@ const UnionCreateByUpazila = () => {
               >
                 Download Pdf
               </a>
+              <a
+                className="btn btn-primary btn-sm text-white"
+                href={`https://api.uniontax.gov.bd/api/upazilas/${selectedUpazila.id}/uniouninfo/excel`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="fa-solid fa-file-excel"></i> Download Exel
+              </a>
             </div>
           </div>
         )}
