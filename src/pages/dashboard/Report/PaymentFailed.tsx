@@ -45,11 +45,11 @@ const PaymentFailed = () => {
   const { data, isLoading, isFetching, refetch } = useFailedPaymentQuery(
     triggerSearch
       ? {
-          token,
-          sonod_type: selectedService,
-          date: selectedDate,
-          union: selectedUnion, // Send union name as parameter
-        }
+        token,
+        sonod_type: selectedService,
+        date: selectedDate,
+        union: selectedUnion.replace(/\s+/g, "").toLowerCase(),/*  */
+      }
       : null
   );
 
