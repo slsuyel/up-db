@@ -149,7 +149,7 @@ const SonodFee = () => {
     <div className="bg-white p-3 rounded">
       <Breadcrumbs current="সনদ ফি" />
 
-      <div className="row mx-auto">
+      <div className="row mx-auto align-items-end">
         <div className="col-md-2">
           <label htmlFor="division">বিভাগ নির্বাচন করুন</label>
           <select
@@ -228,7 +228,7 @@ const SonodFee = () => {
         )}
 
         {selectedUnion && (
-          <div className="col-md-2 mt-2">
+          <div className="col-md-2 mt-2 d-flex align-items-center gap-2">
             <Button
               disabled={getting}
               loading={getting}
@@ -237,20 +237,18 @@ const SonodFee = () => {
             >
               Search
             </Button>
-          </div>
-        )}
-        {selectedUnion && (
-          <div className="col-md-2 mt-2">
-            <a
-              target="_blank"
-              download={true}
-              className="btn btn-sm btn-success"
-              href={`https://api.uniontax.gov.bd/api/admin/sonodnamelist/with-fees?union=${selectedUnion?.name
-                .replace(/\s+/g, "")
-                .toLowerCase()}&pdf=1&token=${token}`}
-            >
-              download
-            </a>
+            <div>
+              <a
+                target="_blank"
+                download={true}
+                className="btn btn-sm btn-success"
+                href={`https://api.uniontax.gov.bd/api/admin/sonodnamelist/with-fees?union=${selectedUnion?.name
+                  .replace(/\s+/g, "")
+                  .toLowerCase()}&pdf=1&token=${token}`}
+              >
+                download
+              </a>
+            </div>
           </div>
         )}
       </div>
