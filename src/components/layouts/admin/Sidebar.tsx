@@ -47,6 +47,7 @@ const Sidebar = () => {
       : []),
     { key: "payment-failed", title: "পেমেন্ট ফেইল্ড", slug: "/payment-failed" },
     { key: "search", title: "সকল প্রতিবেদন", slug: "/up-search" },
+    { key: "sonod-fee", title: "সনদ ফি", slug: "/sonod-fee" },
     ...services.map((service, index) => ({
       key: `service-${index}`,
       title: service.title,

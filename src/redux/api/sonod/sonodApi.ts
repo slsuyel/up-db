@@ -6,9 +6,8 @@ const sonodApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     allSonod: builder.query({
       query: ({ sonodName, stutus, token, sondId, union }) => ({
-        url: `admin/sonod/list?sonod_name=${sonodName}&stutus=${stutus}&union=${union}${
-          sondId ? `&sondId=${sondId}` : ""
-        }`,
+        url: `admin/sonod/list?sonod_name=${sonodName}&stutus=${stutus}&union=${union}${sondId ? `&sondId=${sondId}` : ""
+          }`,
         method: "Get",
         headers: { Authorization: `Bearer ${token}` },
       }),
@@ -25,9 +24,8 @@ const sonodApi = apiSlice.injectEndpoints({
 
     allHolding: builder.query({
       query: ({ word, token, search }) => ({
-        url: `/user/holdingtax?page=1&word=${word}${
-          search ? `&search=${search}` : ""
-        }`,
+        url: `/user/holdingtax?page=1&word=${word}${search ? `&search=${search}` : ""
+          }`,
         method: "Get",
         headers: { Authorization: `Bearer ${token}` },
       }),
@@ -72,6 +70,27 @@ const sonodApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["sonod-action"],
     }),
+
+    /*  */
+    sonodFees: builder.mutation({
+      query: ({ token, union }) => ({
+        url: `/admin/sonodnamelist/with-fees?union=${union}`,
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }),
+      // providesTags: ["sonod-fee"],
+    }),
+    updateSonodFees: builder.mutation({
+      query: ({ token, data }) => ({
+        url: `/user/sonodfees`,
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+        body: data,
+      }),
+      // invalidatesTags: ["sonod-fee"],
+    }),
   }),
 });
 
@@ -83,4 +102,6 @@ export const {
   useAddHoldingMutation,
   useSingleSonodQuery,
   useSonodUpdateMutation,
+  useSonodFeesMutation,
+  useUpdateSonodFeesMutation
 } = sonodApi;

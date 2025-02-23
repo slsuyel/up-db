@@ -13,6 +13,7 @@ import SonodManagement from "@/pages/dashboard/SonodManagement/SonodManagement";
 import UnionProfile from "@/pages/dashboard/UnionProfile";
 import UnionReports from "@/pages/dashboard/UnionReports";
 import UnionCreateTab from "@/pages/SuperAdmin/UnionManage/UnionCreateTab";
+import SonodFee from "../pages/SonodFee/SonodFee";
 
 export const adminRoutes = [
   {
@@ -71,5 +72,9 @@ export const adminRoutes = [
   {
     path: "settings",
     element: <UnderConstruction />,
+  },
+  {
+    path: "sonod-fee",
+    element: <SonodFee />,
   },
 ];
