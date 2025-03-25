@@ -396,16 +396,16 @@ const UnionCreateByUpazila = () => {
                 <td>{union.u_code}</td>
                 <td>
                   {union.chairman_phone && (
-                    <>চেয়ারম্যান: {union.chairman_phone}<br /></>
+                    <>চেয়ারম্যান: <a href={`tel:${union.chairman_phone}`}>{union.chairman_phone}</a><br /></>
                   )}
                   {union.secretary_phone && (
-                    <>সচিব: {union.secretary_phone}<br /></>
+                    <>সচিব: <a href={`tel:${union.secretary_phone}`}>{union.secretary_phone}</a><br /></>
                   )}
                   {union.udc_phone && (
-                    <>ইউডিসি: {union.udc_phone}<br /></>
+                    <>ইউডিসি: <a href={`tel:${union.udc_phone}`}>{union.udc_phone}</a><br /></>
                   )}
                   {union.user_phone && (
-                    <>ইউজার: {union.user_phone}</>
+                    <>ইউজার: <a href={`tel:${union.user_phone}`}>{union.user_phone}</a></>
                   )}
 
 
