@@ -66,7 +66,7 @@ const EkpayReports: React.FC = () => {
   const [unionList, setUnionList] = useState<UnionInfo[]>([])
   const [unionFormData, setUnionFormData] = useState<UnionFormData[]>([])
   const [reportData] = useState<EkpayReport | null>(null)
-  const [isLoading] = useState<boolean>(false)
+  const [] = useState<boolean>(false)
   const [isUnionLoading, setIsUnionLoading] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [token, setToken] = useState<string | null>(null)
@@ -270,7 +270,6 @@ const EkpayReports: React.FC = () => {
         const reports = responseData.data.data
         const currentPage = responseData.data.current_page
         const totalPages = responseData.data.last_page
-        const total = responseData.data.total
 
         setUnionReports(reports)
         setTotalPages(totalPages)
