@@ -1,8 +1,11 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, ReactNode } from "react"
+import { useState, useEffect, type ReactNode } from "react"
 import "bootstrap/dist/css/bootstrap.min.css"
+import { message } from "antd"
+import AddressSelection from "../../../components/reusable/AddressSelection"
+import "../../../styles/ekpay-reports.css"
 
 interface UnionInfo {
   short_name_e: any
@@ -43,6 +46,19 @@ interface EkpayReport {
   details: EkpayReportDetail[]
 }
 
+// Update the UnionReport interface to match the actual API response structure
+interface UnionReport {
+  id: number
+  union: string
+  start_date: string
+  end_date: string
+  ekpay_amount: string
+  server_amount: string
+  difference_amount: string
+  created_at: string
+  updated_at: string
+}
+
 const EkpayReports: React.FC = () => {
   const [startDate, setStartDate] = useState<string>("")
   const [endDate, setEndDate] = useState<string>("")
@@ -54,8 +70,15 @@ const EkpayReports: React.FC = () => {
   const [isUnionLoading, setIsUnionLoading] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [token, setToken] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<'unionList' | 'unionReports'>('unionList')
+
+  // Union reports state
+  const [selectedUnion, setSelectedUnion] = useState<string>("")
+  const [unionReports, setUnionReports] = useState<UnionReport[]>([])
+  const [isUnionReportsLoading, setIsUnionReportsLoading] = useState<boolean>(false)
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [totalPages, setTotalPages] = useState<number>(1)
+  const [reportsPerPage] = useState<number>(10)
 
   // Get token from localStorage when component mounts
   useEffect(() => {
@@ -81,14 +104,16 @@ const EkpayReports: React.FC = () => {
   const fetchUnionList = async () => {
     if (!upazilaId || !token || !startDate || !endDate) {
       if (!startDate || !endDate) {
-        setError("Please select start date and end date first")
+        message.warning("তারিখ বাছাই করুন!")
+      } else if (!upazilaId) {
+        message.warning("উপজেলা আইডি দিন!")
+      } else if (!token) {
+        message.error("অনুগ্রহ করে আবার লগইন করুন।")
       }
       return
     }
 
     setIsUnionLoading(true)
-    setError(null)
-    setSuccess(null)
     try {
       const response = await fetch(`https://api.uniontax.gov.bd/api/admin/upazilas/${upazilaId}/uniouninfo`, {
         method: "POST",
@@ -113,7 +138,7 @@ const EkpayReports: React.FC = () => {
       console.log("Union List:", unions)
     } catch (error) {
       console.error("Error fetching union list:", error)
-      setError("Failed to fetch union list. Please try again.")
+      message.error("ইউনিয়ন তালিকা লোড করতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
     } finally {
       setIsUnionLoading(false)
     }
@@ -141,12 +166,17 @@ const EkpayReports: React.FC = () => {
     e.preventDefault()
 
     if (!startDate || !endDate || unionFormData.length === 0 || !token) {
+      if (!startDate || !endDate) {
+        message.warning("তারিখ বাছাই করুন!")
+      } else if (unionFormData.length === 0) {
+        message.warning("কোন ইউনিয়ন ডাটা নেই!")
+      } else if (!token) {
+        message.error("অনুগ্রহ করে আবার লগইন করুন।")
+      }
       return
     }
 
     setIsSubmitting(true)
-    setError(null)
-    setSuccess(null)
 
     try {
       // Prepare form data with default values applied
@@ -196,235 +226,509 @@ const EkpayReports: React.FC = () => {
 
       const data = await response.json()
       console.log("Report submission response:", data)
-      setSuccess("Report data submitted successfully!")
-
- 
+      message.success("রিপোর্ট ডাটা সফলভাবে জমা হয়েছে!")
     } catch (error) {
       console.error("Error submitting report data:", error)
-      setError(error instanceof Error ? error.message : "Failed to submit report data. Please try again.")
+      message.error(error instanceof Error ? error.message : "রিপোর্ট ডাটা জমা দিতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  // Update the fetchUnionReports function to correctly parse the API response
+  const fetchUnionReports = async (page = 1) => {
+    if (!selectedUnion || !token) {
+      if (!selectedUnion) {
+        message.warning("ইউনিয়ন বাছাই করুন!")
+      }
+      return
+    }
+
+    setIsUnionReportsLoading(true)
+
+    try {
+      const response = await fetch(
+        `https://api.uniontax.gov.bd/api/admin/ekpay-reports/union/${selectedUnion}?page=${page}&limit=${reportsPerPage}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch union reports: ${response.status}`)
+      }
+
+      const responseData = await response.json()
+      console.log("Union Reports API Response:", responseData)
+
+      // Check if the response has the expected structure
+      if (responseData.data && responseData.data.data) {
+        const reports = responseData.data.data
+        const currentPage = responseData.data.current_page
+        const totalPages = responseData.data.last_page
+        const total = responseData.data.total
+
+        setUnionReports(reports)
+        setTotalPages(totalPages)
+        setCurrentPage(currentPage)
+
+        console.log("Union Reports:", reports)
+
+        if (reports.length === 0) {
+          message.info("এই ইউনিয়নের জন্য কোন রিপোর্ট পাওয়া যায়নি।")
+        }
+      } else {
+        throw new Error("Unexpected API response format")
+      }
+    } catch (error) {
+      console.error("Error fetching union reports:", error)
+      message.error(error instanceof Error ? error.message : "ইউনিয়ন রিপোর্ট লোড করতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
+    } finally {
+      setIsUnionReportsLoading(false)
+    }
+  }
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return
+    setCurrentPage(page)
+    fetchUnionReports(page)
+  }
+
+  // Handle union selection change
+  const handleUnionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value
+    if (!value) {
+      message.warning("ইউনিয়ন বাছাই করুন!")
+      return
+    }
+    setSelectedUnion(value)
+  }
+
+  // Fetch reports when union changes
+  useEffect(() => {
+    if (selectedUnion) {
+      fetchUnionReports(1)
+    }
+  }, [selectedUnion])
+
+  // Generate pagination items
+  const renderPaginationItems = () => {
+    const items = []
+
+    // Previous button
+    items.push(
+      <li key="prev" className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+        <button className="page-link" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+          <i className="fas fa-chevron-left"></i> Previous
+        </button>
+      </li>,
+    )
+
+    // Page numbers
+    const startPage = Math.max(1, currentPage - 2)
+    const endPage = Math.min(totalPages, startPage + 4)
+
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <li key={i} className={`page-item ${currentPage === i ? "active" : ""}`}>
+          <button className="page-link" onClick={() => handlePageChange(i)}>
+            {i}
+          </button>
+        </li>,
+      )
+    }
+
+    // Next button
+    items.push(
+      <li key="next" className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+        <button
+          className="page-link"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next <i className="fas fa-chevron-right"></i>
+        </button>
+      </li>,
+    )
+
+    return items
+  }
+
   return (
     <div className="container-fluid py-4">
-      <div className="card">
-        <div className="card-header">
-          <h4 className="card-title">Ekpay Reports</h4>
+      <div className="card shadow-sm">
+        <div className="card-header bg-primary text-white">
+          <h4 className="card-title mb-0">
+            <i className="fas fa-chart-bar me-2"></i> Ekpay Reports
+          </h4>
         </div>
         <div className="card-body">
           {!token ? (
-            <div className="alert alert-danger" role="alert">
-              Authentication token not found. Please login again.
+            <div className="alert alert-danger d-flex align-items-center" role="alert">
+              <i className="fas fa-exclamation-triangle me-2"></i>
+              <div>Authentication token not found. Please login again.</div>
             </div>
           ) : (
             <>
-              {error && (
-                <div className="alert alert-danger" role="alert">
-                  {error}
+              {/* Date and Location Selection Form */}
+              <div className="card mb-4 shadow-sm border-0">
+                <div className="card-header bg-light">
+                  <h5 className="mb-0">
+                    <i className="fas fa-filter me-2"></i> Report Filters
+                  </h5>
                 </div>
-              )}
-              {success && (
-                <div className="alert alert-success" role="alert">
-                  {success}
-                </div>
-              )}
-              <form>
-                <div className="row mb-4">
-                  {/* Start Date Picker */}
-                  <div className="col-md-4 mb-3">
-                    <label htmlFor="start_date" className="form-label">
-                      Start Date
-                    </label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      id="start_date"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      required
-                    />
-                  </div>
+                <div className="card-body">
+                  <form>
+                    <div className="row mb-3">
+                      {/* Start Date Picker */}
+                      <div className="col-md-6 col-lg-3 mb-3">
+                        <label htmlFor="start_date" className="form-label fw-bold">
+                          <i className="far fa-calendar-alt me-1"></i> Start Date
+                        </label>
+                        <input
+                          type="date"
+                          className="form-control form-control-lg"
+                          id="start_date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          required
+                        />
+                      </div>
 
-                  {/* End Date Picker */}
-                  <div className="col-md-4 mb-3">
-                    <label htmlFor="end_date" className="form-label">
-                      End Date
-                    </label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      id="end_date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      required
-                    />
-                  </div>
+                      {/* End Date Picker */}
+                      <div className="col-md-6 col-lg-3 mb-3">
+                        <label htmlFor="end_date" className="form-label fw-bold">
+                          <i className="far fa-calendar-alt me-1"></i> End Date
+                        </label>
+                        <input
+                          type="date"
+                          className="form-control form-control-lg"
+                          id="end_date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
 
-                  {/* Upazila ID Input */}
-                  <div className="col-md-4 mb-3">
-                    <label htmlFor="upazila_id" className="form-label">
-                      Upazila ID
-                    </label>
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="upazila_id"
-                        value={upazilaId}
-                        onChange={(e) => setUpazilaId(e.target.value)}
-                        placeholder="Enter Upazila ID"
-                        required
-                      />
+                    {/* Address Selection Component */}
+                    <div className="mb-3">
+                      <label className="form-label fw-bold">
+                        <i className="fas fa-map-marker-alt me-1"></i> Select Location
+                      </label>
+                      <AddressSelection defaultUpazilaId={upazilaId} onUpazilaChange={(id) => setUpazilaId(id)} />
+                    </div>
+
+                    <div className="d-flex justify-content-end mt-3">
                       <button
                         type="button"
-                        className="btn btn-outline-secondary"
+                        className="btn btn-primary btn-lg"
                         onClick={fetchUnionList}
                         disabled={!upazilaId || !startDate || !endDate || isUnionLoading}
                       >
                         {isUnionLoading ? (
                           <>
                             <span
-                              className="spinner-border spinner-border-sm me-1"
+                              className="spinner-border spinner-border-sm me-2"
                               role="status"
                               aria-hidden="true"
                             ></span>
                             Loading...
                           </>
                         ) : (
-                          "Get Unions"
+                          <>
+                            <i className="fas fa-search me-2"></i> Get Unions
+                          </>
                         )}
                       </button>
                     </div>
+                  </form>
+                </div>
+              </div>
+
+              {/* Tabs for Union List and Union Reports */}
+              {unionList.length > 0 && (
+                <div className="mb-4">
+                  <ul className="nav nav-tabs nav-fill">
+                    <li className="nav-item">
+                      <button 
+                        className={`nav-link ${activeTab === 'unionList' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('unionList')}
+                      >
+                        <i className="fas fa-list me-2"></i> Union List
+                      </button>
+                    </li>
+                    <li className="nav-item">
+                      <button 
+                        className={`nav-link ${activeTab === 'unionReports' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('unionReports')}
+                      >
+                        <i className="fas fa-chart-line me-2"></i> Union Reports
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              )}
+
+              {/* Union List Table with Input Fields */}
+              {unionFormData.length > 0 && activeTab === 'unionList' && (
+                <div className="card shadow-sm border-0">
+                  <div className="card-header bg-light">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <h5 className="mb-0">
+                        <i className="fas fa-list-alt me-2"></i> Union List for Upazila ID: {upazilaId}
+                      </h5>
+                      <span className="badge bg-primary">{unionFormData.length} Unions</span>
+                    </div>
+                  </div>
+                  <div className="card-body">
+                    <form onSubmit={handleSubmitReport}>
+                      <div className="table-responsive">
+                        <table className="table table-bordered table-striped table-hover">
+                          <thead className="table-primary">
+                            <tr>
+                              <th>ID</th>
+                              <th>Union Name</th>
+                              <th>Thana</th>
+                              <th>Ekpay Id</th>
+                              <th className="text-center">Server Amount</th>
+                              <th className="text-center">Ekpay Amount</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {unionFormData.map((union) => {
+                              // Find the corresponding union info from unionList
+                              const unionInfo = unionList.find((u) => u.id === union.id)
+                              const serverAmount = unionInfo?.server_amount || 0
+
+                              return (
+                                <tr key={union.id}>
+                                  <td>{union.id}</td>
+                                  <td className="fw-bold">{union.full_name}</td>
+                                  <td>{unionInfo?.thana || ""}</td>
+                                  <td>{unionInfo?.AKPAY_MER_REG_ID || ""}</td>
+                                  <td className="text-center fw-bold">{serverAmount}</td>
+                                  <td>
+                                    <div className="input-group">
+                                      <span className="input-group-text">৳</span>
+                                      <input
+                                        type="text"
+                                        className="form-control text-center"
+                                        value={union.ekpay_amount}
+                                        onChange={(e) => {
+                                          const value = e.target.value
+                                          if (/^\d*\.?\d*$/.test(value)) {
+                                            handleInputChange(union.id, "ekpay_amount", value)
+                                          }
+                                        }}
+                                        placeholder={`Enter amount (default: ${serverAmount})`}
+                                      />
+                                    </div>
+                                    {!union.ekpay_amount && (
+                                      <small className="text-muted d-block text-center mt-1">
+                                        <i className="fas fa-info-circle me-1"></i>
+                                        Will use server amount ({serverAmount}) if left empty
+                                      </small>
+                                    )}
+                                  </td>
+                                </tr>
+                              )
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div className="d-flex justify-content-between mt-4">
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary btn-lg"
+                          onClick={() => setActiveTab('unionReports')}
+                        >
+                          <i className="fas fa-chart-line me-2"></i> View Reports
+                        </button>
+                        <button
+                          type="submit"
+                          className="btn btn-success btn-lg"
+                          disabled={!startDate || !endDate || unionFormData.length === 0 || isSubmitting}
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                              Submitting...
+                            </>
+                          ) : (
+                            <>
+                              <i className="fas fa-save me-2"></i> Submit Report Data
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 </div>
-              </form>
-            </>
-          )}
+              )}
 
-          {/* Union List Table with Input Fields */}
-          {unionFormData.length > 0 && (
-            <div className="mt-4">
-              <h5 className="mb-3">Union List for Upazila ID: {upazilaId}</h5>
-              <form onSubmit={handleSubmitReport}>
-                <div className="table-responsive">
-                  <table className="table table-bordered table-striped table-hover">
-                    <thead className="table-light">
-                      <tr>
-                        <th>ID</th>
-                        <th>Union Name</th>
-                        <th>Thana</th>
-                        <th>Ekpay Id</th>
-                        <th className="text-left">Server Amount</th>
-                        <th className="text-left">Ekpay Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {unionFormData.map((union) => {
-                        // Find the corresponding union info from unionList
-                        const unionInfo = unionList.find((u) => u.id === union.id)
-                        const serverAmount = unionInfo?.server_amount || 0
-
-                        return (
-                          <tr key={union.id}>
-                            <td>{union.id}</td>
-                            <td>{union.full_name}</td>
-                            <td>{unionInfo?.thana || ""}</td>
-                            <td>{unionInfo?.AKPAY_MER_REG_ID || ""}</td>
-                            <td>{serverAmount}</td>
-                            <td>
-                              <input
-                                type="text"
-                                className="form-control text-left"
-                                value={union.ekpay_amount}
-                                onChange={(e) => {
-                                  const value = e.target.value
-                                  if (/^\d*\.?\d*$/.test(value)) {
-                                    handleInputChange(union.id, "ekpay_amount", value)
-                                  }
-                                }}
-                                placeholder={`Enter amount (default: ${serverAmount})`}
-                              />
-                              {!union.ekpay_amount && (
-                                <small className="text-muted">
-                                  Will use server amount ({serverAmount}) if left empty
-                                </small>
-                              )}
+              {/* Report Data Table */}
+              {reportData && (
+                <div className="card shadow-sm border-0 mt-4">
+                  <div className="card-header bg-success text-white">
+                    <h5 className="mb-0">
+                      <i className="fas fa-file-invoice me-2"></i>
+                      Ekpay Report ({reportData.date.start_date} to {reportData.date.end_date})
+                    </h5>
+                  </div>
+                  <div className="card-body">
+                    <div className="table-responsive">
+                      <table className="table table-bordered table-striped table-hover">
+                        <thead className="table-success">
+                          <tr>
+                            <th>Union</th>
+                            <th className="text-end">Ekpay Amount</th>
+                            <th className="text-end">Server Amount</th>
+                            <th className="text-end">Difference</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {reportData.details.map((detail, index) => (
+                            <tr key={index}>
+                              <td>{detail.union}</td>
+                              <td className="text-end">৳{detail.ekpay_amount.toFixed(2)}</td>
+                              <td className="text-end">৳{detail.server_amount.toFixed(2)}</td>
+                              <td className="text-end">৳{(detail.ekpay_amount - detail.server_amount).toFixed(2)}</td>
+                            </tr>
+                          ))}
+                          <tr className="fw-bold table-success">
+                            <td>Total</td>
+                            <td className="text-end">
+                              ৳{reportData.details.reduce((sum, detail) => sum + detail.ekpay_amount, 0).toFixed(2)}
+                            </td>
+                            <td className="text-end">
+                              ৳{reportData.details.reduce((sum, detail) => sum + detail.server_amount, 0).toFixed(2)}
+                            </td>
+                            <td className="text-end">
+                              ৳
+                              {reportData.details
+                                .reduce((sum, detail) => sum + (detail.ekpay_amount - detail.server_amount), 0)
+                                .toFixed(2)}
                             </td>
                           </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
+              )}
 
-                <div className="d-flex justify-content-between mt-3">
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={!startDate || !endDate || unionFormData.length === 0 || isSubmitting}
-                  >
-                    {isSubmitting ? (
+              {/* Union Reports Section */}
+              {activeTab === 'unionReports' && (
+                <div className="card shadow-sm border-0">
+                  <div className="card-header bg-light">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <h5 className="mb-0">
+                        <i className="fas fa-chart-line me-2"></i> Union-Specific Reports
+                      </h5>
+                      <button 
+                        className="btn btn-outline-primary"
+                        onClick={() => setActiveTab('unionList')}
+                      >
+                        <i className="fas fa-list me-2"></i> Back to Union List
+                      </button>
+                    </div>
+                  </div>
+                  <div className="card-body">
+                    <div className="row mb-4">
+                      <div className="col-md-6">
+                        <label htmlFor="union_select" className="form-label fw-bold">
+                          <i className="fas fa-building me-1"></i> Select Union
+                        </label>
+                        <div className="input-group mb-3">
+                          <select
+                            className="form-select form-select-lg"
+                            id="union_select"
+                            value={selectedUnion}
+                            onChange={handleUnionChange}
+                            disabled={unionList.length === 0}
+                          >
+                            <option value="">Select a union</option>
+                            {unionList.map((union) => (
+                              <option key={union.id} value={union.short_name_e || union.full_name}>
+                                {union.full_name}
+                              </option>
+                            ))}
+                          </select>
+                          <button 
+                            className="btn btn-primary" 
+                            type="button"
+                            onClick={() => selectedUnion && fetchUnionReports(1)}
+                            disabled={!selectedUnion}
+                          >
+                            <i className="fas fa-search"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {isUnionReportsLoading ? (
+                      <div className="d-flex justify-content-center my-5">
+                        <div className="spinner-border text-primary" role="status">
+                          <span className="visually-hidden">Loading...</span>
+                        </div>
+                      </div>
+                    ) : unionReports.length > 0 ? (
                       <>
-                        <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                        Submitting...
+                        <div className="table-responsive">
+                          {/* Update the table rendering to match the actual data structure */}
+                          <table className="table table-bordered table-striped table-hover">
+                            <thead className="table-info">
+                              <tr>
+                                <th>#</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th className="text-end">Ekpay Amount</th>
+                                <th className="text-end">Server Amount</th>
+                                <th className="text-end">Difference</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {unionReports.map((report, index) => (
+                                <tr key={report.id}>
+                                  <td>{(currentPage - 1) * reportsPerPage + index + 1}</td>
+                                  <td>{report.start_date}</td>
+                                  <td>{report.end_date}</td>
+                                  <td className="text-end fw-bold">৳{Number.parseFloat(report.ekpay_amount).toFixed(2)}</td>
+                                  <td className="text-end fw-bold">৳{Number.parseFloat(report.server_amount).toFixed(2)}</td>
+                                  <td className="text-end fw-bold">৳{Number.parseFloat(report.difference_amount).toFixed(2)}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Pagination */}
+                        <nav aria-label="Union reports pagination" className="mt-4">
+                          <ul className="pagination pagination-lg justify-content-center">{renderPaginationItems()}</ul>
+                        </nav>
                       </>
+                    ) : selectedUnion ? (
+                      <div className="alert alert-info d-flex align-items-center">
+                        <i className="fas fa-info-circle me-2 fs-4"></i>
+                        <div>No reports found for this union.</div>
+                      </div>
                     ) : (
-                      "Submit Report Data"
+                      <div className="alert alert-info d-flex align-items-center">
+                        <i className="fas fa-info-circle me-2 fs-4"></i>
+                        <div>Please select a union to view its reports.</div>
+                      </div>
                     )}
-                  </button>
-
-        
+                  </div>
                 </div>
-              </form>
-            </div>
-          )}
-
-          {/* Report Data Table */}
-          {reportData && (
-            <div className="mt-4">
-              <h5 className="mb-3">
-                Ekpay Report ({reportData.date.start_date} to {reportData.date.end_date})
-              </h5>
-              <div className="table-responsive">
-                <table className="table table-bordered table-striped table-hover">
-                  <thead className="table-light">
-                    <tr>
-                      <th>Union</th>
-                      <th className="text-end">Ekpay Amount</th>
-                      <th className="text-end">Server Amount</th>
-                      <th className="text-end">Difference</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {reportData.details.map((detail, index) => (
-                      <tr key={index}>
-                        <td>{detail.union}</td>
-                        <td className="text-end">৳{detail.ekpay_amount.toFixed(2)}</td>
-                        <td className="text-end">৳{detail.server_amount.toFixed(2)}</td>
-                        <td className="text-end">৳{(detail.ekpay_amount - detail.server_amount).toFixed(2)}</td>
-                      </tr>
-                    ))}
-                    <tr className="fw-bold table-secondary">
-                      <td>Total</td>
-                      <td className="text-end">
-                        ৳{reportData.details.reduce((sum, detail) => sum + detail.ekpay_amount, 0).toFixed(2)}
-                      </td>
-                      <td className="text-end">
-                        ৳{reportData.details.reduce((sum, detail) => sum + detail.server_amount, 0).toFixed(2)}
-                      </td>
-                      <td className="text-end">
-                        ৳
-                        {reportData.details
-                          .reduce((sum, detail) => sum + (detail.ekpay_amount - detail.server_amount), 0)
-                          .toFixed(2)}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -1,255 +1,150 @@
+"use client"
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { TDistrict, TUpazila } from "@/types/global";
-import { TDivision } from "@/types/global";
-import { ChangeEvent, useEffect, useState } from "react";
-import { Button, Form, Input, message, Modal } from "antd";
+import type { TUpazila } from "@/types/global"
+import { useEffect, useState } from "react"
+import { Button, Form, Input, message, Modal } from "antd"
 
 import {
   useCreateUnionByUpazilaMutation,
   useShowUnionByUpazilaMutation,
   useUpdateUnionMutation,
-} from "@/redux/api/auth/authApi";
-import { useAppSelector } from "@/redux/features/hooks";
-import { RootState } from "@/redux/features/store";
-import { useNavigate } from "react-router-dom";
+} from "@/redux/api/auth/authApi"
+import { useAppSelector } from "@/redux/features/hooks"
+import type { RootState } from "@/redux/features/store"
+import { useNavigate } from "react-router-dom"
+import AddressSelection from "../../../components/reusable/AddressSelection"
 
 interface TUnionParishad {
-  chairman_phone: string|null;
-  secretary_phone: string|null;
-  udc_phone: string|null;
-  user_phone: string|null;
-  id: number;
-  full_name: string;
-  short_name_e: string;
-  short_name_b: string;
-  thana: string;
-  district: string;
-  c_type: string;
-  c_type_en: string | null;
-  u_code: string;
-  full_name_en: string | null;
-  district_en: string | null;
-  thana_en: string | null;
-  upazila_name: string;
-  upazila_bn_name: string;
-  district_name: string;
-  district_bn_name: string;
-  division_name: string;
-  division_bn_name: string;
-  AKPAY_MER_REG_ID: string;
-  AKPAY_MER_PASS_KEY: string;
+  chairman_phone: string | null
+  secretary_phone: string | null
+  udc_phone: string | null
+  user_phone: string | null
+  id: number
+  full_name: string
+  short_name_e: string
+  short_name_b: string
+  thana: string
+  district: string
+  c_type: string
+  c_type_en: string | null
+  u_code: string
+  full_name_en: string | null
+  district_en: string | null
+  thana_en: string | null
+  upazila_name: string
+  upazila_bn_name: string
+  district_name: string
+  district_bn_name: string
+  division_name: string
+  division_bn_name: string
+  AKPAY_MER_REG_ID: string
+  AKPAY_MER_PASS_KEY: string
 }
 
 const UnionCreateByUpazila = () => {
-  const token = localStorage.getItem("token");
-  const [ekpayEditModal, setEkpayEditModal] = useState(false);
-  const [selectedUnion, setSelectedUnion] = useState<TUnionParishad | null>(
-    null
-  );
-  const navigate = useNavigate();
-  const user = useAppSelector((state: RootState) => state.user.user);
+  const token = localStorage.getItem("token")
+  const [ekpayEditModal, setEkpayEditModal] = useState(false)
+  const [selectedUnion, setSelectedUnion] = useState<TUnionParishad | null>(null)
+  const navigate = useNavigate()
+  const user = useAppSelector((state: RootState) => state.user.user)
 
   useEffect(() => {
     if (user?.position !== "Super Admin") {
-      navigate("/");
+      navigate("/")
     }
-  }, [navigate, user]);
+  }, [navigate, user])
 
-  const [createUnionByUpazila, { isLoading }] =
-    useCreateUnionByUpazilaMutation();
-  const [updateUnion, { isLoading: updating }] = useUpdateUnionMutation();
-  const [showUnionByUpazila, { isLoading: showing, data }] =
-    useShowUnionByUpazilaMutation();
+  const [createUnionByUpazila, { isLoading }] = useCreateUnionByUpazilaMutation()
+  const [updateUnion, { isLoading: updating }] = useUpdateUnionMutation()
+  const [showUnionByUpazila, { isLoading: showing, data }] = useShowUnionByUpazilaMutation()
 
-  const [selectedDivision, setSelectedDivision] = useState<TDivision | null>(
-    null
-  );
-  const [selectedDistrict, setSelectedDistrict] = useState<TDistrict | null>(
-    null
-  );
-  const [selectedUpazila, setSelectedUpazila] = useState<TUpazila | null>(null);
-  const [divisions, setDivisions] = useState<TDivision[]>([]);
-  const [districts, setDistricts] = useState<TDistrict[]>([]);
-  const [upazilas, setUpazilas] = useState<TUpazila[]>([]);
+  const [selectedUpazila, setSelectedUpazila] = useState<TUpazila | null>(null)
+  const [upazilas, setUpazilas] = useState<TUpazila[]>([])
 
-  const [form] = Form.useForm();
-
-  // Load last selected upazila from localStorage on component mount
-  useEffect(() => {
-    const lastSelectedUpazilaId = localStorage.getItem("lastSelectedUpazilaId");
-    if (lastSelectedUpazilaId) {
-      // Fetch upazilas and set the selected upazila
-      fetch("/upazilas.json")
-        .then((response) => response.json())
-        .then((data: TUpazila[]) => {
-          const upazila = data.find((u) => u.id === lastSelectedUpazilaId);
-          if (upazila) {
-            setSelectedUpazila(upazila);
-            // Fetch districts and divisions to set the selected district and division
-            fetch("/districts.json")
-              .then((response) => response.json())
-              .then((districtsData: TDistrict[]) => {
-                const district = districtsData.find(
-                  (d) => d.id === upazila.district_id
-                );
-                if (district) {
-                  setSelectedDistrict(district);
-                  fetch("/divisions.json")
-                    .then((response) => response.json())
-                    .then((divisionsData: TDivision[]) => {
-                      const division = divisionsData.find(
-                        (d) => d.id === district.division_id
-                      );
-                      if (division) {
-                        setSelectedDivision(division);
-                      }
-                    });
-                }
-              });
-          }
-        });
-    }
-  }, []);
+  const [form] = Form.useForm()
 
   useEffect(() => {
-    fetch("/divisions.json")
-      .then((res) => res.json())
-      .then((data: TDivision[]) => setDivisions(data))
-      .catch((error) => console.error("Error fetching divisions data:", error));
-  }, []);
-
-  useEffect(() => {
-    if (selectedDivision) {
-      fetch("/districts.json")
-        .then((response) => response.json())
-        .then((data: TDistrict[]) => {
-          const filteredDistricts = data.filter(
-            (d) => d?.division_id === selectedDivision.id
-          );
-          setDistricts(filteredDistricts);
-        })
-        .catch((error) =>
-          console.error("Error fetching districts data:", error)
-        );
-    }
-  }, [selectedDivision]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
-      fetch("/upazilas.json")
-        .then((response) => response.json())
-        .then((data: TUpazila[]) => {
-          const filteredUpazilas = data.filter(
-            (upazila) => upazila.district_id === selectedDistrict.id
-          );
-          setUpazilas(filteredUpazilas);
-        })
-        .catch((error) =>
-          console.error("Error fetching upazilas data:", error)
-        );
-    }
-  }, [selectedDistrict]);
-
-  const handleDivisionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const division = divisions.find((d) => d.id === event.target.value);
-    setSelectedDivision(division || null);
-    setSelectedDistrict(null);
-    setSelectedUpazila(null);
-  };
-
-  const handleDistrictChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const district = districts.find((d) => d.id === event.target.value);
-    setSelectedDistrict(district || null);
-    setSelectedUpazila(null);
-  };
-
-  const handleUpazilaChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const upazila = upazilas.find((u) => u.id === event.target.value);
-    setSelectedUpazila(upazila || null);
-    // Store the selected upazila ID in localStorage
-    if (upazila) {
-      localStorage.setItem("lastSelectedUpazilaId", upazila.id);
-    }
-  };
+    fetch("/upazilas.json")
+      .then((response) => response.json())
+      .then((data: TUpazila[]) => {
+        setUpazilas(data)
+      })
+      .catch((error) => console.error("Error fetching upazilas data:", error))
+  }, [])
 
   const HandleCreateUnions = async () => {
     try {
       const res = await createUnionByUpazila({
         id: selectedUpazila?.id,
         token: localStorage.getItem("token"),
-      }).unwrap();
-      console.log(res);
+      }).unwrap()
+      console.log(res)
       if (res.status_code === 201) {
-        message.success("Union created successfully!");
+        message.success("Union created successfully!")
       } else {
-        message.error(
-          `Failed to create union: ${res.message || "Unknown error"}`
-        );
+        message.error(`Failed to create union: ${res.message || "Unknown error"}`)
       }
     } catch (error: any) {
-      const errorMessage =
-        error?.data?.message || error?.message || "An error occurred";
-      message.error(`Error: ${errorMessage}`);
+      const errorMessage = error?.data?.message || error?.message || "An error occurred"
+      message.error(`Error: ${errorMessage}`)
     }
-  };
+  }
 
   const HandleShowUnions = async () => {
     try {
       const res = await showUnionByUpazila({
         id: selectedUpazila?.id,
         token: localStorage.getItem("token"),
-      }).unwrap();
+      }).unwrap()
       if (res.status_code === 200) {
-        message.success("Union Get successfully!");
+        message.success("Union Get successfully!")
       } else {
-        message.error(
-          `Failed to create union: ${res.message || "Unknown error"}`
-        );
+        message.error(`Failed to create union: ${res.message || "Unknown error"}`)
       }
     } catch (error: any) {
-      const errorMessage =
-        error?.data?.message || error?.message || "An error occurred";
-      message.error(`Error: ${errorMessage}`);
+      const errorMessage = error?.data?.message || error?.message || "An error occurred"
+      message.error(`Error: ${errorMessage}`)
     }
-  };
+  }
 
-  const allUp: TUnionParishad[] = data?.data || [];
+  const allUp: TUnionParishad[] = data?.data || []
 
   const HandleUpEkpayCreadintial = () => {
-    setEkpayEditModal(true); // Open the modal
-  };
+    setEkpayEditModal(true) // Open the modal
+  }
 
   const HandleUpManage = (id: number) => {
-    console.log(id);
-  };
+    console.log(id)
+  }
 
   const handleSubmit = async () => {
     try {
-      const values = await form.validateFields();
+      const values = await form.validateFields()
       const res = await updateUnion({
         data: values,
         id: selectedUnion?.id,
         token,
-      }).unwrap();
-      console.log(res);
+      }).unwrap()
+      console.log(res)
 
       if (res.status_code == 200) {
-        message.success(`Union information updated successfully`);
-        await HandleShowUnions();
+        message.success(`Union information updated successfully`)
+        await HandleShowUnions()
       }
-      setEkpayEditModal(false);
+      setEkpayEditModal(false)
     } catch (error) {
-      console.error("Validation Failed:", error);
+      console.error("Validation Failed:", error)
     }
-  };
+  }
 
   // Close the modal
   const handleCancel = () => {
-    setEkpayEditModal(false);
-    form.resetFields(); // Reset the form fields
-    setSelectedUnion(null); // Clear the selected union data
-  };
+    setEkpayEditModal(false)
+    form.resetFields() // Reset the form fields
+    setSelectedUnion(null) // Clear the selected union data
+  }
 
   // Update form fields when selectedUnion changes
   useEffect(() => {
@@ -258,68 +153,24 @@ const UnionCreateByUpazila = () => {
         AKPAY_MER_REG_ID: selectedUnion.AKPAY_MER_REG_ID,
         AKPAY_MER_PASS_KEY: selectedUnion.AKPAY_MER_PASS_KEY,
         u_code: selectedUnion.u_code,
-      });
+      })
     }
-  }, [selectedUnion, form]);
+  }, [selectedUnion, form])
 
   return (
     <>
-      <div className="row ">
-        <div className="my-1 col-md-2">
-          <label htmlFor="division">বিভাগ নির্বাচন করুন</label>
-          <select
-            id="division"
-            className="searchFrom form-control"
-            value={selectedDivision?.id || ""}
-            onChange={handleDivisionChange}
-          >
-            <option value="">বিভাগ নির্বাচন করুন</option>
-            {divisions.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.bn_name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="my-1 col-md-2">
-          <label htmlFor="district">জেলা নির্বাচন করুন</label>
-          <select
-            id="district"
-            className="searchFrom form-control"
-            value={selectedDistrict?.id || ""}
-            onChange={handleDistrictChange}
-          >
-            <option value="">জেলা নির্বাচন করুন</option>
-            {districts.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.bn_name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="my-1 col-md-2">
-          <label htmlFor="upazila">উপজেলা নির্বাচন করুন</label>
-          <select
-            id="upazila"
-            className="searchFrom form-control"
-            value={selectedUpazila?.id || ""}
-            onChange={handleUpazilaChange}
-          >
-            <option value="">উপজেলা নির্বাচন করুন</option>
-            {upazilas.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.bn_name}
-              </option>
-            ))}
-          </select>
+      <div className="row">
+        <div className="col-md-8">
+          <AddressSelection
+            onUpazilaChange={(id) => {
+              const upazila = upazilas.find((u) => u.id === id)
+              setSelectedUpazila(upazila || null)
+            }}
+          />
         </div>
         {selectedUpazila && (
           <div className="my-1 col-md-4 d-flex flex-column">
-            <label htmlFor="">
-              {selectedUpazila?.bn_name} উপজেলার ইউনিয়ন তৈরি করুন
-            </label>
+            <label htmlFor="">{selectedUpazila?.bn_name} উপজেলার ইউনিয়ন তৈরি করুন</label>
             <div>
               <Button
                 className=""
@@ -339,16 +190,9 @@ const UnionCreateByUpazila = () => {
       <div className="my-3">
         {selectedUpazila && (
           <div className="d-flex flex-column">
-            <label htmlFor="">
-              {selectedUpazila?.bn_name} উপজেলার ইউনিয়ন দেখুন
-            </label>
+            <label htmlFor="">{selectedUpazila?.bn_name} উপজেলার ইউনিয়ন দেখুন</label>
             <div className="d-flex gap-2">
-              <Button
-                type="primary"
-                loading={showing}
-                disabled={showing}
-                onClick={HandleShowUnions}
-              >
+              <Button type="primary" loading={showing} disabled={showing} onClick={HandleShowUnions}>
                 Show Unions
               </Button>
 
@@ -396,27 +240,33 @@ const UnionCreateByUpazila = () => {
                 <td>{union.u_code}</td>
                 <td>
                   {union.chairman_phone && (
-                    <>চেয়ারম্যান: <a href={`tel:${union.chairman_phone}`}>{union.chairman_phone}</a><br /></>
+                    <>
+                      চেয়ারম্যান: <a href={`tel:${union.chairman_phone}`}>{union.chairman_phone}</a>
+                      <br />
+                    </>
                   )}
                   {union.secretary_phone && (
-                    <>সচিব: <a href={`tel:${union.secretary_phone}`}>{union.secretary_phone}</a><br /></>
+                    <>
+                      সচিব: <a href={`tel:${union.secretary_phone}`}>{union.secretary_phone}</a>
+                      <br />
+                    </>
                   )}
                   {union.udc_phone && (
-                    <>ইউডিসি: <a href={`tel:${union.udc_phone}`}>{union.udc_phone}</a><br /></>
+                    <>
+                      ইউডিসি: <a href={`tel:${union.udc_phone}`}>{union.udc_phone}</a>
+                      <br />
+                    </>
                   )}
                   {union.user_phone && (
-                    <>ইউজার: <a href={`tel:${union.user_phone}`}>{union.user_phone}</a></>
+                    <>
+                      ইউজার: <a href={`tel:${union.user_phone}`}>{union.user_phone}</a>
+                    </>
                   )}
-
-
                 </td>
                 <td>{union.AKPAY_MER_REG_ID}</td>
                 <td>{union.AKPAY_MER_PASS_KEY}</td>
                 <td>
-                  <button
-                    className="btn btn-primary btn-sm"
-                    onClick={() => HandleUpManage(union.id)}
-                  >
+                  <button className="btn btn-primary btn-sm" onClick={() => HandleUpManage(union.id)}>
                     Edit
                   </button>
                 </td>
@@ -424,8 +274,8 @@ const UnionCreateByUpazila = () => {
                   <button
                     className="btn btn-info btn-sm"
                     onClick={() => {
-                      setSelectedUnion(union);
-                      HandleUpEkpayCreadintial();
+                      setSelectedUnion(union)
+                      HandleUpEkpayCreadintial()
                     }}
                   >
                     একপে সেটিং
@@ -447,12 +297,7 @@ const UnionCreateByUpazila = () => {
             <Button key="cancel" onClick={handleCancel}>
               Cancel
             </Button>,
-            <Button
-              loading={updating}
-              key="submit"
-              type="primary"
-              onClick={handleSubmit}
-            >
+            <Button loading={updating} key="submit" type="primary" onClick={handleSubmit}>
               Submit
             </Button>,
           ]}
@@ -500,7 +345,7 @@ const UnionCreateByUpazila = () => {
         </Modal>
       )}
     </>
-  );
-};
+  )
+}
 
-export default UnionCreateByUpazila;
+export default UnionCreateByUpazila

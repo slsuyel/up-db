@@ -1,0 +1,118 @@
+/* Custom styles for EkpayReports component */
+
+/* Card styling */
+.card {
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.card-header {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Button styling */
+.btn {
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+/* Table styling */
+.table {
+  vertical-align: middle;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.table-hover > tbody > tr:hover > * {
+  background-color: rgba(13, 110, 253, 0.075);
+}
+
+/* Form controls */
+.form-control,
+.form-select {
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ced4da;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Nav tabs */
+.nav-tabs .nav-link {
+  border: none;
+  color: #495057;
+  font-weight: 500;
+  padding: 0.75rem 1.25rem;
+  transition: all 0.2s;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #0d6efd;
+  border-color: transparent;
+}
+
+.nav-tabs .nav-link.active {
+  color: #0d6efd;
+  background-color: #fff;
+  border-bottom: 3px solid #0d6efd;
+  font-weight: 600;
+}
+
+/* Pagination */
+.pagination .page-link {
+  color: #0d6efd;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  margin: 0 0.25rem;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .btn-lg {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+
+  .form-control-lg,
+  .form-select-lg {
+    font-size: 1rem;
+  }
+}
