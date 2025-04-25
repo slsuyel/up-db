@@ -7,6 +7,7 @@ import HoldingTax from "@/pages/dashboard/holding/HoldingTax";
 import SingleHolding from "@/pages/dashboard/holding/SingleHolding";
 import PaymentFailed from "@/pages/dashboard/Report/PaymentFailed";
 import SonodBaseReport from "@/pages/dashboard/Report/SonodBaseReport";
+import EkpayReports from "@/pages/dashboard/Report/EkpayReports";
 
 import EditSonod from "@/pages/dashboard/SonodManagement/EditSonod";
 import SonodManagement from "@/pages/dashboard/SonodManagement/SonodManagement";
@@ -23,6 +24,10 @@ export const adminRoutes = [
   {
     path: "reports",
     element: <UnionReports />,
+  },
+  {
+    path: "ekpay-report",
+    element: <EkpayReports />,
   },
   {
     path: "payment-failed",

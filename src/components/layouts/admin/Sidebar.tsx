@@ -42,9 +42,18 @@ const Sidebar = () => {
       pendingCount: 0,
     },
     { key: "reports", title: "লেনদেনের প্রতিবেদন", slug: "/reports" },
+
+    
     ...(user?.position === "Super Admin"
       ? [{ key: "union-create", title: "ইউনিয়ন তৈরি", slug: "/create-union" }]
       : []),
+
+
+    ...(user?.position === "Super Admin"
+      ? [{ key: "ekpay-report", title: "একপে প্রতিবেদন", slug: "/ekpay-report" }]
+      : []),
+
+
     { key: "payment-failed", title: "পেমেন্ট ফেইল্ড", slug: "/payment-failed" },
     { key: "search", title: "সকল প্রতিবেদন", slug: "/up-search" },
     { key: "sonod-fee", title: "সনদ ফি", slug: "/sonod-fee" },
