@@ -8,16 +8,12 @@ import {
   useFailedPaymentQuery,
 } from "@/redux/features/payment/paymentApi";
 import { RootState } from "@/redux/features/store";
-import {
-  TDistrict,
-  TDivision,
-  TPaymentFailed,
-  TUnion,
-  TUpazila,
-} from "@/types";
+import { TPaymentFailed } from "@/types";
 import { Button, Modal } from "antd";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Spinner } from "react-bootstrap";
+import AddressSelectorUnion from '@/components/reusable/AddressSelectorUnion';
+import './PaymentFailed.css';  // Custom CSS file for additional styling
 
 const PaymentFailed = () => {
   const services = useAllServices();
@@ -31,122 +27,26 @@ const PaymentFailed = () => {
   const token = localStorage.getItem(`token`);
   const user = useAppSelector((state: RootState) => state.user.user);
 
-  const [selectedDivision, setSelectedDivision] = useState<string>("");
-  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
-  const [selectedUpazila, setSelectedUpazila] = useState<string>("");
   const [selectedUnion, setSelectedUnion] = useState<string>("");
-
-  const [divisions, setDivisions] = useState<TDivision[]>([]);
-  const [districts, setDistricts] = useState<TDistrict[]>([]);
-  const [upazilas, setUpazilas] = useState<TUpazila[]>([]);
-  const [unions, setUnions] = useState<TUnion[]>([]);
-
   const [triggerSearch, setTriggerSearch] = useState(false);
+
   const { data, isLoading, isFetching, refetch } = useFailedPaymentQuery(
     triggerSearch
       ? {
-        token,
-        sonod_type: selectedService,
-        date: selectedDate,
-        union: selectedUnion.replace(/\s+/g, "").toLowerCase(),/*  */
-      }
+          token,
+          sonod_type: selectedService,
+          date: selectedDate,
+          union: selectedUnion.replace(/\s+/g, "").toLowerCase(),
+        }
       : null
   );
-
-  // Fetch divisions
-  useEffect(() => {
-    fetch("/divisions.json")
-      .then((res) => res.json())
-      .then((data: TDivision[]) => {
-        setDivisions(data);
-        if (user?.division_name) {
-          const userDivision = data.find((d) => d.name === user.division_name);
-          if (userDivision) {
-            setSelectedDivision(userDivision.id);
-          }
-        }
-      })
-      .catch((error) => console.error("Error fetching divisions:", error));
-  }, [user]);
-
-  // Fetch districts based on selected division
-  useEffect(() => {
-    if (selectedDivision) {
-      fetch("/districts.json")
-        .then((res) => res.json())
-        .then((data: TDistrict[]) => {
-          const filteredDistricts = data.filter(
-            (d) => d.division_id === selectedDivision
-          );
-          setDistricts(filteredDistricts);
-          if (user?.district_name) {
-            const userDistrict = filteredDistricts.find(
-              (d) => d.name === user.district_name
-            );
-            if (userDistrict) {
-              setSelectedDistrict(userDistrict.id);
-            }
-          }
-        })
-        .catch((error) => console.error("Error fetching districts:", error));
-    } else {
-      setDistricts([]);
-      setSelectedDistrict("");
-      setSelectedUpazila("");
-      setSelectedUnion("");
-    }
-  }, [selectedDivision, user]);
-
-  // Fetch upazilas based on selected district
-  useEffect(() => {
-    if (selectedDistrict) {
-      fetch("/upazilas.json")
-        .then((res) => res.json())
-        .then((data: TUpazila[]) => {
-          const filteredUpazilas = data.filter(
-            (u) => u.district_id === selectedDistrict
-          );
-          setUpazilas(filteredUpazilas);
-          if (user?.upazila_name) {
-            const userUpazila = filteredUpazilas.find(
-              (u) => u.name === user.upazila_name
-            );
-            if (userUpazila) {
-              setSelectedUpazila(userUpazila.id);
-            }
-          }
-        })
-        .catch((error) => console.error("Error fetching upazilas:", error));
-    } else {
-      setUpazilas([]);
-      setSelectedUpazila("");
-      setSelectedUnion("");
-    }
-  }, [selectedDistrict, user]);
-
-  // Fetch unions based on selected upazila
-  useEffect(() => {
-    if (selectedUpazila) {
-      fetch("/unions.json")
-        .then((res) => res.json())
-        .then((data: TUnion[]) => {
-          const filteredUnions = data.filter(
-            (u) => u.upazilla_id === selectedUpazila
-          );
-          setUnions(filteredUnions);
-        })
-        .catch((error) => console.error("Error fetching unions:", error));
-    } else {
-      setUnions([]);
-      setSelectedUnion("");
-    }
-  }, [selectedUpazila]);
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setSelectedService(e.target.value);
   };
 
   const handleSearch = () => {
+    console.log("Selected Union:", selectedUnion);
     setTriggerSearch(true);
     refetch();
   };
@@ -180,113 +80,56 @@ const PaymentFailed = () => {
   };
 
   return (
-    <div className="bg-white p-3 rounded">
+    <div className="container bg-light p-4 rounded shadow-sm">
       <Breadcrumbs current="পেমেন্ট ফেইল্ড তালিকাঃ" />
-      <div className="">
-        <div className="row ">
-          <div className="form-group col-md-3 my-1">
-            <select
-              className="form-control"
-              value={selectedDivision}
-              disabled={!!user?.division_name}
-              onChange={(e) => setSelectedDivision(e.target.value)}
-            >
-              <option value="">বিভাগ নির্বাচন করুন</option>
-              {divisions.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.bn_name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group col-md-3 my-1">
-            <select
-              className="form-control"
-              value={selectedDistrict}
-              disabled={!!user?.district_name}
-              onChange={(e) => setSelectedDistrict(e.target.value)}
-            >
-              <option value="">জেলা নির্বাচন করুন</option>
-              {districts.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.bn_name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group col-md-3 my-1">
-            <select
-              className="form-control"
-              value={selectedUpazila}
-              disabled={!!user?.upazila_name}
-              onChange={(e) => setSelectedUpazila(e.target.value)}
-            >
-              <option value="">উপজেলা নির্বাচন করুন</option>
-              {upazilas.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.bn_name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group col-md-3 my-1">
-            <select
-              className="form-control"
-              value={selectedUnion}
-              onChange={(e) => setSelectedUnion(e.target.value)}
-              disabled={!selectedUpazila}
-            >
-              <option value="">ইউনিয়ন নির্বাচন করুন</option>
-              {unions.map((u) => (
-                <option key={u.id} value={u.name}>
-                  {u.bn_name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group col-md-3 my-1">
-            <select
-              id="sonod"
-              required
-              className="form-control"
-              onChange={handleChange}
-              value={selectedService}
-            >
-              <option value="">চিহ্নিত করুন</option>
-              <option value="all">সকল</option>
-              <option value="holdingtax">হোল্ডিং ট্যাক্স</option>
-              {services.map((d) => (
-                <option key={d.title} value={d.title}>
-                  {d.title}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group col-md-3 my-1">
-            <input
-              className="form-control"
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-            />
-          </div>
-          <div className="form-group col-md-3 my-1">
-            <button
-              className="btn_main"
-              onClick={handleSearch}
-              disabled={!selectedDate || !selectedService || !selectedUnion}
-            >
-              অনুসন্ধান
-            </button>
-          </div>
+      <div className="row mb-4">
+        <div className="col-md-12 mb-3">
+          <AddressSelectorUnion
+            onUnionChange={(union) => setSelectedUnion(union ? union.name : "")}
+          />
+        </div>
+        <div className="col-md-3 mb-3">
+          <select
+            id="sonod"
+            className="form-control custom-select"
+            onChange={handleChange}
+            value={selectedService}
+          >
+            <option value="">চিহ্নিত করুন</option>
+            <option value="all">সকল</option>
+            <option value="holdingtax">হোল্ডিং ট্যাক্স</option>
+            {services.map((d) => (
+              <option key={d.title} value={d.title}>
+                {d.title}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="col-md-3 mb-3">
+          <input
+            className="form-control custom-input"
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+          />
+        </div>
+        <div className="col-md-3 mb-3">
+          <Button
+            type="primary"
+            className="w-100"
+            onClick={handleSearch}
+            disabled={!selectedDate || !selectedService || !selectedUnion}
+          >
+            অনুসন্ধান
+          </Button>
         </div>
       </div>
 
       <div className="my-4">
         <h2>পেমেন্ট ফেইল্ড রেকর্ড</h2>
-        <div className="table-responsive d-none d-md-block">
-          <table className="table table-bordered table-hover">
-            <thead className="thead-dark">
+        <div className="table-responsive">
+          <table className="table table-striped table-bordered">
+            <thead>
               <tr>
                 <th>সনদ আইডি</th>
                 <th>ইউনিয়ন</th>
@@ -304,7 +147,7 @@ const PaymentFailed = () => {
             <tbody>
               {isLoading || isFetching ? (
                 <tr>
-                  <td colSpan={14} className="text-center">
+                  <td colSpan={11} className="text-center">
                     <Spinner />
                   </td>
                 </tr>
@@ -315,13 +158,8 @@ const PaymentFailed = () => {
                     <td>{item.union}</td>
                     <td>{item.trxId}</td>
                     <td>{item.sonod_type}</td>
-                    <td>
-                      {/* {item.date} */}
-
-                      {new Date(item?.date).toLocaleString()}
-                    </td>
+                    <td>{new Date(item?.date).toLocaleString()}</td>
                     <td>{item.method}</td>
-
                     {item?.holding_tax ? (
                       <>
                         <td>{item?.holding_tax?.maliker_name}</td>
@@ -337,7 +175,6 @@ const PaymentFailed = () => {
                         <td>{item.sonods?.applicant_holding_tax_number}</td>
                       </>
                     )}
-
                     <td>
                       <Button
                         disabled={loadingTrxId !== null}
@@ -345,7 +182,6 @@ const PaymentFailed = () => {
                         onClick={() => handleCheckPayment(item.trxId)}
                         className="btn btn-sm btn-primary"
                       >
-                        {" "}
                         চেক পেমেন্ট
                       </Button>
                     </td>
@@ -353,7 +189,7 @@ const PaymentFailed = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={14} className="text-center">
+                  <td colSpan={11} className="text-center">
                     কোন রেকর্ড পাওয়া যায়নি।
                   </td>
                 </tr>
@@ -361,98 +197,9 @@ const PaymentFailed = () => {
             </tbody>
           </table>
         </div>
-        {/* Card View for Mobile */}
-        <div className="card-view d-block d-md-none">
-          {isLoading || isFetching ? (
-            <div className="text-center">
-              <Spinner />
-            </div>
-          ) : failedResult?.length > 0 ? (
-            failedResult.map((item) => (
-              <div key={item.id} className="card mb-3">
-                <div className="card-body">
-                  <p>
-                    <strong>আইডি:</strong> {item.id}
-                  </p>
-                  <p>
-                    <strong>সনদ আইডি:</strong> {item.sonodId}
-                  </p>
-                  <p>
-                    <strong>ইউনিয়ন:</strong> {item.union}
-                  </p>
-                  <p>
-                    <strong>লেনদেন আইডি:</strong> {item.trxId}
-                  </p>
-                  <p>
-                    <strong>সনদ প্রকার:</strong> {item.sonod_type}
-                  </p>
-                  <p>
-                    <strong>তারিখ:</strong> {item.date}
-                  </p>
-                  <p>
-                    <strong>পদ্ধতি:</strong> {item.method}
-                  </p>
-                  {item?.holding_tax ? (
-                    <>
-                      <p>
-                        <strong>মালিকের নাম:</strong>{" "}
-                        {item.holding_tax.maliker_name}
-                      </p>
-                      <p>
-                        <strong>গ্রাম:</strong> {item.holding_tax.gramer_name}
-                      </p>
-                      <p>
-                        <strong>মোবাইল নম্বর:</strong>{" "}
-                        {item.holding_tax.mobile_no}
-                      </p>
-                      <p>
-                        <strong>হোল্ডিং নম্বর:</strong>{" "}
-                        {item.holding_tax.holding_no}
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p>
-                        <strong>মালিকের নাম:</strong>{" "}
-                        {item.sonods?.applicant_name}
-                      </p>
-                      <p>
-                        <strong>গ্রাম:</strong>{" "}
-                        {item.sonods?.applicant_present_village}
-                      </p>
-                      <p>
-                        <strong>মোবাইল নম্বর:</strong>{" "}
-                        {item.sonods?.applicant_mobile}
-                      </p>
-                      <p>
-                        <strong>হোল্ডিং নম্বর:</strong>{" "}
-                        {item.sonods?.applicant_holding_tax_number}
-                      </p>
-                    </>
-                  )}
-
-                  <td>
-                    <Button
-                      disabled={loadingTrxId !== null}
-                      loading={loadingTrxId === item.trxId}
-                      onClick={() => handleCheckPayment(item.trxId)}
-                      className="btn btn-sm btn-primary"
-                    >
-                      {" "}
-                      চেক পেমেন্ট
-                    </Button>
-                  </td>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center">কোন রেকর্ড পাওয়া যায়নি।</div>
-          )}
-        </div>
       </div>
 
       <Modal
-        // loading={}
         title="পেমেন্ট বিস্তারিত"
         open={isModalOpen}
         onOk={handleCloseModal}
@@ -465,7 +212,6 @@ const PaymentFailed = () => {
       >
         <div>
           {paymentData?.msg_det}
-
           <div className=" mt-3">
             {paymentData?.msg_code == "1020" && (
               <Button

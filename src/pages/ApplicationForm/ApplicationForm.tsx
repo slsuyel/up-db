@@ -66,8 +66,21 @@ const ApplicationForm = ({ user }: { user?: TApplicantData }) => {
   const handleCancel = () => {
     setModalVisible(false);
   };
-  const successorList =
-    (user?.successor_list && JSON.parse(user?.successor_list)) || [];
+  // const successorList =
+  //   (user?.successor_list && JSON.parse(user?.successor_list)) || [];
+
+
+    const successorList = Array.isArray(user?.successor_list)
+    ? user?.successor_list
+    : (() => {
+        try {
+          return JSON.parse(user?.successor_list || "[]");
+        } catch {
+          return [];
+        }
+      })();
+
+
 
   return (
     <div className={`${!isDashboard ? "container my-3" : ""}`}>

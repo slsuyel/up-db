@@ -15,11 +15,16 @@ import UnionProfile from "@/pages/dashboard/UnionProfile";
 import UnionReports from "@/pages/dashboard/UnionReports";
 import UnionCreateTab from "@/pages/SuperAdmin/UnionManage/UnionCreateTab";
 import SonodFee from "../pages/SonodFee/SonodFee";
+import SonodSearch from "@/pages/dashboard/Search/SonodSearch";
 
 export const adminRoutes = [
   {
     path: "",
     element: <Dhome />,
+  },
+  {
+    path: "sonod-search",
+    element: <SonodSearch />,
   },
   {
     path: "reports",

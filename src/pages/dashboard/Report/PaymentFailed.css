@@ -1,0 +1,59 @@
+/* Custom Styles */
+.container {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-select, .custom-input {
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.custom-select:focus, .custom-input:focus {
+  border-color: #007bff;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table th, .table td {
+  padding: 12px;
+  text-align: center;
+}
+
+.table-striped tbody tr:nth-child(odd) {
+  background-color: #f1f1f1;
+}
+
+.table th {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn {
+  border-radius: 5px;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.card-view {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.card {
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.card-body p {
+  margin: 8px 0;
+}
