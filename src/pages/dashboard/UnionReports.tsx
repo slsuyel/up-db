@@ -1,14 +1,12 @@
 import { useState } from "react";
 import { message } from "antd";
 import Breadcrumbs from "@/components/reusable/Breadcrumbs";
-import { useAppSelector } from "@/redux/features/hooks";
-import { RootState } from "@/redux/features/store";
+
 import useAllServices from "@/hooks/useAllServices";
 import UnionLocationSelector from "@/components/reusable/AddressSelectorUnion";
 import { TUnion } from "@/types/global";
 
 const UnionReports = () => {
-  const user = useAppSelector((state: RootState) => state.user.user);
   const token = localStorage.getItem(`token`);
   const services = useAllServices();
   const [selectedUnion, setSelectedUnion] = useState<TUnion | null>(null);
@@ -44,7 +42,7 @@ const UnionReports = () => {
 
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <UnionLocationSelector user={user} onUnionChange={setSelectedUnion} />
+          <UnionLocationSelector onUnionChange={setSelectedUnion} />
         </div>
 
         <div className="row g-3 align-items-end">

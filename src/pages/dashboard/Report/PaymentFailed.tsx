@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Breadcrumbs from "@/components/reusable/Breadcrumbs";
 import useAllServices from "@/hooks/useAllServices";
-import { useAppSelector } from "@/redux/features/hooks";
+
 import {
   useCallipnMutation,
   useCheckPaymentMutation,
   useFailedPaymentQuery,
 } from "@/redux/features/payment/paymentApi";
-import { RootState } from "@/redux/features/store";
 import { TPaymentFailed } from "@/types";
 import { Button, Modal } from "antd";
 import { ChangeEvent, useState } from "react";
@@ -25,7 +24,6 @@ const PaymentFailed = () => {
   const [selectedService, setSelectedService] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const token = localStorage.getItem(`token`);
-  const user = useAppSelector((state: RootState) => state.user.user);
 
   const [selectedUnion, setSelectedUnion] = useState<string>("");
   const [triggerSearch, setTriggerSearch] = useState(false);
@@ -84,7 +82,7 @@ const PaymentFailed = () => {
       <Breadcrumbs current="পেমেন্ট ফেইল্ড তালিকাঃ" />
       <div className="row mb-4">
         <div className="col-md-12 mb-3">
-          <AddressSelectorUnion
+          <AddressSelectorUnion 
             onUnionChange={(union) => setSelectedUnion(union ? union.name : "")}
           />
         </div>
