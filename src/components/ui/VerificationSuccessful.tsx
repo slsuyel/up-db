@@ -3,13 +3,14 @@ import { Link } from "react-router-dom";
 import { TSonodDetails } from "./SearchTimeline";
 
 const VerificationSuccessful = ({ sonod }: { sonod: TSonodDetails }) => {
+  const VITE_BASE_DOC_URL = import.meta.env.VITE_BASE_DOC_URL;
   return (
     <div className="d-flex justify-content-between my-5 sonod-verification">
       <div className="col-md-12 p-sm-0">
         <div className=" text-end mb-2 no-print">
           <div>
             <Link
-              to={`https://api.uniontax.gov.bd/sonod/download/${sonod.id}`}
+              to={`${VITE_BASE_DOC_URL}/sonod/download/${sonod.id}`}
               target="_blank"
               className="btn btn-sm btn-success"
             >

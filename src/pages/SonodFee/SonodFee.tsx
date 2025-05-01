@@ -35,6 +35,8 @@ const SonodFee = () => {
   const [upazilas, setUpazilas] = useState<TUpazila[]>([]);
   const [unions, setUnions] = useState<TUnion[]>([]);
 
+  const VITE_BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
+
   const [sonodFees, { data, isLoading: getting }] = useSonodFeesMutation();
   // const [updateSonod, { isLoading: updating }] = useUpdateSonodFeesMutation();
 
@@ -242,7 +244,7 @@ const SonodFee = () => {
                 target="_blank"
                 download={true}
                 className="btn btn-sm btn-success"
-                href={`https://api.uniontax.gov.bd/api/admin/sonodnamelist/with-fees?union=${selectedUnion?.name
+                href={`${VITE_BASE_API_URL}/admin/sonodnamelist/with-fees?union=${selectedUnion?.name
                   .replace(/\s+/g, "")
                   .toLowerCase()}&pdf=1&token=${token}`}
               >

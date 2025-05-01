@@ -63,6 +63,8 @@ const UnionCreateByUpazila = () => {
   const [selectedUpazila, setSelectedUpazila] = useState<TUpazila | null>(null)
   const [upazilas, setUpazilas] = useState<TUpazila[]>([])
 
+  const VITE_BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
+
   const [form] = Form.useForm()
 
   useEffect(() => {
@@ -198,7 +200,7 @@ const UnionCreateByUpazila = () => {
 
               <a
                 className="btn btn-info btn-sm text-white"
-                href={`https://api.uniontax.gov.bd/api/upazilas/${selectedUpazila.id}/uniouninfo/pdf`}
+                href={`${VITE_BASE_API_URL}/upazilas/${selectedUpazila.id}/uniouninfo/pdf`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -206,7 +208,7 @@ const UnionCreateByUpazila = () => {
               </a>
               <a
                 className="btn btn-primary btn-sm text-white"
-                href={`https://api.uniontax.gov.bd/api/upazilas/${selectedUpazila.id}/uniouninfo/excel`}
+                href={`${VITE_BASE_API_URL}/upazilas/${selectedUpazila.id}/uniouninfo/excel`}
                 target="_blank"
                 rel="noopener noreferrer"
               >

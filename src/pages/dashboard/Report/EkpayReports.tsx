@@ -80,6 +80,8 @@ const EkpayReports: React.FC = () => {
   const [totalPages, setTotalPages] = useState<number>(1)
   const [reportsPerPage] = useState<number>(10)
 
+  const VITE_BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
+
   // Get token from localStorage when component mounts
   useEffect(() => {
     const storedToken = localStorage.getItem(`token`)
@@ -115,7 +117,7 @@ const EkpayReports: React.FC = () => {
 
     setIsUnionLoading(true)
     try {
-      const response = await fetch(`https://api.uniontax.gov.bd/api/admin/upazilas/${upazilaId}/uniouninfo`, {
+      const response = await fetch(`${VITE_BASE_API_URL}/admin/upazilas/${upazilaId}/uniouninfo`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -211,7 +213,7 @@ const EkpayReports: React.FC = () => {
       console.log("Submitting payload:", payload)
 
       // Uncomment this to actually submit the data
-      const response = await fetch("https://api.uniontax.gov.bd/api/admin/ekpay-reports", {
+      const response = await fetch(`${VITE_BASE_API_URL}/admin/ekpay-reports`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -248,7 +250,7 @@ const EkpayReports: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://api.uniontax.gov.bd/api/admin/ekpay-reports/union/${selectedUnion}?page=${page}&limit=${reportsPerPage}`,
+        `${VITE_BASE_API_URL}/admin/ekpay-reports/union/${selectedUnion}?page=${page}&limit=${reportsPerPage}`,
         {
           method: "GET",
           headers: {

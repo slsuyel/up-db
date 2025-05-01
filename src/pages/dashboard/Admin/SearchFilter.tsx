@@ -30,6 +30,9 @@ const SearchFilter: React.FC = () => {
 
   const [adminReport, { isLoading, data }] = useAdminReportMutation();
 
+
+  const VITE_BASE_DOC_URL = import.meta.env.VITE_BASE_DOC_URL;
+
   useEffect(() => {
     fetch("/divisions.json")
       .then((res) => res.json())
@@ -262,7 +265,7 @@ const SearchFilter: React.FC = () => {
         {admin?.sonod_reports.length >= 1 && (
           <Link
             target="_blank"
-            to={`https://api.uniontax.gov.bd/download/reports/get-reports${selectedDivision ? `?division_name=${selectedDivision.name}` : ""
+            to={`${VITE_BASE_DOC_URL}/download/reports/get-reports${selectedDivision ? `?division_name=${selectedDivision.name}` : ""
               }${selectedDistrict ? `&district_name=${selectedDistrict.name}` : ""
               }${selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ""}${selectedUnion ? `&union_name=${selectedUnion.name}` : ""
               }${selected ? `&sonod_name=${selected}` : ""}&token=${token}`}
@@ -346,7 +349,7 @@ const SearchFilter: React.FC = () => {
                 {!selectedUnion && (
                   <td>
                     <a
-                      href={`https://api.uniontax.gov.bd/download/reports/get-reports?${selectedDivision?.name
+                      href={`${VITE_BASE_DOC_URL}/download/reports/get-reports?${selectedDivision?.name
                         ? `division_name=${selectedDivision.name}&`
                         : ""
                         }${selectedDistrict?.name

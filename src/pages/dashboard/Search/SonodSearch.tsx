@@ -75,6 +75,8 @@ export default function SonodSearch() {
   const [error, setError] = useState<string | null>(null)
   const [sonodOptions, setSonodOptions] = useState<SonodReport[]>([])
 
+  const VITE_BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
+  const VITE_BASE_DOC_URL = import.meta.env.VITE_BASE_DOC_URL;
   // Load sonod options from localStorage
   useEffect(() => {
     try {
@@ -103,7 +105,7 @@ export default function SonodSearch() {
     try {
       // Encode the parameters properly
       const encodedName = encodeURIComponent(name)
-      const url = `https://api.uniontax.gov.bd/api/sonod/search?sonod_name=${encodedName}&sonod_Id=${id}`
+      const url = `${VITE_BASE_API_URL}/sonod/search?sonod_name=${encodedName}&sonod_Id=${id}`
 
       const response = await fetch(url)
       const data = await response.json()
@@ -326,7 +328,7 @@ export default function SonodSearch() {
 
 
                 <Link
-          to={`https://api.uniontax.gov.bd/applicant/copy/download/${result.data.id}`}
+          to={`${VITE_BASE_DOC_URL}/applicant/copy/download/${result.data.id}`}
           className="btn btn-success btn-sm mr-1"
           target="_blank"
         >
@@ -334,7 +336,7 @@ export default function SonodSearch() {
         </Link>
         
         <Link
-          to={`https://api.uniontax.gov.bd/sonod/invoice/download/${result.data.id}`}
+          to={`${VITE_BASE_DOC_URL}/sonod/invoice/download/${result.data.id}`}
           className="btn btn-info btn-sm mr-1"
           target="_blank"
         >

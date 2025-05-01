@@ -18,6 +18,7 @@ const SonodActionBtn = ({
   condition,
 }: SonodActionBtnProps) => {
   const user = useAppSelector((state: RootState) => state.user.user);
+  const VITE_BASE_DOC_URL = import.meta.env.VITE_BASE_DOC_URL;
 
   const [view, setView] = useState(false);
 
@@ -45,7 +46,7 @@ const SonodActionBtn = ({
         )}
 
         <Link
-          to={`https://api.uniontax.gov.bd/applicant/copy/download/${item.id}`}
+          to={`${VITE_BASE_DOC_URL}/applicant/copy/download/${item.id}`}
           className="btn btn-success btn-sm mr-1"
           target="_blank"
         >
@@ -60,7 +61,7 @@ const SonodActionBtn = ({
         </button>
 
         <Link
-          to={`https://api.uniontax.gov.bd/sonod/invoice/download/${item.id}`}
+          to={`${VITE_BASE_DOC_URL}/sonod/invoice/download/${item.id}`}
           className="btn btn-info btn-sm mr-1"
           target="_blank"
         >
@@ -70,7 +71,7 @@ const SonodActionBtn = ({
         {condition == "approved" && (
           <Link
             target="_blank"
-            to={`https://api.uniontax.gov.bd/sonod/download/${item.id}`}
+            to={`${VITE_BASE_DOC_URL}/sonod/download/${item.id}`}
             className="btn btn-success btn-sm mr-1"
           >
             সনদ

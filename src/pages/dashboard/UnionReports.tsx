@@ -10,7 +10,7 @@ const UnionReports = () => {
   const token = localStorage.getItem(`token`);
   const services = useAllServices();
   const [selectedUnion, setSelectedUnion] = useState<TUnion | null>(null);
-
+  const VITE_BASE_DOC_URL = import.meta.env.VITE_BASE_DOC_URL;
   const [formData, setFormData] = useState({
     sonod: "",
     paymentType: "",
@@ -31,7 +31,7 @@ const UnionReports = () => {
     }
 
     const smallUnion = `${selectedUnion.name}`.replace(/\s+/g, "").toLowerCase();
-    const url = `https://api.uniontax.gov.bd/payment/report/download?union=${smallUnion}&from=${formData.fromDate}&to=${formData.toDate}&sonod_type=${formData.sonod}&payment_type=${formData.paymentType}&token=${token}`;
+    const url = `${VITE_BASE_DOC_URL}/payment/report/download?union=${smallUnion}&from=${formData.fromDate}&to=${formData.toDate}&sonod_type=${formData.sonod}&payment_type=${formData.paymentType}&token=${token}`;
     window.open(url, "_blank");
   };
 

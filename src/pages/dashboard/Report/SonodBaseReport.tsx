@@ -27,6 +27,8 @@ const SonodBaseReport: React.FC = () => {
   const [upazilas, setUpazilas] = useState<TUpazila[]>([]);
   const [unions, setUnions] = useState<TUnion[]>([]);
 
+  const VITE_BASE_DOC_URL = import.meta.env.VITE_BASE_DOC_URL;
+
   const [adminReport, { isLoading, data }] = useAdminReportMutation();
 
   useEffect(() => {
@@ -276,7 +278,7 @@ const SonodBaseReport: React.FC = () => {
         {admin?.sonod_reports.length >= 1 && (
           <Link
             target="_blank"
-            to={`https://api.uniontax.gov.bd/download/reports/get-reports${
+            to={`${VITE_BASE_DOC_URL}/download/reports/get-reports${
               selectedDivision ? `?division_name=${selectedDivision.name}` : ""
             }${
               selectedDistrict ? `&district_name=${selectedDistrict.name}` : ""
@@ -372,7 +374,7 @@ const SonodBaseReport: React.FC = () => {
                 {!selectedUnion && (
                   <td>
                     <a
-                      href={`https://api.uniontax.gov.bd/download/reports/get-reports?${
+                      href={`${VITE_BASE_DOC_URL}/download/reports/get-reports?${
                         selectedDivision?.name
                           ? `division_name=${selectedDivision.name}&`
                           : ""
