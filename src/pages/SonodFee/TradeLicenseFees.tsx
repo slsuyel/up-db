@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import axios from "axios"
-import { Alert, Button, Card, Form, Modal, Spinner, Table } from "react-bootstrap"
+import { Accordion, Alert, Button, Card, Form, Modal, Spinner, Table } from "react-bootstrap"
 import "bootstrap/dist/css/bootstrap.min.css"
 
 interface ChildKhat {
@@ -43,6 +43,7 @@ const TradeLicenseFees: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [editedFees, setEditedFees] = useState<Record<string, number>>({})
+  const [activeKey, setActiveKey] = useState<string | null>(null)
 
   // Modal state
   const [showModal, setShowModal] = useState<boolean>(false)
@@ -84,6 +85,11 @@ const VITE_BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
         })
       })
       setEditedFees(initialFees)
+
+      // Set the first khat as active by default if there are khats
+      if (response.data.data && response.data.data.length > 0) {
+        setActiveKey(response.data.data[0].khat_id)
+      }
     } catch (err) {
       setError("ট্রেড লাইসেন্স ফি তথ্য লোড করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।")
       console.error("Error fetching trade license fees:", err)
@@ -271,50 +277,55 @@ const VITE_BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
           {success && <Alert variant="success">{success}</Alert>}
 
           <Form onSubmit={handleSubmit}>
-            {khatData.map((khat) => (
-              <div key={khat.khat_id} className="mb-4">
-                <h5 className="border-bottom pb-2 text-primary">
-                  {khat.name} ({khat.khat_id})
-                </h5>
-
-                <Table striped bordered hover responsive className="mt-3">
-                  <thead className="bg-light">
-                    <tr>
-                      <th width="10%">খাত আইডি</th>
-                      <th width="50%">খাতের নাম</th>
-                      <th width="20%">ফি (৳)</th>
-                      <th width="20%">অপশন</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {khat.child_khats.map((childKhat) => (
-                      <tr key={childKhat.khat_fee_id}>
-                        <td>{childKhat.khat_id_1}</td>
-                        <td>{childKhat.name}</td>
-                        <td>
-                          <Form.Control
-                            type="number"
-                            min="0"
-                            value={editedFees[childKhat.khat_fee_id] || 0}
-                            onChange={(e) => handleFeeChange(childKhat.khat_fee_id, e.target.value)}
-                            className="form-control-sm"
-                          />
-                        </td>
-                        <td>
-                          <Button
-                            variant="outline-secondary"
-                            size="sm"
-                            onClick={() => handleFeeChange(childKhat.khat_fee_id, "0")}
-                          >
-                            রিসেট
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </div>
-            ))}
+            <Accordion activeKey={activeKey || ""} onSelect={(key) => setActiveKey(key as string)}>
+              {khatData.map((khat) => (
+                <Accordion.Item key={khat.khat_id} eventKey={khat.khat_id}>
+                  <Accordion.Header>
+                    <span className="fw-bold">{khat.name}</span>
+                    <span className="text-muted ms-2">({khat.khat_id})</span>
+                    <span className="ms-3 badge bg-info">{khat.child_khats.length} উপ-খাত</span>
+                  </Accordion.Header>
+                  <Accordion.Body>
+                    <Table striped bordered hover responsive>
+                      <thead className="bg-light">
+                        <tr>
+                          <th width="10%">খাত আইডি</th>
+                          <th width="50%">খাতের নাম</th>
+                          <th width="20%">ফি (৳)</th>
+                          <th width="20%">অপশন</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {khat.child_khats.map((childKhat) => (
+                          <tr key={childKhat.khat_fee_id}>
+                            <td>{childKhat.khat_id_1}</td>
+                            <td>{childKhat.name}</td>
+                            <td>
+                              <Form.Control
+                                type="number"
+                                min="0"
+                                value={editedFees[childKhat.khat_fee_id] || 0}
+                                onChange={(e) => handleFeeChange(childKhat.khat_fee_id, e.target.value)}
+                                className="form-control-sm"
+                              />
+                            </td>
+                            <td>
+                              <Button
+                                variant="outline-secondary"
+                                size="sm"
+                                onClick={() => handleFeeChange(childKhat.khat_fee_id, "0")}
+                              >
+                                রিসেট
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </Accordion.Body>
+                </Accordion.Item>
+              ))}
+            </Accordion>
 
             <div className="d-flex justify-content-end mt-4">
               <Button
