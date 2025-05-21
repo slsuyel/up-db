@@ -49,6 +49,8 @@ const TradeLicenseFees: React.FC = () => {
   const [creatingKhat, setCreatingKhat] = useState<boolean>(false)
   const [modalError, setModalError] = useState<string | null>(null)
 
+const VITE_BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
+
   // New khat form state
   const [newKhats, setNewKhats] = useState<NewKhat[]>([
     {
@@ -66,7 +68,7 @@ const TradeLicenseFees: React.FC = () => {
       setLoading(true)
       setError(null)
       const token = localStorage.getItem("token")
-      const response = await axios.get("http://localhost:8000/api/admin/get/tradelicense/fees", {
+      const response = await axios.get(`${VITE_BASE_API_URL}/admin/get/tradelicense/fees`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -119,7 +121,7 @@ const TradeLicenseFees: React.FC = () => {
       })
 
       const token = localStorage.getItem("token")
-      await axios.post("http://localhost:8000/api/admin/store/tradelicense/fees", submissionData, {
+      await axios.post(`${VITE_BASE_API_URL}/admin/store/tradelicense/fees`, submissionData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -229,7 +231,7 @@ const TradeLicenseFees: React.FC = () => {
 
     try {
       const token = localStorage.getItem("token")
-      await axios.post("http://localhost:8000/api/admin/create/tradelicense/khat", newKhats, {
+      await axios.post(`${VITE_BASE_API_URL}/admin/create/tradelicense/khat`, newKhats, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
