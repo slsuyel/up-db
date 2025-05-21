@@ -15,6 +15,7 @@ import UnionProfile from "@/pages/dashboard/UnionProfile";
 import UnionReports from "@/pages/dashboard/UnionReports";
 import UnionCreateTab from "@/pages/SuperAdmin/UnionManage/UnionCreateTab";
 import SonodFee from "../pages/SonodFee/SonodFee";
+import TradeLicenseFees from "../pages/SonodFee/TradeLicenseFees";
 import SonodSearch from "@/pages/dashboard/Search/SonodSearch";
 
 export const adminRoutes = [
@@ -26,6 +27,7 @@ export const adminRoutes = [
     path: "sonod-search",
     element: <SonodSearch />,
   },
+
   {
     path: "reports",
     element: <UnionReports />,
@@ -86,5 +88,10 @@ export const adminRoutes = [
   {
     path: "sonod-fee",
     element: <SonodFee />,
+  },
+
+  {
+    path: "tradelicense/fees",
+    element: <TradeLicenseFees />,
   },
 ];
