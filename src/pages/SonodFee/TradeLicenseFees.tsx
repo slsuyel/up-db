@@ -289,10 +289,10 @@ const VITE_BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
                     <Table striped bordered hover responsive>
                       <thead className="bg-light">
                         <tr>
-                          <th width="10%">খাত আইডি</th>
-                          <th width="50%">খাতের নাম</th>
-                          <th width="20%">ফি (৳)</th>
-                          <th width="20%">অপশন</th>
+                          <th style={{ width: "10%" }}>খাত আইডি</th>
+                          <th style={{ width: "50%" }}>খাতের নাম</th>
+                          <th style={{ width: "20%" }}>ফি (৳)</th>
+                          <th style={{ width: "20%" }}>অপশন</th>
                         </tr>
                       </thead>
                       <tbody>
