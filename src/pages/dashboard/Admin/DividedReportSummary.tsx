@@ -32,7 +32,7 @@ type Props = {
 }
 
 // Summary component placeholder - replace with your actual Summary component
-const Summary: React.FC<{ data: any; isLoading: boolean }> = ({ data, isLoading }) => {
+const Summary: React.FC<{ data: any; isLoading: boolean }> = ({ isLoading }) => {
   if (isLoading) return <div className="text-center">Loading summary...</div>
   return (
     <div className="card mb-4">
@@ -87,7 +87,7 @@ const DividedReportSummary: React.FC<Props> = ({ data, isLoading, adminTotals,ti
   let totalPayments = 0
   let totalAmount = 0
 
-  Object.entries(data).forEach(([regionName, regionData]) => {
+  Object.entries(data).forEach(([, regionData]) => {
     totalPending += regionData?.totals?.total_pending || 0
     totalApproved += regionData?.totals?.total_approved || 0
     totalCanceled += regionData?.totals?.total_cancel || 0
