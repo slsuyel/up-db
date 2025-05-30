@@ -285,6 +285,12 @@ export interface TAdminData {
   sonod_reports: SonodReport[];
   payment_reports: PaymentReport[];
   totals: Totals;
+  divided_reports: Record<string, RegionData>; // Divided by region (Panchagarh, Dinajpur, etc.)
+}
+export interface RegionData {
+  sonod_reports: SonodReport[];
+  payment_reports: PaymentReport[];
+  totals: Totals;
 }
 
 export interface PaymentReport {
@@ -301,11 +307,11 @@ export interface SonodReport {
 }
 
 export interface Totals {
-  total_pending: number;
-  total_approved: number;
-  total_cancel: number;
-  total_payments: number;
-  total_amount: number;
+  total_pending: string;   // eg: "৫১৬৪"
+  total_approved: string;  // eg: "২৫৫২৭৭"
+  total_cancel: string;    // eg: "১৭৪৫"
+  total_payments: string;  // eg: "৩১৬৫৪০"
+  total_amount: string;    // eg: "০.০০"
 }
 export interface TPaymentFailed {
   id: number;

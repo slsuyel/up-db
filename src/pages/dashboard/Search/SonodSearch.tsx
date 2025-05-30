@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 // import Image from "next/image"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 
+
+
 interface SonodReport {
   sonod_name: string
   pending_count: number
@@ -11,9 +13,17 @@ interface SonodReport {
   cancel_count: number
 }
 
-interface CachedAdminData {
+interface PaymentReport {
+  sonod_type: string
+  total_payments: number
+  total_amount: string
+  sonods: any | null
+  holding_tax: any | null
+}
+
+interface RegionData {
   sonod_reports: SonodReport[]
-  payment_reports: any[]
+  payment_reports: PaymentReport[]
   totals: {
     total_pending: number
     total_approved: number
@@ -22,6 +32,26 @@ interface CachedAdminData {
     total_amount: string
   }
 }
+
+interface CachedAdminData {
+  title: string
+  sonod_reports: boolean
+  total_report: {
+    sonod_reports: SonodReport[]
+    payment_reports: PaymentReport[]
+    totals: {
+      total_pending: number
+      total_approved: number
+      total_cancel: number
+      total_payments: number
+      total_amount: string
+    }
+  }
+  divided_reports: {
+    [region: string]: RegionData
+  }
+}
+
 
 interface SonodData {
   id: number

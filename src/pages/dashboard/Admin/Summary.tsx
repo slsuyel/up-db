@@ -41,6 +41,7 @@ const Summary = ({ data, isLoading }: { data: any; isLoading: boolean }) => {
   }
 
   const all = data;
+  console.log("Summary Data:", all);
 
   const summaryItems = [
     {
