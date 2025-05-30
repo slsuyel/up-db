@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import type React from "react"
@@ -36,12 +37,7 @@ interface AdminTotals {
   [key: string]: unknown
 }
 
-interface DividedReportSummaryProps {
-  data: Record<string, RegionData>
-  isLoading: boolean
-  adminTotals?: AdminTotals
-  title: string
-}
+
 
 interface SummaryProps {
   data: AdminTotals
@@ -63,7 +59,7 @@ const Summary: React.FC<SummaryProps> = ({ isLoading }) => {
   )
 }
 
-const DividedReportSummary: React.FC<DividedReportSummaryProps> = ({ data, isLoading, adminTotals, title }) => {
+const DividedReportSummary = ({ data, isLoading, adminTotals, title }:any) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedRegionData, setSelectedRegionData] = useState<RegionData | null>(null)
   const [selectedRegionName, setSelectedRegionName] = useState<string>("")
@@ -104,7 +100,7 @@ const DividedReportSummary: React.FC<DividedReportSummaryProps> = ({ data, isLoa
   let totalPayments = 0
   let totalAmount = 0
 
-  Object.entries(data).forEach(([, regionData]: [string, RegionData]) => {
+  Object.entries(data).forEach(([, regionData]: any) => {
     totalPending += regionData?.totals?.total_pending || 0
     totalApproved += regionData?.totals?.total_approved || 0
     totalCanceled += regionData?.totals?.total_cancel || 0
@@ -167,7 +163,7 @@ const DividedReportSummary: React.FC<DividedReportSummaryProps> = ({ data, isLoa
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(data).map(([regionName, regionData]: [string, RegionData], index) => {
+                {Object.entries(data).map(([regionName, regionData]: any, index) => {
                   const regionTotals = regionData?.totals || {
                     total_pending: 0,
                     total_approved: 0,
