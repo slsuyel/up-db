@@ -3,36 +3,53 @@
 import type React from "react"
 import { useState } from "react"
 
-type RegionData = {
-  totals?: {
-    total_pending: number
-    total_approved: number
-    total_cancel: number
-    total_payments: number
-    total_amount: string
-  }
-  sonod_reports?: Array<{
-    sonod_name: string
-    pending_count: number
-    approved_count: number
-    cancel_count: number
-  }>
-  payment_reports?: Array<{
-    sonod_type: string
-    total_payments: number
-    total_amount: string
-  }>
+// Type definitions
+interface RegionTotals {
+  total_pending: number
+  total_approved: number
+  total_cancel: number
+  total_payments: number
+  total_amount: string
 }
 
-type Props = {
+interface SonodReport {
+  sonod_name: string
+  pending_count: number
+  approved_count: number
+  cancel_count: number
+}
+
+interface PaymentReport {
+  sonod_type: string
+  total_payments: number
+  total_amount: string
+}
+
+interface RegionData {
+  totals: RegionTotals
+  sonod_reports?: SonodReport[]
+  payment_reports?: PaymentReport[]
+}
+
+interface AdminTotals {
+  // Define the structure of admin totals based on your data
+  [key: string]: unknown
+}
+
+interface DividedReportSummaryProps {
   data: Record<string, RegionData>
   isLoading: boolean
-  adminTotals: any
-  title: any
+  adminTotals?: AdminTotals
+  title: string
+}
+
+interface SummaryProps {
+  data: AdminTotals
+  isLoading: boolean
 }
 
 // Summary component placeholder - replace with your actual Summary component
-const Summary: React.FC<{ data: any; isLoading: boolean }> = ({ isLoading }) => {
+const Summary: React.FC<SummaryProps> = ({ isLoading }) => {
   if (isLoading) return <div className="text-center">Loading summary...</div>
   return (
     <div className="card mb-4">
@@ -46,7 +63,7 @@ const Summary: React.FC<{ data: any; isLoading: boolean }> = ({ isLoading }) => 
   )
 }
 
-const DividedReportSummary: React.FC<Props> = ({ data, isLoading, adminTotals,title }) => {
+const DividedReportSummary: React.FC<DividedReportSummaryProps> = ({ data, isLoading, adminTotals, title }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedRegionData, setSelectedRegionData] = useState<RegionData | null>(null)
   const [selectedRegionName, setSelectedRegionName] = useState<string>("")
@@ -87,7 +104,7 @@ const DividedReportSummary: React.FC<Props> = ({ data, isLoading, adminTotals,ti
   let totalPayments = 0
   let totalAmount = 0
 
-  Object.entries(data).forEach(([, regionData]) => {
+  Object.entries(data).forEach(([, regionData]: [string, RegionData]) => {
     totalPending += regionData?.totals?.total_pending || 0
     totalApproved += regionData?.totals?.total_approved || 0
     totalCanceled += regionData?.totals?.total_cancel || 0
@@ -150,7 +167,7 @@ const DividedReportSummary: React.FC<Props> = ({ data, isLoading, adminTotals,ti
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(data).map(([regionName, regionData], index) => {
+                {Object.entries(data).map(([regionName, regionData]: [string, RegionData], index) => {
                   const regionTotals = regionData?.totals || {
                     total_pending: 0,
                     total_approved: 0,
@@ -197,12 +214,22 @@ const DividedReportSummary: React.FC<Props> = ({ data, isLoading, adminTotals,ti
                   <th scope="row" className="text-white fw-bold text-center">
                     মোট
                   </th>
-                  <td className="fw-bold  text-center" style={totalApplicationsCellStyle} >{totalPending}</td>
-                  <td className="fw-bold  text-center" style={newApplicationsCellStyle}>{totalApproved}</td>
-                  <td className="fw-bold text-center" style={issuedCertificatesCellStyle}>{totalCanceled}</td>
-                  <td className="fw-bold  text-center" style={canceledApplicationsCellStyle}>{totalPayments}</td>
-                  <td className="fw-bold  text-center" style={totalFeesCellStyle}>{totalAmount.toFixed(2)}</td>
-                  <td className=" text-center">-</td>
+                  <td className="fw-bold text-center" style={totalApplicationsCellStyle}>
+                    {totalPending}
+                  </td>
+                  <td className="fw-bold text-center" style={newApplicationsCellStyle}>
+                    {totalApproved}
+                  </td>
+                  <td className="fw-bold text-center" style={issuedCertificatesCellStyle}>
+                    {totalCanceled}
+                  </td>
+                  <td className="fw-bold text-center" style={canceledApplicationsCellStyle}>
+                    {totalPayments}
+                  </td>
+                  <td className="fw-bold text-center" style={totalFeesCellStyle}>
+                    {totalAmount.toFixed(2)}
+                  </td>
+                  <td className="text-center">-</td>
                 </tr>
               </tfoot>
             </table>
