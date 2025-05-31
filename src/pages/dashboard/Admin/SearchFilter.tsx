@@ -1,156 +1,182 @@
-import useAllServices from "@/hooks/useAllServices";
-import { useAdminReportMutation } from "@/redux/api/auth/authApi";
-import { TAdminData, TDistrict, TDivision, TUnion, TUpazila } from "@/types";
-import React, { ChangeEvent, useEffect, useState } from "react";
-import { Spinner } from "react-bootstrap";
-import Summary from "./Summary";
-import { Link } from "react-router-dom";
-import { message } from "antd";
-import { useAppSelector } from "@/redux/features/hooks";
-import { RootState } from "@/redux/features/store";
-import Breadcrumbs from "@/components/reusable/Breadcrumbs";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client"
+
+import useAllServices from "@/hooks/useAllServices"
+import { useAdminReportMutation } from "@/redux/api/auth/authApi"
+import type { TAdminData, TDistrict, TDivision, TUnion, TUpazila } from "@/types"
+import type React from "react"
+import { type ChangeEvent, useEffect, useState } from "react"
+import { Spinner } from "react-bootstrap"
+import Summary from "./Summary"
+import { Link } from "react-router-dom"
+import { message } from "antd"
+import { useAppSelector } from "@/redux/features/hooks"
+import type { RootState } from "@/redux/features/store"
+import Breadcrumbs from "@/components/reusable/Breadcrumbs"
+
+// Define interfaces for the report data structure
+interface SonodReport {
+  sonod_name: string
+  pending_count: number
+  approved_count: number
+  cancel_count: number
+}
+
+interface PaymentReport {
+  sonod_type: string
+  total_payments: number
+  total_amount: number
+}
+
+interface TotalReport {
+  sonod_reports: SonodReport[]
+  payment_reports: PaymentReport[]
+  totals?: any // You can define a more specific type based on your Summary component needs
+}
+
+interface AdminReportData extends TAdminData {
+  total_report: TotalReport
+  sonod_reports: SonodReport[]
+}
+
+interface AdminReportResponse {
+  data: AdminReportData
+}
 
 const SearchFilter: React.FC = () => {
-  const user = useAppSelector((state: RootState) => state.user.user);
-  const token = localStorage.getItem("token");
-  const services = useAllServices();
-  const [selected, setSelected] = useState("");
-  const [selectedUnion, setSelectedUnion] = useState<TUnion | null>(null);
-  const [selectedDivision, setSelectedDivision] = useState<TDivision | null>(
-    null
-  );
-  const [selectedDistrict, setSelectedDistrict] = useState<TDistrict | null>(
-    null
-  );
-  const [selectedUpazila, setSelectedUpazila] = useState<TUpazila | null>(null);
-  const [divisions, setDivisions] = useState<TDivision[]>([]);
-  const [districts, setDistricts] = useState<TDistrict[]>([]);
-  const [upazilas, setUpazilas] = useState<TUpazila[]>([]);
-  const [unions, setUnions] = useState<TUnion[]>([]);
+  const user = useAppSelector((state: RootState) => state.user.user)
+  const token = localStorage.getItem("token")
+  const services = useAllServices()
+  const [selected, setSelected] = useState<string>("")
+  const [selectedUnion, setSelectedUnion] = useState<TUnion | null>(null)
+  const [selectedDivision, setSelectedDivision] = useState<TDivision | null>(null)
+  const [selectedDistrict, setSelectedDistrict] = useState<TDistrict | null>(null)
+  const [selectedUpazila, setSelectedUpazila] = useState<TUpazila | null>(null)
+  const [divisions, setDivisions] = useState<TDivision[]>([])
+  const [districts, setDistricts] = useState<TDistrict[]>([])
+  const [upazilas, setUpazilas] = useState<TUpazila[]>([])
+  const [unions, setUnions] = useState<TUnion[]>([])
+  const [fromDate, setFromDate] = useState<string>("")
+  const [toDate, setToDate] = useState<string>("")
 
-  const [adminReport, { isLoading, data }] = useAdminReportMutation();
+  const [adminReport, { isLoading, data }] = useAdminReportMutation()
 
-
-  const VITE_BASE_DOC_URL = import.meta.env.VITE_BASE_DOC_URL;
+  const VITE_BASE_DOC_URL = import.meta.env.VITE_BASE_DOC_URL as string
 
   useEffect(() => {
     fetch("/divisions.json")
       .then((res) => res.json())
       .then((data: TDivision[]) => {
-        setDivisions(data);
+        setDivisions(data)
         if (user?.division_name) {
-          const userDivision = data.find((d) => d?.name === user.division_name);
+          const userDivision = data.find((d) => d?.name === user.division_name)
           if (userDivision) {
-            setSelectedDivision(userDivision);
+            setSelectedDivision(userDivision)
           }
         }
       })
-      .catch((error) => console.error("Error fetching divisions data:", error));
-  }, [user]);
+      .catch((error) => console.error("Error fetching divisions data:", error))
+  }, [user])
 
   useEffect(() => {
     if (selectedDivision) {
       fetch("/districts.json")
         .then((response) => response.json())
         .then((data: TDistrict[]) => {
-          const filteredDistricts = data.filter(
-            (d) => d?.division_id === selectedDivision.id
-          );
-          setDistricts(filteredDistricts);
+          const filteredDistricts = data.filter((d) => d?.division_id === selectedDivision.id)
+          setDistricts(filteredDistricts)
           if (user?.district_name) {
-            const userDistrict = filteredDistricts.find(
-              (d) => d?.name === user.district_name
-            );
+            const userDistrict = filteredDistricts.find((d) => d?.name === user.district_name)
             if (userDistrict) {
-              setSelectedDistrict(userDistrict);
+              setSelectedDistrict(userDistrict)
             }
           }
         })
-        .catch((error) =>
-          console.error("Error fetching districts data:", error)
-        );
+        .catch((error) => console.error("Error fetching districts data:", error))
     }
-  }, [selectedDivision, user]);
+  }, [selectedDivision, user])
 
   useEffect(() => {
     if (selectedDistrict) {
       fetch("/upazilas.json")
         .then((response) => response.json())
         .then((data: TUpazila[]) => {
-          const filteredUpazilas = data.filter(
-            (upazila) => upazila.district_id === selectedDistrict.id
-          );
-          setUpazilas(filteredUpazilas);
+          const filteredUpazilas = data.filter((upazila) => upazila.district_id === selectedDistrict.id)
+          setUpazilas(filteredUpazilas)
           if (user?.upazila_name) {
-            const userUpazila = filteredUpazilas.find(
-              (u) => u?.name === user.upazila_name
-            );
+            const userUpazila = filteredUpazilas.find((u) => u?.name === user.upazila_name)
             if (userUpazila) {
-              setSelectedUpazila(userUpazila);
+              setSelectedUpazila(userUpazila)
             }
           }
         })
-        .catch((error) =>
-          console.error("Error fetching upazilas data:", error)
-        );
+        .catch((error) => console.error("Error fetching upazilas data:", error))
     }
-  }, [selectedDistrict, user]);
+  }, [selectedDistrict, user])
 
   useEffect(() => {
     if (selectedUpazila) {
       fetch("/unions.json")
         .then((response) => response.json())
         .then((data: TUnion[]) => {
-          const filteredUnions = data.filter(
-            (union) => union.upazilla_id === selectedUpazila.id
-          );
-          setUnions(filteredUnions);
+          const filteredUnions = data.filter((union) => union.upazilla_id === selectedUpazila.id)
+          setUnions(filteredUnions)
         })
-        .catch((error) => console.error("Error fetching unions data:", error));
+        .catch((error) => console.error("Error fetching unions data:", error))
     }
-  }, [selectedUpazila]);
+  }, [selectedUpazila])
 
   const handleDivisionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const division = divisions.find((d) => d.id === event.target.value);
-    setSelectedDivision(division || null);
-    setSelectedDistrict(null);
-    setSelectedUpazila(null);
-    setSelectedUnion(null);
-  };
+    const division = divisions.find((d) => d.id === event.target.value)
+    setSelectedDivision(division || null)
+    setSelectedDistrict(null)
+    setSelectedUpazila(null)
+    setSelectedUnion(null)
+  }
 
   const handleDistrictChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const district = districts.find((d) => d.id === event.target.value);
-    setSelectedDistrict(district || null);
-    setSelectedUpazila(null);
-  };
+    const district = districts.find((d) => d.id === event.target.value)
+    setSelectedDistrict(district || null)
+    setSelectedUpazila(null)
+    setSelectedUnion(null)
+  }
 
   const handleUpazilaChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const upazila = upazilas.find((u) => u.id === event.target.value);
-    setSelectedUpazila(upazila || null);
-  };
+    const upazila = upazilas.find((u) => u.id === event.target.value)
+    setSelectedUpazila(upazila || null)
+    setSelectedUnion(null)
+  }
 
   const handleUnionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const union = unions.find((u) => u.id === event.target.value);
-    setSelectedUnion(union || null);
-  };
+    const union = unions.find((u) => u.id === event.target.value)
+    setSelectedUnion(union || null)
+  }
 
   const handleSearchClick = async () => {
     if (!selectedDivision?.name) {
-      message.warning("বিভাগ নির্বাচন করুন");
-      return;
+      message.warning("বিভাগ নির্বাচন করুন")
+      return
     }
 
-    const data = {
+    const requestData = {
       division_name: selectedDivision?.name,
-      district_name: selectedDistrict?.name,
-      upazila_name: selectedUpazila?.name,
-      union_name: selectedUnion?.name.replace(/\s+/g, "").toLowerCase(),
-      sonod_name: selected,
-    };
-    await adminReport({ data, token }).unwrap();
-  };
+      district_name: selectedDistrict?.name || undefined,
+      upazila_name: selectedUpazila?.name || undefined,
+      union_name: selectedUnion?.name ? selectedUnion.name.replace(/\s+/g, "").toLowerCase() : undefined,
+      sonod_name: selected || undefined,
+      from_date: fromDate || undefined,
+      to_date: toDate || undefined,
+    }
 
-  const admin: TAdminData = data?.data;
+    try {
+      await adminReport({ data: requestData, token }).unwrap()
+    } catch (error) {
+      console.error("Error fetching admin report:", error)
+    }
+  }
+
+  // Type assertion with proper null checking
+  const admin: AdminReportData | undefined = (data as AdminReportResponse)?.data
 
   return (
     <div className="bg-white p-3 rounded">
@@ -216,14 +242,14 @@ const SearchFilter: React.FC = () => {
 
         {selectedUpazila && (
           <div className="col-md-2">
-            <label htmlFor="union">ইউনিয়ন নির্বাচন করুন</label>
+            <label htmlFor="union">ইউনিয়ন নির্বাচন করুন</label>
             <select
               id="union"
               className="searchFrom form-control"
               value={selectedUnion?.id || ""}
               onChange={handleUnionChange}
             >
-              <option value="">ইউনিয়ন নির্বাচন করুন</option>
+              <option value="">ইউনিয়ন নির্বাচন করুন</option>
               {unions.map((u) => (
                 <option key={u.id} value={u.id}>
                   {u.bn_name}
@@ -242,7 +268,6 @@ const SearchFilter: React.FC = () => {
             onChange={(e) => setSelected(e.target.value)}
           >
             <option value="">সেবা নির্বাচন করুন</option>
-            {/* <option value="all">সকল</option> */}
             <option value="holdingtax">হোল্ডিং ট্যাক্স</option>
             {services?.map((d) => (
               <option key={d.title} value={d.title}>
@@ -253,22 +278,47 @@ const SearchFilter: React.FC = () => {
         </div>
 
         <div className="col-md-2">
+          <label htmlFor="fromDate">শুরুর তারিখ</label>
+          <input
+            type="date"
+            id="fromDate"
+            className="searchFrom form-control"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+          />
+        </div>
+
+        <div className="col-md-2">
+          <label htmlFor="toDate">শেষের তারিখ</label>
+          <input
+            type="date"
+            id="toDate"
+            className="searchFrom form-control"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+          />
+        </div>
+
+        <div className="col-md-2">
           <button onClick={handleSearchClick} className="btn btn-primary mt-4">
             Search
           </button>
         </div>
       </div>
 
-      <div className=" w-100"> {isLoading && <Spinner />}</div>
+      <div className="w-100">{isLoading && <Spinner />}</div>
 
-      <div className=" my-3 d-flex justify-content-end text-white">
-        {admin?.sonod_reports.length >= 1 && (
+      <div className="my-3 d-flex justify-content-end text-white">
+        {admin?.total_report?.sonod_reports && admin.total_report.sonod_reports.length >= 1 && (
           <Link
             target="_blank"
-            to={`${VITE_BASE_DOC_URL}/download/reports/get-reports${selectedDivision ? `?division_name=${selectedDivision.name}` : ""
-              }${selectedDistrict ? `&district_name=${selectedDistrict.name}` : ""
-              }${selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ""}${selectedUnion ? `&union_name=${selectedUnion.name}` : ""
-              }${selected ? `&sonod_name=${selected}` : ""}&token=${token}`}
+            to={`${VITE_BASE_DOC_URL}/download/reports/get-reports${
+              selectedDivision ? `?division_name=${selectedDivision.name}` : ""
+            }${selectedDistrict ? `&district_name=${selectedDistrict.name}` : ""}${
+              selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ""
+            }${selectedUnion ? `&union_name=${selectedUnion.name}` : ""}${
+              selected ? `&sonod_name=${selected}` : ""
+            }${fromDate ? `&from_date=${fromDate}` : ""}${toDate ? `&to_date=${toDate}` : ""}&token=${token}`}
             className="btn btn-info text-white"
           >
             প্রতিবেদন ডাউনলোড করুন
@@ -276,19 +326,19 @@ const SearchFilter: React.FC = () => {
         )}
       </div>
 
-      {admin?.totals && <Summary data={admin.totals} isLoading={isLoading} />}
+      {admin?.total_report?.totals && <Summary data={admin.total_report.totals} isLoading={isLoading} />}
 
-      <div className=" row mx-auto mt-4">
-        {admin?.sonod_reports && (
+      <div className="row mx-auto mt-4">
+        {admin?.total_report?.sonod_reports && (
           <h6 className="mb-4 fs-4 border-bottom">
             {selectedUnion?.bn_name
-              ? `${selectedUnion.bn_name} ইউনিয়নের সনদের প্রতিবেদন`
+              ? `${selectedUnion.bn_name} ইউনিয়নের সনদের প্রতিবেদন`
               : selectedUpazila?.bn_name
-                ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
+                ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
                 : selectedDistrict?.bn_name
-                  ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
+                  ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
                   : selectedDivision?.bn_name
-                    ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের সনদের প্রতিবেদন`
+                    ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের সনদের প্রতিবেদন`
                     : "সনদের প্রতিবেদন"}
           </h6>
         )}
@@ -304,16 +354,12 @@ const SearchFilter: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {admin?.sonod_reports?.map((report, index) => (
+            {admin?.total_report?.sonod_reports?.map((report, index) => (
               <tr key={index}>
                 <td>{report.sonod_name}</td>
                 <td>
                   {selectedUnion ? (
-                    <Link
-                      to={`/dashboard/sonod/${report.sonod_name}/${"Pending"}/${selectedUnion?.name
-                        }`}
-                    >
-                      {" "}
+                    <Link to={`/dashboard/sonod/${report.sonod_name}/Pending/${selectedUnion.name}`}>
                       {report.pending_count}
                     </Link>
                   ) : (
@@ -322,11 +368,7 @@ const SearchFilter: React.FC = () => {
                 </td>
                 <td>
                   {selectedUnion ? (
-                    <Link
-                      to={`/dashboard/sonod/${report.sonod_name
-                        }/${"approved"}/${selectedUnion?.name}`}
-                    >
-                      {" "}
+                    <Link to={`/dashboard/sonod/${report.sonod_name}/approved/${selectedUnion.name}`}>
                       {report.approved_count}
                     </Link>
                   ) : (
@@ -335,11 +377,7 @@ const SearchFilter: React.FC = () => {
                 </td>
                 <td>
                   {selectedUnion ? (
-                    <Link
-                      to={`/dashboard/sonod/${report.sonod_name}/${"cancel"}/${selectedUnion?.name
-                        }`}
-                    >
-                      {" "}
+                    <Link to={`/dashboard/sonod/${report.sonod_name}/cancel/${selectedUnion.name}`}>
                       {report.cancel_count}
                     </Link>
                   ) : (
@@ -349,21 +387,16 @@ const SearchFilter: React.FC = () => {
                 {!selectedUnion && (
                   <td>
                     <a
-                      href={`${VITE_BASE_DOC_URL}/download/reports/get-reports?${selectedDivision?.name
-                        ? `division_name=${selectedDivision.name}&`
-                        : ""
-                        }${selectedDistrict?.name
-                          ? `district_name=${selectedDistrict.name}&`
-                          : ""
-                        }${selectedUpazila?.name
-                          ? `upazila_name=${selectedUpazila.name}&`
-                          : ""
-                        }${`sonod_name=${report.sonod_name}&`}detials=1&token=${token}`}
+                      href={`${VITE_BASE_DOC_URL}/download/reports/get-reports?${
+                        selectedDivision?.name ? `division_name=${selectedDivision.name}&` : ""
+                      }${selectedDistrict?.name ? `district_name=${selectedDistrict.name}&` : ""}${
+                        selectedUpazila?.name ? `upazila_name=${selectedUpazila.name}&` : ""
+                      }sonod_name=${report.sonod_name}&detials=1&token=${token}`}
                       target="_blank"
+                      rel="noopener noreferrer"
                       className="btn btn-sm btn-info"
                     >
-                      <i className="fa-solid fa-download text-white"></i>{" "}
-                      ডাউনলোড
+                      <i className="fa-solid fa-download text-white"></i> ডাউনলোড
                     </a>
                   </td>
                 )}
@@ -372,18 +405,19 @@ const SearchFilter: React.FC = () => {
           </tbody>
         </table>
       </div>
-      <div className="row mx-auto  mt-5 ">
-        {admin?.payment_reports && (
+
+      <div className="row mx-auto mt-5">
+        {admin?.total_report?.payment_reports && (
           <h6 className="mb-4 fs-4 border-bottom">
             {selectedUnion?.bn_name
-              ? `${selectedUnion.bn_name} ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+              ? `${selectedUnion.bn_name} ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
               : selectedUpazila?.bn_name
-                ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+                ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
                 : selectedDistrict?.bn_name
-                  ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+                  ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
                   : selectedDivision?.bn_name
-                    ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-                    : "আদায়কৃত ফি এর প্রতিবেদন"}
+                    ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+                    : "আদায়কৃত ফি এর প্রতিবেদন"}
           </h6>
         )}
 
@@ -396,7 +430,7 @@ const SearchFilter: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {admin?.payment_reports?.map((report, index) => (
+            {admin?.total_report?.payment_reports?.map((report, index) => (
               <tr key={index}>
                 <td>{report.sonod_type}</td>
                 <td>{report.total_payments}</td>
@@ -407,7 +441,7 @@ const SearchFilter: React.FC = () => {
         </table>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SearchFilter;
+export default SearchFilter
