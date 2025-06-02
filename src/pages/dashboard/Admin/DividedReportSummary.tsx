@@ -60,6 +60,7 @@ const Summary: React.FC<SummaryProps> = ({ isLoading }) => {
 }
 
 const DividedReportSummary = ({ data, isLoading, adminTotals, title }:any) => {
+ 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedRegionData, setSelectedRegionData] = useState<RegionData | null>(null)
   const [selectedRegionName, setSelectedRegionName] = useState<string>("")
@@ -110,6 +111,7 @@ const DividedReportSummary = ({ data, isLoading, adminTotals, title }:any) => {
 
   // Function to open modal and set selected region data
   const openModal = (regionName: string, regionData: RegionData) => {
+    console.log("Opening modal for region:", regionName, "with data:", regionData)
     setSelectedRegionName(regionName)
     setSelectedRegionData(regionData)
     setIsModalOpen(true)

@@ -13,6 +13,7 @@ import { message } from "antd"
 import { useAppSelector } from "@/redux/features/hooks"
 import type { RootState } from "@/redux/features/store"
 import Breadcrumbs from "@/components/reusable/Breadcrumbs"
+import DividedReportSummary from "./DividedReportSummary"
 
 // Define interfaces for the report data structure
 interface SonodReport {
@@ -327,6 +328,10 @@ const SearchFilter: React.FC = () => {
       </div>
 
       {admin?.total_report?.totals && <Summary data={admin.total_report.totals} isLoading={isLoading} />}
+
+      {admin?.divided_reports && (
+        <DividedReportSummary data={admin.divided_reports} title={admin.title} isLoading={isLoading} />
+      )}
 
       <div className="row mx-auto mt-4">
         {admin?.total_report?.sonod_reports && (
