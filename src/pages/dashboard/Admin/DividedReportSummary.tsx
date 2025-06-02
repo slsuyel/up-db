@@ -205,6 +205,7 @@ const DividedReportSummary = ({ data, isLoading, adminTotals, title }:any) => {
                       </td>
                     </tr>
                   )
+                  
                 })}
               </tbody>
               <tfoot>
