@@ -36,6 +36,7 @@ interface TotalReport {
 }
 
 interface AdminReportData extends TAdminData {
+  title: any
   total_report: TotalReport
   sonod_reports: SonodReport[]
 }
