@@ -14,6 +14,7 @@ import { useAppSelector } from "@/redux/features/hooks"
 import type { RootState } from "@/redux/features/store"
 import Breadcrumbs from "@/components/reusable/Breadcrumbs"
 import DividedReportSummary from "./DividedReportSummary"
+import DividedReportCharts from "./DividedReportCharts"
 
 // Define interfaces for the report data structure
 interface SonodReport {
@@ -60,6 +61,7 @@ const SearchFilter: React.FC = () => {
   const [unions, setUnions] = useState<TUnion[]>([])
   const [fromDate, setFromDate] = useState<string>("")
   const [toDate, setToDate] = useState<string>("")
+  const [showCharts, setShowCharts] = useState<boolean>(false)
 
   const [adminReport, { isLoading, data }] = useAdminReportMutation()
 
@@ -326,13 +328,33 @@ const SearchFilter: React.FC = () => {
             প্রতিবেদন ডাউনলোড করুন
           </Link>
         )}
+        {admin?.divided_reports && (
+          <button onClick={() => setShowCharts(!showCharts)} className="btn btn-success text-white ms-2">
+            {showCharts ? "চার্ট লুকান" : "চার্ট দেখান"}
+          </button>
+        )}
       </div>
-
+      
       {admin?.total_report?.totals && <Summary data={admin.total_report.totals} isLoading={isLoading} />}
+
+      {admin?.divided_reports && showCharts && (
+        <div className="mt-4">
+          <DividedReportCharts
+            data={admin.divided_reports}
+            title={`${admin.title} - চার্ট বিশ্লেষণ`}
+            isLoading={isLoading}
+          />
+        </div>
+      )}
+
+
+
 
       {admin?.divided_reports && (
         <DividedReportSummary data={admin.divided_reports} title={admin.title} isLoading={isLoading} />
       )}
+
+
 
       <div className="row mx-auto mt-4">
         {admin?.total_report?.sonod_reports && (
@@ -422,7 +444,7 @@ const SearchFilter: React.FC = () => {
                 : selectedDistrict?.bn_name
                   ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
                   : selectedDivision?.bn_name
-                    ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+                    ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের সনদের প্রতিবেদন`
                     : "আদায়কৃত ফি এর প্রতিবেদন"}
           </h6>
         )}
