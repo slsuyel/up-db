@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import type React from "react"
@@ -39,10 +41,10 @@ ChartJS.register(
 
 // Type definitions
 interface RegionTotals {
-  total_pending: number
-  total_approved: number
-  total_cancel: number
-  total_payments: number
+  total_pending: string | number
+  total_approved: string | number
+  total_cancel: string | number
+  total_payments: string | number
   total_amount: string
 }
 
@@ -66,7 +68,7 @@ interface RegionData {
 }
 
 interface DividedReportChartsProps {
-  data: Record<string, RegionData> 
+  data: Record<string, RegionData>
   isLoading: boolean
   title?: string
 }
@@ -98,10 +100,10 @@ const DividedReportCharts: React.FC<DividedReportChartsProps> = ({ data, isLoadi
   // Prepare data for charts
   const regionChartData = Object.entries(data || {}).map(([regionName, regionData]) => ({
     region: regionName,
-    pending: regionData?.totals?.total_pending || 0,
-    approved: regionData?.totals?.total_approved || 0,
-    canceled: regionData?.totals?.total_cancel || 0,
-    payments: regionData?.totals?.total_payments || 0,
+    pending: Number(regionData?.totals?.total_pending) || 0,
+    approved: Number(regionData?.totals?.total_approved) || 0,
+    canceled: Number(regionData?.totals?.total_cancel) || 0,
+    payments: Number(regionData?.totals?.total_payments) || 0,
     amount: Number.parseFloat(regionData?.totals?.total_amount || "0"),
   }))
 
