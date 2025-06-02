@@ -37,8 +37,6 @@ interface AdminTotals {
   [key: string]: unknown
 }
 
-
-
 interface SummaryProps {
   data: AdminTotals
   isLoading: boolean
@@ -59,8 +57,7 @@ const Summary: React.FC<SummaryProps> = ({ isLoading }) => {
   )
 }
 
-const DividedReportSummary = ({ data, isLoading, adminTotals, title }:any) => {
- 
+const DividedReportSummary = ({ data, isLoading, adminTotals, title }: any) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedRegionData, setSelectedRegionData] = useState<RegionData | null>(null)
   const [selectedRegionName, setSelectedRegionName] = useState<string>("")
@@ -205,7 +202,6 @@ const DividedReportSummary = ({ data, isLoading, adminTotals, title }:any) => {
                       </td>
                     </tr>
                   )
-                  
                 })}
               </tbody>
               <tfoot>
@@ -318,6 +314,38 @@ const DividedReportSummary = ({ data, isLoading, adminTotals, title }:any) => {
                           )
                         })}
                       </tbody>
+                      <tfoot>
+                        <tr style={{ backgroundColor: "#343a40" }}>
+                          <th scope="row" className="text-white fw-bold text-center">
+                            মোট
+                          </th>
+                          <td className="fw-bold text-center" style={{ backgroundColor: "#b6d7ff", color: "#0d47a1" }}>
+                            {selectedRegionData.sonod_reports?.reduce((sum, report) => sum + report.pending_count, 0) ||
+                              0}
+                          </td>
+                          <td className="fw-bold text-center" style={{ backgroundColor: "#b6d7ff", color: "#0d47a1" }}>
+                            {selectedRegionData.sonod_reports?.reduce(
+                              (sum, report) => sum + report.approved_count,
+                              0,
+                            ) || 0}
+                          </td>
+                          <td className="fw-bold text-center" style={{ backgroundColor: "#b6d7ff", color: "#0d47a1" }}>
+                            {selectedRegionData.sonod_reports?.reduce((sum, report) => sum + report.cancel_count, 0) ||
+                              0}
+                          </td>
+                          <td className="fw-bold text-center" style={{ backgroundColor: "#c3e6cb", color: "#1b5e20" }}>
+                            {selectedRegionData.payment_reports?.reduce(
+                              (sum, payment) => sum + payment.total_payments,
+                              0,
+                            ) || 0}
+                          </td>
+                          <td className="fw-bold text-center" style={{ backgroundColor: "#c3e6cb", color: "#1b5e20" }}>
+                            {selectedRegionData.payment_reports
+                              ?.reduce((sum, payment) => sum + Number.parseFloat(payment.total_amount || "0"), 0)
+                              .toFixed(2) || "0.00"}
+                          </td>
+                        </tr>
+                      </tfoot>
                     </table>
 
                     {(!selectedRegionData.sonod_reports || selectedRegionData.sonod_reports.length === 0) && (
