@@ -134,6 +134,24 @@ const authApi = apiSlice.injectEndpoints({
         headers: { Authorization: `Bearer ${token}` },
       }),
     }),
+
+
+    maintenanceFeeCheck: builder.mutation({
+      query: ({ token, filters }) => ({
+        url: `/admin/maintance-fees/maintenance/unpaid-unions`,
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: {
+          type: filters.type === "all" ? undefined : filters.type,
+          period: filters.period === "all" ? undefined : filters.period,
+          status: filters.status === "all" ? undefined : filters.status,
+          upazila_name: filters.upazila_name === "all" ? undefined : filters.upazila_name,
+        },
+      }),
+    }),
+    
+
+
   }),
 });
 
@@ -153,4 +171,5 @@ export const {
   useCreateUnionByUpazilaMutation,
   useShowUnionByUpazilaMutation,
   useUpdateUnionMutation,
+  useMaintenanceFeeCheckMutation
 } = authApi;

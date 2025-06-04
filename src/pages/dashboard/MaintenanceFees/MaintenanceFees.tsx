@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, } from "react"
 import { message } from "antd"
 import Breadcrumbs from "@/components/reusable/Breadcrumbs"
-import type { MaintenanceFee, FilterState, ApiResponse } from "@/types/maintenance"
+import type { MaintenanceFee, FilterState, } from "@/types/maintenance"
 import useMobile from "@/hooks/useMobile"
+import { useMaintenanceFeeCheckMutation } from "@/redux/api/auth/authApi"
 
-const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 
 // Add this function before the MaintenanceFees component
 const generateMonthlyOptions = () => {
@@ -68,10 +69,8 @@ const PhoneLink = ({ phone, label }: { phone: string | null; label: string }) =>
 }
 
 const MaintenanceFees = () => {
+  const [maintenanceFeeCheck, { isLoading, data, error }] = useMaintenanceFeeCheckMutation()
   const token = localStorage.getItem(`token`)
-  const [data, setData] = useState<MaintenanceFee[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const isMobile = useMobile()
 
   const [filters, setFilters] = useState<FilterState>({
@@ -86,63 +85,15 @@ const MaintenanceFees = () => {
     setFilters((prev) => ({ ...prev, [id]: value }))
   }
 
-  const fetchData = async () => {
-    setLoading(true)
-    setError(null)
 
-    try {
-      const response = await fetch(`${BASE_API_URL}/admin/maintance-fees/maintenance/unpaid-unions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          type: filters.type === "all" ? undefined : filters.type,
-          period: filters.period === "all" ? undefined : filters.period,
-          status: filters.status === "all" ? undefined : filters.status,
-          upazila_name: filters.upazila_name === "all" ? undefined : filters.upazila_name,
-        }),
-      })
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch data")
-      }
 
-      const result: ApiResponse = await response.json()
 
-      if (result.isError) {
-        throw new Error(result.error || "API returned an error")
-      }
-
-      setData(result.data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred")
-      message.error(err instanceof Error ? err.message : "ডাটা লোড করতে সমস্যা হয়েছে")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  // Reset period when type changes
-  useEffect(() => {
-    if (filters.type === "monthly") {
-      const currentDate = new Date()
-      const currentYear = currentDate.getFullYear()
-      const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, "0")
-      setFilters((prev) => ({ ...prev, period: `${currentYear}-${currentMonth}` }))
-    } else if (filters.type === "yearly") {
-      setFilters((prev) => ({ ...prev, period: "2024-25" }))
-    }
-  }, [filters.type])
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault()
-    fetchData()
+  const handleSubmit = async (e: any) => {
+    e.preventDefault()
+    // fetchData()
+    const result = await maintenanceFeeCheck({ token, filters }).unwrap()
+    console.log(result);
   }
 
   const formatCurrency = (amount: string) => {
@@ -156,7 +107,7 @@ const MaintenanceFees = () => {
       day: "numeric",
     })
   }
-
+  console.log(data);
   // Card component for mobile view
   const MobileCard = ({ item }: { item: MaintenanceFee }) => {
     return (
@@ -288,7 +239,7 @@ const MaintenanceFees = () => {
 
           <div className="col-12 d-flex justify-content-end mt-3">
             <button type="submit" className="btn btn-primary">
-              {loading ? "লোড হচ্ছে..." : "ফিল্টার করুন"}
+              {isLoading ? "লোড হচ্ছে..." : "ফিল্টার করুন"}
             </button>
           </div>
         </div>
@@ -296,25 +247,25 @@ const MaintenanceFees = () => {
 
       {error && (
         <div className="alert alert-danger" role="alert">
-          {error}
+          "Something went wrong"
         </div>
       )}
 
-      {loading ? (
+      {isLoading ? (
         <div className="text-center py-5">
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">লোড হচ্ছে...</span>
           </div>
           <p className="mt-2">ডাটা লোড হচ্ছে...</p>
         </div>
-      ) : data.length === 0 ? (
+      ) : !data ? (
         <div className="alert alert-info text-center" role="alert">
           কোন ডাটা পাওয়া যায়নি
         </div>
       ) : isMobile ? (
         // Mobile view - Cards
         <div className="mt-3">
-          {data.map((item, index) => (
+          {data?.data?.map((item:MaintenanceFee, index:number) => (
             <MobileCard key={`${item.short_name_e}-${index}`} item={item} />
           ))}
         </div>
@@ -336,7 +287,7 @@ const MaintenanceFees = () => {
               </tr>
             </thead>
             <tbody>
-              {data.map((item, index) => (
+              {data?.data?.map((item:MaintenanceFee, index:number) => (
                 <tr key={`${item.short_name_e}-${index}`}>
                   <td>{item.full_name}</td>
                   <td>{item.short_name_e}</td>
@@ -372,7 +323,7 @@ const MaintenanceFees = () => {
         </div>
       )}
 
-      {data.length > 0 && (
+      {data?.data?.length > 0 && (
         <div className="d-flex justify-content-between align-items-center mt-3 flex-wrap">
           <div>
             <span className="text-muted">মোট {data.length}টি রেকর্ড</span>
