@@ -113,8 +113,8 @@ export default function SonodSearch() {
       const cachedData = localStorage.getItem("cachedAdminData")
       if (cachedData) {
         const parsedData: CachedAdminData = JSON.parse(cachedData)
-        if (parsedData.sonod_reports && Array.isArray(parsedData.sonod_reports)) {
-          setSonodOptions(parsedData.sonod_reports)
+        if (parsedData.total_report.sonod_reports && Array.isArray(parsedData.total_report.sonod_reports)) {
+          setSonodOptions(parsedData.total_report.sonod_reports)
         }
       }
     } catch (err) {
