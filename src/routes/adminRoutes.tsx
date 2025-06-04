@@ -17,11 +17,17 @@ import UnionCreateTab from "@/pages/SuperAdmin/UnionManage/UnionCreateTab";
 import SonodFee from "../pages/SonodFee/SonodFee";
 import TradeLicenseFees from "../pages/SonodFee/TradeLicenseFees";
 import SonodSearch from "@/pages/dashboard/Search/SonodSearch";
+import MaintenanceFees from "@/pages/dashboard/MaintenanceFees/MaintenanceFees";
 
 export const adminRoutes = [
   {
     path: "",
     element: <Dhome />,
+  },
+
+  {
+    path: "maintance-fees",
+    element: <MaintenanceFees />,
   },
   {
     path: "sonod-search",

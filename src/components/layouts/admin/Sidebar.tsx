@@ -49,6 +49,10 @@ const Sidebar = () => {
       : []),
 
     ...(user?.position === "Super Admin"
+      ? [{ key: "maintance-fees", title: "রক্ষণাবেক্ষণ ফি", slug: "/maintance-fees" }]
+      : []),
+
+    ...(user?.position === "Super Admin"
       ? [{ key: "union-create", title: "ইউনিয়ন তৈরি", slug: "/create-union" }]
       : []),
 
