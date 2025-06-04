@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
 
-import type React from "react"
-
-import { useState, } from "react"
+import { useEffect, useState, } from "react"
 import { message } from "antd"
 import Breadcrumbs from "@/components/reusable/Breadcrumbs"
 import type { MaintenanceFee, FilterState, } from "@/types/maintenance"
 import useMobile from "@/hooks/useMobile"
 import { useMaintenanceFeeCheckMutation } from "@/redux/api/auth/authApi"
+import UpazilaSelector from "@/components/reusable/UpazilaSelector"
 
 
 // Add this function before the MaintenanceFees component
@@ -72,7 +70,7 @@ const MaintenanceFees = () => {
   const [maintenanceFeeCheck, { isLoading, data, error }] = useMaintenanceFeeCheckMutation()
   const token = localStorage.getItem(`token`)
   const isMobile = useMobile()
-
+  const [selectedUpazila, setSelectedUpazila] = useState<any>(null);
   const [filters, setFilters] = useState<FilterState>({
     type: "yearly",
     period: "2024-25",
@@ -85,13 +83,16 @@ const MaintenanceFees = () => {
     setFilters((prev) => ({ ...prev, [id]: value }))
   }
 
-
-
-
-
+  useEffect(() => {
+    if (selectedUpazila) {
+      setFilters((prev) => ({
+        ...prev,
+        upazila_name: selectedUpazila.name || "Tetulia",
+      }));
+    }
+  }, [selectedUpazila]);
   const handleSubmit = async (e: any) => {
     e.preventDefault()
-    // fetchData()
     const result = await maintenanceFeeCheck({ token, filters }).unwrap()
     console.log(result);
   }
@@ -107,7 +108,7 @@ const MaintenanceFees = () => {
       day: "numeric",
     })
   }
-  console.log(data);
+
   // Card component for mobile view
   const MobileCard = ({ item }: { item: MaintenanceFee }) => {
     return (
@@ -172,13 +173,12 @@ const MaintenanceFees = () => {
   }
 
   return (
-    <div className="container bg-white p-4 rounded shadow-sm">
+    <div className="">
       <Breadcrumbs current="রক্ষণাবেক্ষণ ফি" />
-      <h4 className="mb-4 border-bottom pb-2 text-primary">ইউনিয়নের রক্ষণাবেক্ষণ ফি</h4>
-
-      <form onSubmit={handleSubmit}>
-        <div className="row g-3 align-items-end mb-4">
-          <div className="col-md-3 col-6">
+      <UpazilaSelector onUpazilaChange={setSelectedUpazila} />
+      <form onSubmit={handleSubmit} className=" mt-2">
+        <div className="row mx-auto g-3 align-items-end mb-4">
+          <div className="col-md-4 col-6">
             <label htmlFor="type" className="form-label fw-bold">
               ফি টাইপ
             </label>
@@ -189,7 +189,7 @@ const MaintenanceFees = () => {
             </select>
           </div>
 
-          <div className="col-md-3 col-6">
+          <div className="col-md-4 col-6">
             <label htmlFor="period" className="form-label fw-bold">
               সময়কাল
             </label>
@@ -215,7 +215,7 @@ const MaintenanceFees = () => {
             </select>
           </div>
 
-          <div className="col-md-3 col-6">
+          <div className="col-md-4 col-6">
             <label htmlFor="status" className="form-label fw-bold">
               স্টেটাস
             </label>
@@ -226,7 +226,7 @@ const MaintenanceFees = () => {
             </select>
           </div>
 
-          <div className="col-md-3 col-6">
+          {/* <div className="col-md-4 col-6">
             <label htmlFor="upazila_name" className="form-label fw-bold">
               উপজেলা
             </label>
@@ -235,7 +235,7 @@ const MaintenanceFees = () => {
               <option value="Tetulia">তেতুলিয়া</option>
               <option value="Panchagarh Sadar">পঞ্চগড় সদর</option>
             </select>
-          </div>
+          </div> */}
 
           <div className="col-12 d-flex justify-content-end mt-3">
             <button type="submit" className="btn btn-primary">
@@ -265,7 +265,7 @@ const MaintenanceFees = () => {
       ) : isMobile ? (
         // Mobile view - Cards
         <div className="mt-3">
-          {data?.data?.map((item:MaintenanceFee, index:number) => (
+          {data?.data?.map((item: MaintenanceFee, index: number) => (
             <MobileCard key={`${item.short_name_e}-${index}`} item={item} />
           ))}
         </div>
@@ -287,7 +287,7 @@ const MaintenanceFees = () => {
               </tr>
             </thead>
             <tbody>
-              {data?.data?.map((item:MaintenanceFee, index:number) => (
+              {data?.data?.map((item: MaintenanceFee, index: number) => (
                 <tr key={`${item.short_name_e}-${index}`}>
                   <td>{item.full_name}</td>
                   <td>{item.short_name_e}</td>
