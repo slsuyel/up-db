@@ -160,11 +160,13 @@ const SonodBaseReport: React.FC = () => {
     token,
   ]);
 
-  useEffect(() => {
-    handleSearchClick();
-  }, [service, handleSearchClick]);
+  // useEffect(() => {
+  //   handleSearchClick();
+  // }, [service, handleSearchClick]);
 
-  const admin: TAdminData = data?.data;
+  const admin: TAdminData = data?.data?.total_report
+
+
 
   return (
     <div className="bg-white p-3 rounded">
@@ -278,13 +280,10 @@ const SonodBaseReport: React.FC = () => {
         {admin?.sonod_reports.length >= 1 && (
           <Link
             target="_blank"
-            to={`${VITE_BASE_DOC_URL}/download/reports/get-reports${
-              selectedDivision ? `?division_name=${selectedDivision.name}` : ""
-            }${
-              selectedDistrict ? `&district_name=${selectedDistrict.name}` : ""
-            }${selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ""}${
-              selectedUnion ? `&union_name=${selectedUnion.name}` : ""
-            }${service ? `&sonod_name=${service}` : ""}&token=${token}`}
+            to={`${VITE_BASE_DOC_URL}/download/reports/get-reports${selectedDivision ? `?division_name=${selectedDivision.name}` : ""
+              }${selectedDistrict ? `&district_name=${selectedDistrict.name}` : ""
+              }${selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ""}${selectedUnion ? `&union_name=${selectedUnion.name}` : ""
+              }${service ? `&sonod_name=${service}` : ""}&token=${token}`}
             className="btn btn-info text-white"
           >
             প্রতিবেদন ডাউনলোড করুন
@@ -300,12 +299,12 @@ const SonodBaseReport: React.FC = () => {
             {selectedUnion?.bn_name
               ? `${selectedUnion.bn_name} ইউনিয়নের সনদের প্রতিবেদন`
               : selectedUpazila?.bn_name
-              ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
-              : selectedDistrict?.bn_name
-              ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
-              : selectedDivision?.bn_name
-              ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের সনদের প্রতিবেদন`
-              : "সনদের প্রতিবেদন"}
+                ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
+                : selectedDistrict?.bn_name
+                  ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
+                  : selectedDivision?.bn_name
+                    ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের সনদের প্রতিবেদন`
+                    : "সনদের প্রতিবেদন"}
           </h6>
         )}
 
@@ -326,11 +325,10 @@ const SonodBaseReport: React.FC = () => {
                 <td>
                   {selectedUnion ? (
                     <Link
-                      to={`/dashboard/sonod/${
-                        report.sonod_name
-                      }/${"Pending"}/${selectedUnion?.name
-                        .replace(/\s+/g, "")
-                        .toLowerCase()}`}
+                      to={`/dashboard/sonod/${report.sonod_name
+                        }/${"Pending"}/${selectedUnion?.name
+                          .replace(/\s+/g, "")
+                          .toLowerCase()}`}
                     >
                       {" "}
                       {report.pending_count}
@@ -342,11 +340,10 @@ const SonodBaseReport: React.FC = () => {
                 <td>
                   {selectedUnion ? (
                     <Link
-                      to={`/dashboard/sonod/${
-                        report.sonod_name
-                      }/${"approved"}/${selectedUnion?.name
-                        .replace(/\s+/g, "")
-                        .toLowerCase()}`}
+                      to={`/dashboard/sonod/${report.sonod_name
+                        }/${"approved"}/${selectedUnion?.name
+                          .replace(/\s+/g, "")
+                          .toLowerCase()}`}
                     >
                       {" "}
                       {report.approved_count}
@@ -358,11 +355,10 @@ const SonodBaseReport: React.FC = () => {
                 <td>
                   {selectedUnion ? (
                     <Link
-                      to={`/dashboard/sonod/${
-                        report.sonod_name
-                      }/${"cancel"}/${selectedUnion?.name
-                        .replace(/\s+/g, "")
-                        .toLowerCase()}`}
+                      to={`/dashboard/sonod/${report.sonod_name
+                        }/${"cancel"}/${selectedUnion?.name
+                          .replace(/\s+/g, "")
+                          .toLowerCase()}`}
                     >
                       {" "}
                       {report.cancel_count}
@@ -374,19 +370,16 @@ const SonodBaseReport: React.FC = () => {
                 {!selectedUnion && (
                   <td>
                     <a
-                      href={`${VITE_BASE_DOC_URL}/download/reports/get-reports?${
-                        selectedDivision?.name
+                      href={`${VITE_BASE_DOC_URL}/download/reports/get-reports?${selectedDivision?.name
                           ? `division_name=${selectedDivision.name}&`
                           : ""
-                      }${
-                        selectedDistrict?.name
+                        }${selectedDistrict?.name
                           ? `district_name=${selectedDistrict.name}&`
                           : ""
-                      }${
-                        selectedUpazila?.name
+                        }${selectedUpazila?.name
                           ? `upazila_name=${selectedUpazila.name}&`
                           : ""
-                      }${`sonod_name=${report.sonod_name}&`}detials=1&token=${token}`}
+                        }${`sonod_name=${report.sonod_name}&`}detials=1&token=${token}`}
                       target="_blank"
                       className="btn btn-sm btn-info"
                     >
@@ -406,12 +399,12 @@ const SonodBaseReport: React.FC = () => {
             {selectedUnion?.bn_name
               ? `${selectedUnion.bn_name} ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
               : selectedUpazila?.bn_name
-              ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-              : selectedDistrict?.bn_name
-              ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-              : selectedDivision?.bn_name
-              ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-              : "আদায়কৃত ফি এর প্রতিবেদন"}
+                ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+                : selectedDistrict?.bn_name
+                  ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+                  : selectedDivision?.bn_name
+                    ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
+                    : "আদায়কৃত ফি এর প্রতিবেদন"}
           </h6>
         )}
 
