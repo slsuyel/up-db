@@ -1,56 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 
+import useAllServices from "@/hooks/useAllServices"
 import { useState, useEffect } from "react"
 // import Image from "next/image"
 import { Link, useNavigate, useLocation } from "react-router-dom"
-
-
-
-interface SonodReport {
-  sonod_name: string
-  pending_count: number
-  approved_count: number
-  cancel_count: number
-}
-
-interface PaymentReport {
-  sonod_type: string
-  total_payments: number
-  total_amount: string
-  sonods: any | null
-  holding_tax: any | null
-}
-
-interface RegionData {
-  sonod_reports: SonodReport[]
-  payment_reports: PaymentReport[]
-  totals: {
-    total_pending: number
-    total_approved: number
-    total_cancel: number
-    total_payments: number
-    total_amount: string
-  }
-}
-
-interface CachedAdminData {
-  title: string
-  sonod_reports: boolean
-  total_report: {
-    sonod_reports: SonodReport[]
-    payment_reports: PaymentReport[]
-    totals: {
-      total_pending: number
-      total_approved: number
-      total_cancel: number
-      total_payments: number
-      total_amount: string
-    }
-  }
-  divided_reports: {
-    [region: string]: RegionData
-  }
-}
 
 
 interface SonodData {
@@ -92,7 +46,7 @@ interface ApiResponse {
 export default function SonodSearch() {
   const navigate = useNavigate()
   const location = useLocation()
-
+  const services = useAllServices();
   // Parse search params from URL
   const searchParams = new URLSearchParams(location.search)
   const urlSonodName = searchParams.get("sonod_name") || ""
@@ -103,24 +57,10 @@ export default function SonodSearch() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [result, setResult] = useState<ApiResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [sonodOptions, setSonodOptions] = useState<SonodReport[]>([])
 
   const VITE_BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
   const VITE_BASE_DOC_URL = import.meta.env.VITE_BASE_DOC_URL;
-  // Load sonod options from localStorage
-  useEffect(() => {
-    try {
-      const cachedData = localStorage.getItem("cachedAdminData")
-      if (cachedData) {
-        const parsedData: CachedAdminData = JSON.parse(cachedData)
-        if (parsedData.total_report.sonod_reports && Array.isArray(parsedData.total_report.sonod_reports)) {
-          setSonodOptions(parsedData.total_report.sonod_reports)
-        }
-      }
-    } catch (err) {
-      console.error("Error loading sonod options from localStorage:", err)
-    }
-  }, [])
+
 
   // Function to fetch data based on search parameters
   const fetchData = async (name: string, id: string) => {
@@ -197,8 +137,8 @@ export default function SonodSearch() {
   const errorMessage = getErrorMessage()
 
   return (
-    <main>
-      <div className="container py-5">
+  
+      <div className=" py-5">
         <div className="text-center mb-5">
           <div className="d-flex justify-content-center mb-3">
             {/* <Image src="/bangladesh-govt-logo.png" alt="Bangladesh Government Logo" width={80} height={80} /> */}
@@ -225,9 +165,9 @@ export default function SonodSearch() {
                   onChange={(e) => setSonodName(e.target.value)}
                 >
                   <option value="">সনদ নাম নির্বাচন করুন</option>
-                  {sonodOptions.map((option) => (
-                    <option key={option.sonod_name} value={option.sonod_name}>
-                      {option.sonod_name} ({option.approved_count})
+                  {services.map((option) => (
+                    <option key={option.title} value={option.title}>
+                      {option.title}
                     </option>
                   ))}
                 </select>
@@ -347,7 +287,7 @@ export default function SonodSearch() {
                   <p className="small text-muted mb-0">ইস্যু বছর: {result.data.year}</p>
                 </div>
                 <div className="d-flex gap-2">
-                <Link
+                  <Link
                     to={`/dashboard/sonod/${encodeURIComponent(result.data.sonod_name)}/action/edit/${result.data.id}`}
                     className="btn btn-info btn-sm mr-1"
                   >
@@ -357,25 +297,25 @@ export default function SonodSearch() {
 
 
 
-                <Link
-          to={`${VITE_BASE_DOC_URL}/applicant/copy/download/${result.data.id}`}
-          className="btn btn-success btn-sm mr-1"
-          target="_blank"
-        >
-          প্রাপ্তী স্বীকারপত্র
-        </Link>
-        
-        <Link
-          to={`${VITE_BASE_DOC_URL}/sonod/invoice/download/${result.data.id}`}
-          className="btn btn-info btn-sm mr-1"
-          target="_blank"
-        >
-          রশিদ প্রিন্ট
-        </Link>
+                  <Link
+                    to={`${VITE_BASE_DOC_URL}/applicant/copy/download/${result.data.id}`}
+                    className="btn btn-success btn-sm mr-1"
+                    target="_blank"
+                  >
+                    প্রাপ্তী স্বীকারপত্র
+                  </Link>
+
+                  <Link
+                    to={`${VITE_BASE_DOC_URL}/sonod/invoice/download/${result.data.id}`}
+                    className="btn btn-info btn-sm mr-1"
+                    target="_blank"
+                  >
+                    রশিদ প্রিন্ট
+                  </Link>
 
 
 
-  
+
 
                   <a
                     href={result.data.download_url}
@@ -401,6 +341,6 @@ export default function SonodSearch() {
           </div>
         )}
       </div>
-    </main>
+    
   )
 }
