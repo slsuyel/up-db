@@ -51,6 +51,9 @@ const sonodApi = apiSlice.injectEndpoints({
       invalidatesTags: ["holding"],
     }),
 
+
+
+
     sonodAction: builder.mutation({
       query: ({ id, token }) => ({
         url: `/user/sonod/action/${id}`,
@@ -91,6 +94,20 @@ const sonodApi = apiSlice.injectEndpoints({
       }),
       // invalidatesTags: ["sonod-fee"],
     }),
+
+    renewPreviousHolding: builder.mutation({
+      query: ({ token, union }) => ({
+        url: `admin/holding-tax/Renew?unioun=${union}`,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+      }),
+      invalidatesTags: ["holding-create-update"],
+    }),
+
+
+
   }),
 });
 
@@ -103,5 +120,6 @@ export const {
   useSingleSonodQuery,
   useSonodUpdateMutation,
   useSonodFeesMutation,
-  useUpdateSonodFeesMutation
+  useUpdateSonodFeesMutation,
+  useRenewPreviousHoldingMutation
 } = sonodApi;

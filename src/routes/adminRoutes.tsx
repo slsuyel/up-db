@@ -63,7 +63,7 @@ export const adminRoutes = [
     element: <SonodBaseReport />,
   },
   {
-    path: "holding/tax/",
+    path: "holding-manage",
     element: <HoldingTax />,
   },
   {

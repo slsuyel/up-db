@@ -1,34 +1,77 @@
-import { Link } from "react-router-dom";
-import { Card } from "antd";
+import { useState } from "react";
+import { Card, message, Modal } from "antd";
 import Breadcrumbs from "@/components/reusable/Breadcrumbs";
+import { useRenewPreviousHoldingMutation } from "@/redux/api/sonod/sonodApi";
+import AddressSelectorUnion from "@/components/reusable/AddressSelectorUnion";
 
 const HoldingTax = () => {
-  const wards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const token = localStorage.getItem('token');
+  const [renewPreviousHolding, { isLoading }] = useRenewPreviousHoldingMutation();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedUnion, setSelectedUnion] = useState<string>("");
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = async () => {
+    try {
+      const res = await renewPreviousHolding({
+        token,
+        union: selectedUnion.name.toLowerCase().replace(/\s+/g, "")
+      }).unwrap();
+      if (res.isError) {
+        setIsModalVisible(false);
+        message.error("কিছু সমস্যা হয়েছে, দয়া করে আবার চেষ্টা করুন।");
+      } else {
+        message.success("পূর্বের হোল্ডিং ট্যাক্স সফলভাবে রিনিউ করা হয়েছে।");
+        setIsModalVisible(false);
+      }
+    } catch (error) {
+      console.log("Error:", error);
+      message.error("কিছু সমস্যা হয়েছে, দয়া করে আবার চেষ্টা করুন।");
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+
+  console.log(selectedUnion); //Panchagarh Sadar
 
   return (
-    <div>
+    <div className="card p-3 border-0">
       <Breadcrumbs current="হোল্ডিং ট্যাক্স" />
-      <Card>
-        <div className="card-body">
-          <div className="d-flex justify-content-between mb-3">
-            <div className="row">
-              <div className="col-md-12">
-                <h5 className="card-title">হোল্ডিং ট্যাক্স</h5>
-              </div>
-              {wards.map((ward) => (
-                <div key={ward} className="col-md-2 col-sm-3 my-4 col-4">
-                  <Link
-                    className="align-item-center btn btn-info d-flex fs-4 justify-content-center text-center text-nowrap"
-                    to={`/dashboard/holding/tax/list/${ward}`}
-                  >
-                    {`${ward} নং ওয়ার্ড`}
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
+
+      <div className="col-md-12 mb-3">
+        <AddressSelectorUnion
+          onUnionChange={(union) => setSelectedUnion(union ? union : "")}
+        />
+      </div>
+
+      {selectedUnion && <div className="d-flex justify-content-between mb-3">
+        <div className="align-item-center d-flex gap-1">
+          <button
+            className="btn btn-sm btn-info"
+            onClick={showModal}
+          >
+            <span>{selectedUnion.bn_name} ইউনিয়নের</span> হোল্ডিং ট্যাক্স রিনিউ করুন
+          </button>
         </div>
-      </Card>
+      </div>}
+
+      {/* Confirmation Modal */}
+      <Modal
+        title="নিশ্চিত করুন"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="হ্যাঁ"
+        cancelText="না"
+        loading={isLoading}
+      >
+        <p className="border-top p-2">আপনি কি <span className=" fs-5 fw-bold">{selectedUnion.bn_name} </span> ইউনিয়নের ইউনিয়নের পূর্বের হোল্ডিং ট্যাক্স রিনিউ করতে চান?</p>
+      </Modal>
     </div>
   );
 };

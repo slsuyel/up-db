@@ -43,7 +43,7 @@ const Sidebar = () => {
     },
 
 
-        
+
     ...(user?.position === "Super Admin"
       ? [{ key: "sonod-search", title: "সনদ অনুসন্ধান", slug: "/sonod-search" }]
       : []),
@@ -60,15 +60,16 @@ const Sidebar = () => {
       ? [{ key: "ekpay-report", title: "একপে প্রতিবেদন", slug: "/ekpay-report" }]
       : []),
 
-      
 
-      { key: "reports", title: "লেনদেনের প্রতিবেদন", slug: "/reports" },
+
+    { key: "reports", title: "লেনদেনের প্রতিবেদন", slug: "/reports" },
     { key: "payment-failed", title: "পেমেন্ট ফেইল্ড", slug: "/payment-failed" },
     { key: "search", title: "সকল প্রতিবেদন", slug: "/up-search" },
+    { key: "holdingTax", title: "হোল্ডিং ট্যাক্স ম্যানেজ", slug: "/holding-manage" },
     { key: "sonod-fee", title: "সনদ ফি", slug: "/sonod-fee" },
-    
+
     ...(user?.position === "Super Admin"
-      ? [    { key: "tradelicense_fees", title: "ট্রেড লাইসেন্স ফি ব্যবস্থাপনা", slug: "/tradelicense/fees" },]
+      ? [{ key: "tradelicense_fees", title: "ট্রেড লাইসেন্স ফি ব্যবস্থাপনা", slug: "/tradelicense/fees" },]
       : []),
 
 
