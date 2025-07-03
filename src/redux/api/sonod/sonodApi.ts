@@ -103,7 +103,6 @@ const sonodApi = apiSlice.injectEndpoints({
           Authorization: `Bearer ${token}`
         },
       }),
-      invalidatesTags: ["holding-create-update"],
     }),
 
 
