@@ -14,7 +14,7 @@ const HoldingTax = () => {
   const token = localStorage.getItem('token');
   const [renewPreviousHolding, { isLoading }] = useRenewPreviousHoldingMutation();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedUnion, setSelectedUnion] = useState<Union | string>("");
+  const [selectedUnion, setSelectedUnion] = useState<Union | null>(null); // Initialize as null
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -22,7 +22,7 @@ const HoldingTax = () => {
 
   const handleOk = async () => {
     try {
-      if (typeof selectedUnion !== "string") {
+      if (selectedUnion) {
         const res = await renewPreviousHolding({
           token,
           union: selectedUnion.name.toLowerCase().replace(/\s+/g, ""),
@@ -46,8 +46,8 @@ const HoldingTax = () => {
     setIsModalVisible(false);
   };
 
-  const handleUnionChange = (union: Union | string) => {
-    setSelectedUnion(union ? union : "");
+  const handleUnionChange = (union: Union | null) => {
+    setSelectedUnion(union); // Directly assign union, which can now be null
   };
 
   return (
@@ -58,7 +58,7 @@ const HoldingTax = () => {
         <AddressSelectorUnion onUnionChange={handleUnionChange} />
       </div>
 
-      {selectedUnion && typeof selectedUnion !== "string" && (
+      {selectedUnion && (
         <div className="d-flex justify-content-between mb-3">
           <div className="align-item-center d-flex gap-1">
             <button className="btn btn-sm btn-info" onClick={showModal}>
@@ -79,7 +79,7 @@ const HoldingTax = () => {
         loading={isLoading}
       >
         <p className="border-top p-2">
-          আপনি কি <span className=" fs-5 fw-bold">{selectedUnion && typeof selectedUnion !== "string" ? selectedUnion.bn_name : ""}</span> ইউনিয়নের পূর্বের হোল্ডিং ট্যাক্স রিনিউ করতে চান?
+          আপনি কি <span className=" fs-5 fw-bold">{selectedUnion?.bn_name}</span> ইউনিয়নের পূর্বের হোল্ডিং ট্যাক্স রিনিউ করতে চান?
         </p>
       </Modal>
     </div>
