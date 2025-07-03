@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, ChangeEvent } from "react";
 import { TDivision, TDistrict, TUpazila, TUnion } from "@/types/global";
 import { useAppSelector } from "@/redux/features/hooks";

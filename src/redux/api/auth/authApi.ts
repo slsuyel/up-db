@@ -73,6 +73,14 @@ const authApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["profileUpdate", "profileCreate", "logout"] as any,
     }),
+    siteSetting: builder.query({
+      query: ({ token }) => ({
+        url: `/admin/site-settings/list`,
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }),
+    }),
 
     updateProfile: builder.mutation({
       query: ({ token, data }) => ({
@@ -171,5 +179,6 @@ export const {
   useCreateUnionByUpazilaMutation,
   useShowUnionByUpazilaMutation,
   useUpdateUnionMutation,
-  useMaintenanceFeeCheckMutation
+  useMaintenanceFeeCheckMutation,
+  useSiteSettingQuery
 } = authApi;

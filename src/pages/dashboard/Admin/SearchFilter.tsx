@@ -47,6 +47,8 @@ interface AdminReportResponse {
 }
 
 const SearchFilter: React.FC = () => {
+
+  const isUnion = useAppSelector((state: RootState) => state.siteSetting.isUnion);
   const user = useAppSelector((state: RootState) => state.user.user)
   const token = localStorage.getItem("token")
   const services = useAllServices()
@@ -130,6 +132,22 @@ const SearchFilter: React.FC = () => {
     }
   }, [selectedUpazila])
 
+  useEffect(() => {
+    if (selectedDistrict) {
+      fetch("/pouroseba.json")
+        .then((res) => res.json())
+        .then((data) => {
+          const filteredPorasova = data.filter((u: any) => u.district_id == selectedDistrict.id);
+          console.log(filteredPorasova);
+          setUnions(filteredPorasova);
+        })
+        .catch((error) => console.error("Error fetching unions:", error));
+    } else {
+      setUnions([]);
+    }
+  }, [selectedDistrict]);
+
+
   const handleDivisionChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const division = divisions.find((d) => d.id === event.target.value)
     setSelectedDivision(division || null)
@@ -181,7 +199,7 @@ const SearchFilter: React.FC = () => {
 
   // Type assertion with proper null checking
   const admin: AdminReportData | undefined = (data as AdminReportResponse)?.data
-
+console.log(isUnion);
   return (
     <div className="bg-white p-3 rounded">
       <Breadcrumbs current=" সকল প্রতিবেদন" />
@@ -224,44 +242,61 @@ const SearchFilter: React.FC = () => {
           </div>
         )}
 
-        {selectedDistrict && (
-          <div className="col-md-2">
-            <label htmlFor="upazila">উপজেলা নির্বাচন করুন</label>
-            <select
-              disabled={!!user?.upazila_name}
-              id="upazila"
-              className="searchFrom form-control"
-              value={selectedUpazila?.id || ""}
-              onChange={handleUpazilaChange}
-            >
-              <option value="">উপজেলা নির্বাচন করুন</option>
-              {upazilas.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.bn_name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        {isUnion ? <>
+          {selectedDistrict && (
+            <div className="col-md-2">
+              <label htmlFor="upazila">উপজেলা নির্বাচন করুন</label>
+              <select
+                disabled={!!user?.upazila_name}
+                id="upazila"
+                className="searchFrom form-control"
+                value={selectedUpazila?.id || ""}
+                onChange={handleUpazilaChange}
+              >
+                <option value="">উপজেলা নির্বাচন করুন</option>
+                {upazilas.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.bn_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
-        {selectedUpazila && (
-          <div className="col-md-2">
-            <label htmlFor="union">ইউনিয়ন নির্বাচন করুন</label>
-            <select
-              id="union"
-              className="searchFrom form-control"
-              value={selectedUnion?.id || ""}
-              onChange={handleUnionChange}
-            >
-              <option value="">ইউনিয়ন নির্বাচন করুন</option>
-              {unions.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.bn_name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+          {selectedUpazila && (
+            <div className="col-md-2">
+              <label htmlFor="union">ইউনিয়ন নির্বাচন করুন</label>
+              <select
+                id="union"
+                className="searchFrom form-control"
+                value={selectedUnion?.id || ""}
+                onChange={handleUnionChange}
+              >
+                <option value="">ইউনিয়ন নির্বাচন করুন</option>
+                {unions.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.bn_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </> : <div className="col-md-2">
+          <label htmlFor="union">পৌরসভা নির্বাচন করুন</label>
+          <select
+            id="union"
+            className="searchFrom form-control"
+            value={selectedUnion?.id || ""}
+            onChange={handleUnionChange}
+          >
+            <option value="">পৌরসভা নির্বাচন করুন</option>
+            {unions.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.bn_name}
+              </option>
+            ))}
+          </select>
+        </div>}
 
         <div className="col-md-2">
           <label htmlFor="service">সেবা নির্বাচন করুন</label>
@@ -316,13 +351,10 @@ const SearchFilter: React.FC = () => {
         {admin?.total_report?.sonod_reports && admin.total_report.sonod_reports.length >= 1 && (
           <Link
             target="_blank"
-            to={`${VITE_BASE_DOC_URL}/download/reports/get-reports${
-              selectedDivision ? `?division_name=${selectedDivision.name}` : ""
-            }${selectedDistrict ? `&district_name=${selectedDistrict.name}` : ""}${
-              selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ""
-            }${selectedUnion ? `&union_name=${selectedUnion.name}` : ""}${
-              selected ? `&sonod_name=${selected}` : ""
-            }${fromDate ? `&from_date=${fromDate}` : ""}${toDate ? `&to_date=${toDate}` : ""}&token=${token}`}
+            to={`${VITE_BASE_DOC_URL}/download/reports/get-reports${selectedDivision ? `?division_name=${selectedDivision.name}` : ""
+              }${selectedDistrict ? `&district_name=${selectedDistrict.name}` : ""}${selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ""
+              }${selectedUnion ? `&union_name=${selectedUnion.name}` : ""}${selected ? `&sonod_name=${selected}` : ""
+              }${fromDate ? `&from_date=${fromDate}` : ""}${toDate ? `&to_date=${toDate}` : ""}&token=${token}`}
             className="btn btn-info text-white"
           >
             প্রতিবেদন ডাউনলোড করুন
@@ -334,7 +366,7 @@ const SearchFilter: React.FC = () => {
           </button>
         )}
       </div>
-      
+
       {admin?.total_report?.totals && <Summary data={admin.total_report.totals} isLoading={isLoading} />}
 
       {admin?.divided_reports && showCharts && (
@@ -415,11 +447,9 @@ const SearchFilter: React.FC = () => {
                 {!selectedUnion && (
                   <td>
                     <a
-                      href={`${VITE_BASE_DOC_URL}/download/reports/get-reports?${
-                        selectedDivision?.name ? `division_name=${selectedDivision.name}&` : ""
-                      }${selectedDistrict?.name ? `district_name=${selectedDistrict.name}&` : ""}${
-                        selectedUpazila?.name ? `upazila_name=${selectedUpazila.name}&` : ""
-                      }sonod_name=${report.sonod_name}&detials=1&token=${token}`}
+                      href={`${VITE_BASE_DOC_URL}/download/reports/get-reports?${selectedDivision?.name ? `division_name=${selectedDivision.name}&` : ""
+                        }${selectedDistrict?.name ? `district_name=${selectedDistrict.name}&` : ""}${selectedUpazila?.name ? `upazila_name=${selectedUpazila.name}&` : ""
+                        }sonod_name=${report.sonod_name}&detials=1&token=${token}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn btn-sm btn-info"

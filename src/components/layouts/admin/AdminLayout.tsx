@@ -1,15 +1,32 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Layout } from "antd";
 
 import { Outlet } from "react-router-dom";
+
 import Navbar from "./Navbar";
 import { useEffect, useState } from "react";
-
 import Sidebar from "./Sidebar";
-
+import { useSiteSettingQuery } from "@/redux/api/auth/authApi";
+import { useAppDispatch } from "@/redux/features/hooks";
+import { setData, setIsUnion } from "@/redux/features/user/siteSettingSlice";
 const { Header, Content, Footer } = Layout;
 const UserLayout = () => {
+  const dispatch = useAppDispatch(); 
+  const token = localStorage.getItem(`token`)
+  const { data } = useSiteSettingQuery({token})
   const theme = false;
   const [scrollY, setScrollY] = useState(0);
+  useEffect(() => {
+    if (data?.data) {
+      dispatch(setData(data.data)); 
+      const unionItem = data.data.find((item: { key: string; }) => item.key === 'union');
+      const isUnion = unionItem ? unionItem.value === 'true' : false;
+      dispatch(setIsUnion(isUnion));  
+    }
+  }, [data, dispatch]);
+  
+
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +39,7 @@ const UserLayout = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
 
   return (
     <Layout >
@@ -66,7 +84,7 @@ const UserLayout = () => {
         <Footer className={`${!theme ? "dark border-top" : ""}`}>
           <footer>
             <div className="float-right d-none d-sm-inline">Version 1.0.0 </div>
-            <strong>Copyright © 2023-2024 সফটওয়েব সিস্টেম সল্যুশন</strong>
+            <strong>Copyright © 2020-2026 সফটওয়েব সিস্টেম সল্যুশন</strong>
             {""} || All rights reserved.
           </footer>
         </Footer>

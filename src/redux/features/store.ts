@@ -13,6 +13,7 @@ import userSlice from "./user/userSlice";
 import apiSlice from "../api/apiSlice";
 import storage from "redux-persist/lib/storage";
 import unionSlice from "./union/unionSlice";
+import siteSettingReducer from "./user/siteSettingSlice";
 
 const persistConfig = {
   key: "auth",
@@ -27,6 +28,7 @@ export const store = configureStore({
     [apiSlice.reducerPath]: apiSlice.reducer,
     user: persistedAuthReducer,
     union: persistedUnionReducer,
+    siteSetting: siteSettingReducer
   },
 
   middleware: (getDefaultMiddlewares) =>
