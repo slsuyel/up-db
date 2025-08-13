@@ -13,8 +13,12 @@ import { ChangeEvent, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import AddressSelectorUnion from '@/components/reusable/AddressSelectorUnion';
 import './PaymentFailed.css';  // Custom CSS file for additional styling
+import PouroLocationSelector from "@/components/reusable/PouroLocationSelector";
+import { useAppSelector } from "@/redux/features/hooks";
+import { RootState } from "@/redux/features/store";
 
 const PaymentFailed = () => {
+  const isUnion = useAppSelector((state: RootState) => state.siteSetting.isUnion);
   const services = useAllServices();
   const [callIpn, { isLoading: chckingIpn }] = useCallipnMutation();
   const [paymentData, setPaymentData] = useState<any>(null);
@@ -31,11 +35,11 @@ const PaymentFailed = () => {
   const { data, isLoading, isFetching, refetch } = useFailedPaymentQuery(
     triggerSearch
       ? {
-          token,
-          sonod_type: selectedService,
-          date: selectedDate,
-          union: selectedUnion.replace(/\s+/g, "").toLowerCase(),
-        }
+        token,
+        sonod_type: selectedService,
+        date: selectedDate,
+        union: selectedUnion.replace(/\s+/g, "").toLowerCase(),
+      }
       : null
   );
 
@@ -82,9 +86,17 @@ const PaymentFailed = () => {
       <Breadcrumbs current="পেমেন্ট ফেইল্ড তালিকাঃ" />
       <div className="row mb-4">
         <div className="col-md-12 mb-3">
-          <AddressSelectorUnion 
-            onUnionChange={(union) => setSelectedUnion(union ? union.name : "")}
-          />
+
+          {
+            isUnion ? <AddressSelectorUnion
+              onUnionChange={(union) => setSelectedUnion(union ? union.name : "")}
+            /> : <PouroLocationSelector
+              onUnionChange={(union) => setSelectedUnion(union ? union.name : "")}
+              showLabels={true}
+            />
+          }
+
+
         </div>
         <div className="col-md-3 mb-3">
           <select

@@ -5,11 +5,12 @@ import { Form, Select } from "antd";
 const { Option } = Select;
 
 interface LocationSelectorProps {
-  onUnionSelect: (union: any | null) => void;
+  onUnionSelect?: (union: any | null) => void; // optional
+  onUnionChange?: (union: any | null) => void; // optional
   showLabels?: boolean;
 }
 
-const PouroLocationSelector = ({ onUnionSelect, showLabels = false }: LocationSelectorProps) => {
+const PouroLocationSelector = ({ onUnionSelect, onUnionChange, showLabels = false }: LocationSelectorProps) => {
   const [selecteddivisions, setSelectedDivisions] = useState<string>("");
   const [selectedDistrict, setSelectedDistrict] = useState<string>("");
   const [selectedUnion, setSelectedUnion] = useState<string>("");
@@ -17,14 +18,10 @@ const PouroLocationSelector = ({ onUnionSelect, showLabels = false }: LocationSe
   const [divisions, setDivisions] = useState<TDivision[]>([]);
   const [districts, setDistricts] = useState<TDistrict[]>([]);
   const [unions, setUnions] = useState<TUnion[]>([]);
-  // const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 
   const BASE_API_URL = "https://api.uniontax.gov.bd/api";
 
-
   useEffect(() => {
-
-
     fetch(`${BASE_API_URL}/global/divisions`)
       .then((res) => res.json())
       .then((data) => setDivisions(data?.data))
@@ -70,7 +67,14 @@ const PouroLocationSelector = ({ onUnionSelect, showLabels = false }: LocationSe
       (u) => u?.name.toLowerCase().replace(/\s+/g, "") === value.toLowerCase().replace(/\s+/g, "")
     );
     setSelectedUnion(selectedUnionObject?.name || "");
-    onUnionSelect(selectedUnionObject?.name || null);
+
+    // Call both props if they exist
+    if (onUnionSelect) {
+      onUnionSelect(selectedUnionObject || null);
+    }
+    if (onUnionChange) {
+      onUnionChange(selectedUnionObject || null);
+    }
   };
 
   const fields = [
@@ -110,43 +114,55 @@ const PouroLocationSelector = ({ onUnionSelect, showLabels = false }: LocationSe
   ];
 
   return (
-    <div className={showLabels ? "row w-100" : "d-flex justify-content-between align-items-center gap-3"}>
-      {fields.map((field, index) => (
-        <div key={index} className={showLabels ? "col-md-4" : ""}>
-          {showLabels ? (
-            <Form.Item>
-              <label>{field.label}</label>
-              <Select
-                value={field.value || undefined}
-                onChange={field.onChange}
-                placeholder={field.placeholder}
-                style={{ width: "100%" }}
+
+    <div className="card shadow-sm mb-4">
+      <div className="card-header bg-primary text-white mb-2">
+        <h5 className="mb-0">ঠিকানা নির্বাচন করুন</h5>
+      </div>
+      <div className={showLabels ? "row w-100" : "d-flex justify-content-between align-items-center gap-3"}>
+        {fields.map((field, index) => (
+          <div key={index} className={showLabels ? "col-md-4" : ""}>
+            {showLabels ? (
+              <Form.Item>
+                <label>{field.label}</label>
+                <Select
+                  value={field.value || undefined}
+                  onChange={field.onChange}
+                  placeholder={field.placeholder}
+                  style={{ width: "100%" }}
+                  disabled={field.disabled}
+                >
+                  {field.options?.map((option) => (
+                    <Option
+                      key={option[field.optionKey as keyof TDivision]}
+                      value={option[field.optionValue as keyof TDivision]}
+                    >
+                      {option[field.optionLabel as keyof TDivision]}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            ) : (
+              <select
+                className="searchFrom form_control"
+                value={field.value || ""}
+                onChange={(e) => field.onChange(e.target.value)}
                 disabled={field.disabled}
               >
+                <option value="">{field.label}</option>
                 {field.options?.map((option) => (
-                  <Option key={option[field.optionKey as keyof TDivision]} value={option[field.optionValue as keyof TDivision]}>
+                  <option
+                    key={option[field.optionKey as keyof TDivision]}
+                    value={option[field.optionValue as keyof TDivision]}
+                  >
                     {option[field.optionLabel as keyof TDivision]}
-                  </Option>
+                  </option>
                 ))}
-              </Select>
-            </Form.Item>
-          ) : (
-            <select
-              className="searchFrom form_control"
-              value={field.value || ""}
-              onChange={(e) => field.onChange(e.target.value)}
-              disabled={field.disabled}
-            >
-              <option value="">{field.label}</option>
-              {field.options?.map((option) => (
-                <option key={option[field.optionKey as keyof TDivision]} value={option[field.optionValue as keyof TDivision]}>
-                  {option[field.optionLabel as keyof TDivision]}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-      ))}
+              </select>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

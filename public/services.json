@@ -58,5 +58,45 @@
   {
     "title": "আর্থিক অস্বচ্ছলতার সনদপত্র",
     "link": "Certificate_of_Financial_Insolvency"
+  },
+  {
+    "title": "বিবাহিত সনদ",
+    "link": "Married_certificate"
+  },
+  {
+    "title": "দ্বিতীয় বিবাহের অনুমতি পত্র",
+    "link": "Permission_for_second_marriage"
+  },
+  {
+    "title": "নতুন ভোটারের প্রত্যয়ন পত্র",
+    "link": "Certificate_of_new_voter"
+  },
+  {
+    "title": "ভোটার স্থানান্তরের প্রত্যয়ন পত্র",
+    "link": "Certificate_of_voter_transfer"
+  },
+  {
+    "title": "বেকারত্বের সনদপত্র",
+    "link": "Unemployment_certificate"
+  },
+  {
+    "title": "অস্থায়ীভাবে বসবাসের প্রত্যয়ন পত্র",
+    "link": "Temporary_residence_certificate"
+  },
+  {
+    "title": "জাতীয়তা সনদ",
+    "link": "Nationality_certificate"
+  },
+  {
+    "title": "স্থায়ী বাসিন্দা সনদ",
+    "link": "Permanent_residence_certificate"
+  },
+  {
+    "title": "এতিম সনদ",
+    "link": "Orphan_certificate"
+  },
+  {
+    "title": "মাসিক আয়ের সনদ",
+    "link": "Monthly_income_certificate"
   }
 ]
