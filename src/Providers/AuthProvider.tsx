@@ -20,7 +20,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     if (!token || isError || (data && data.status_code !== 200)) {
-      navigate("/login");
+      navigate("/");
     } else if (data && data.status_code === 200) {
       dispatch(setUser(data.data.admin));
     }
