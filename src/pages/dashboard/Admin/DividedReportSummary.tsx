@@ -177,16 +177,16 @@ const DividedReportSummary = ({ data, isLoading, adminTotals, title }: any) => {
                         {regionName}
                       </td>
                       <td style={totalApplicationsCellStyle} className="text-center">
-                        {regionTotals.total_pending}
+                        {regionTotals.total_pending + regionTotals.total_approved + regionTotals.total_cancel}
                       </td>
                       <td style={newApplicationsCellStyle} className="text-center">
-                        {regionTotals.total_approved}
+                        {regionTotals.total_pending}
                       </td>
                       <td style={issuedCertificatesCellStyle} className="text-center">
-                        {regionTotals.total_cancel}
+                        {regionTotals.total_approved}
                       </td>
                       <td style={canceledApplicationsCellStyle} className="text-center">
-                        {regionTotals.total_payments}
+                        {regionTotals.total_cancel}
                       </td>
                       <td style={totalFeesCellStyle} className="text-center fw-bold">
                         {regionTotals.total_amount}
