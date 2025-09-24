@@ -7,11 +7,6 @@ import { RootState } from "@/redux/features/store";
 import { message, Modal } from "antd";
 import { useState } from "react";
 
-// Define the type for Union
-interface Union {
-  name: string;
-  bn_name: string;
-}
 
 const HoldingTax = () => {
   const isUnion = useAppSelector(
