@@ -18,6 +18,7 @@ import SonodFee from "../pages/SonodFee/SonodFee";
 import TradeLicenseFees from "../pages/SonodFee/TradeLicenseFees";
 import SonodSearch from "@/pages/dashboard/Search/SonodSearch";
 import MaintenanceFees from "@/pages/dashboard/MaintenanceFees/MaintenanceFees";
+import SupportPage from "@/pages/Supports/Support";
 
 export const adminRoutes = [
   {
@@ -99,5 +100,9 @@ export const adminRoutes = [
   {
     path: "tradelicense/fees",
     element: <TradeLicenseFees />,
+  },
+  {
+    path: "supports",
+    element: <SupportPage />,
   },
 ];

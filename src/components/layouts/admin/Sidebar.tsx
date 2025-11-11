@@ -59,6 +59,9 @@ const Sidebar = () => {
     ...(user?.position === "Super Admin"
       ? [{ key: "ekpay-report", title: "একপে প্রতিবেদন", slug: "/ekpay-report" }]
       : []),
+    ...(user?.position === "Super Admin"
+      ? [{ key: "supports", title: "সাপোর্ট", slug: "/supports" }]
+      : []),
 
 
 

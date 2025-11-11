@@ -16,6 +16,7 @@ const apiSlice = createApi({
     'sonod-action',
     'holding',
     'holding_pay',
+    'Supports',
   ],
 });
 
