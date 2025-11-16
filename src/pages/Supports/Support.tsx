@@ -3,6 +3,8 @@ import { useGetAllSupportsQuery, useUpdateSupportStatusMutation } from "@/redux/
 import { Modal, Form, Badge } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button } from "antd";
+import { useAppSelector } from "@/redux/features/hooks";
+import { RootState } from "@/redux/features/store";
 
 interface Support {
     id: number;
@@ -12,6 +14,7 @@ interface Support {
     phone: string;
     sonod_name: string;
     support_id: string;
+    sonod_id?: string;
     type: string;
     description: string;
     status: string;
@@ -19,6 +22,9 @@ interface Support {
 }
 
 const SupportPage: React.FC = () => {
+    const isUnion = useAppSelector(
+        (state: RootState) => state.siteSetting.isUnion
+    );
     const { data, isLoading, isError, refetch } = useGetAllSupportsQuery(undefined);
     const [updateSupportStatus, { isLoading: updating }] = useUpdateSupportStatusMutation();
 
@@ -97,9 +103,10 @@ const SupportPage: React.FC = () => {
                     <thead className="table-dark">
                         <tr>
                             <th>#</th>
+
                             <th>Sender Info</th>
-                            <th>Union / Sonod Name</th>
-                            <th>Support ID</th>
+                            <th>Sonod Info </th>
+
                             <th>Type</th>
                             <th>Status</th>
                             <th>Description</th>
@@ -107,11 +114,12 @@ const SupportPage: React.FC = () => {
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {data?.data.map((support: Support, index: number) => (
+                    <tbody className=" text-capitalize">
+                        {data?.data.map((support: Support) => (
                             <tr key={support.id}>
-                                <td>{index + 1}</td>
+                                <td>{support.support_id}</td>
                                 <td className="text-start">
+
                                     <p className="mb-0 fw-semibold">{support.name}</p>
                                     <p className="mb-0 text-muted small">{support.email}</p>
                                     <p className="mb-0 text-muted small">
@@ -121,10 +129,14 @@ const SupportPage: React.FC = () => {
                                     </p>
                                 </td>
                                 <td>
-                                    <p className="mb-0">{support.union_name || "-"}</p>
+                                    <p className="mb-0">{support.sonod_id || "-"}</p>
                                     <p className="mb-0">{support.sonod_name}</p>
+                                    <p className="mb-0">{support.union_name || "-"}</p>
+                                    {support?.sonod_id && <a target="_blank" href={`${isUnion ? `https://uniontax.gov.bd/sonod/search?sonodType=${support.sonod_name}&sonodNo=${support.sonod_id}` : `https://pouroseba.gov.bd/sonod/search?sonodType=${support.sonod_name}&sonodNo=${support.sonod_id}`}`}>
+                                        <i className="fa-solid fa-file-pdf"></i>
+                                    </a>}
                                 </td>
-                                <td>{support.support_id}</td>
+
                                 <td>{support.type}</td>
                                 <td>{renderStatusBadge(support.status)}</td>
                                 <td>{support.description}</td>
