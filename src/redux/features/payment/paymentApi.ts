@@ -42,10 +42,11 @@ const paymentApi = apiSlice.injectEndpoints({
       invalidatesTags: ["holding_pay"],
     }),
     ekpayReportUpload: builder.mutation({
-      query: (formData) => ({
+      query: ({formData,token}) => ({
         url: `admin/ekpay-reports/excel/upload`,
         method: "POST",
-        body: formData, // <-- send FormData directly
+        body: formData,
+        headers: { Authorization: `Bearer ${token}` },
       }),
     }),
   }),

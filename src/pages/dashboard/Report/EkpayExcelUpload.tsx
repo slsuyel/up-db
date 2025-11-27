@@ -4,6 +4,7 @@ import { Button, message, Upload } from "antd";
 import { useState } from "react";
 
 export default function EkpayExcelUpload() {
+    const token = localStorage.getItem("token");
     const [file, setFile] = useState<File | null>(null);
     const [uploadExcel, { isLoading }] = useEkpayReportUploadMutation();
 
@@ -17,8 +18,11 @@ export default function EkpayExcelUpload() {
         formData.append("excel_file", file);
 
         try {
-            const res = await uploadExcel(formData).unwrap();
-            // message.success("File uploaded successfully!");
+            const res = await uploadExcel({ formData, token }).unwrap();
+            if (res.data) {
+                message.success("File uploaded successfully!");
+            }
+            // message.success("File uploaded successfully!")
             console.log(res);
         } catch (err) {
             message.error("Upload failed!");
