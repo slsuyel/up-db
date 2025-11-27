@@ -43,7 +43,7 @@ const paymentApi = apiSlice.injectEndpoints({
     }),
     ekpayReportUpload: builder.mutation({
       query: (formData) => ({
-        url: `/ekpay-reports/excel/upload`,
+        url: `admin/ekpay-reports/excel/upload`,
         method: "POST",
         body: formData, // <-- send FormData directly
       }),
