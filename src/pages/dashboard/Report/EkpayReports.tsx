@@ -1,11 +1,12 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect, type ReactNode } from "react"
-import "bootstrap/dist/css/bootstrap.min.css"
 import { message } from "antd"
+import "bootstrap/dist/css/bootstrap.min.css"
+import type React from "react"
+import { useEffect, useState, type ReactNode } from "react"
 import AddressSelection from "../../../components/reusable/AddressSelection"
 import "../../../styles/ekpay-reports.css"
+import EkpayExcelUpload from "./EkpayExcelUpload"
 
 interface UnionInfo {
   short_name_e: any
@@ -362,11 +363,14 @@ const EkpayReports: React.FC = () => {
 
   return (
     <div className="container-fluid py-4">
-      <div className="card shadow-sm">
-        <div className="card-header bg-primary text-white">
-          <h4 className="card-title mb-0">
+      <div className="">
+        <div className="card-header text-white d-flex justify-content-between align-items-center mb-3">
+          <h4 className="card-title mb-0 text-primary">
             <i className="fas fa-chart-bar me-2"></i> Ekpay Reports
           </h4>
+          <EkpayExcelUpload />
+
+
         </div>
         <div className="card-body">
           {!token ? (
@@ -457,7 +461,7 @@ const EkpayReports: React.FC = () => {
                 <div className="mb-4">
                   <ul className="nav nav-tabs nav-fill">
                     <li className="nav-item">
-                      <button 
+                      <button
                         className={`nav-link ${activeTab === 'unionList' ? 'active' : ''}`}
                         onClick={() => setActiveTab('unionList')}
                       >
@@ -465,7 +469,7 @@ const EkpayReports: React.FC = () => {
                       </button>
                     </li>
                     <li className="nav-item">
-                      <button 
+                      <button
                         className={`nav-link ${activeTab === 'unionReports' ? 'active' : ''}`}
                         onClick={() => setActiveTab('unionReports')}
                       >
@@ -633,7 +637,7 @@ const EkpayReports: React.FC = () => {
                       <h5 className="mb-0">
                         <i className="fas fa-chart-line me-2"></i> Union-Specific Reports
                       </h5>
-                      <button 
+                      <button
                         className="btn btn-outline-primary"
                         onClick={() => setActiveTab('unionList')}
                       >
@@ -662,8 +666,8 @@ const EkpayReports: React.FC = () => {
                               </option>
                             ))}
                           </select>
-                          <button 
-                            className="btn btn-primary" 
+                          <button
+                            className="btn btn-primary"
                             type="button"
                             onClick={() => selectedUnion && fetchUnionReports(1)}
                             disabled={!selectedUnion}
