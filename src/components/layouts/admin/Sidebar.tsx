@@ -41,47 +41,86 @@ const Sidebar = () => {
       slug: "",
       pendingCount: 0,
     },
-
-
-
     ...(user?.position === "Super Admin"
-      ? [{ key: "sonod-search", title: "সনদ অনুসন্ধান", slug: "/sonod-search" }]
+    ? [{ key: "sonod-search", title: "সনদ অনুসন্ধান", slug: "/sonod-search" }]
+    : []),
+      ...(user?.position === "Super Admin"
+    ? [{ key: "supports", title: "সাপোর্ট", slug: "/supports" }]
+    : []),
+
+   ...(user?.position === "Super Admin"
+      ? [
+          {
+            key: "admin",
+            title: "অ্যাডমিন",
+            submenu: [
+              {
+                key: "maintance-fees",
+                title: "রক্ষণাবেক্ষণ ফি",
+                slug: "/maintance-fees",
+              },
+              {
+                key: "union-create",
+                title: "ইউনিয়ন তৈরি",
+                slug: "/create-union",
+              },
+              {
+                key: "system-settings",
+                title: "সিস্টেম সেটিংস",
+                slug: "/system-settings",
+              },
+              {
+                key: "ekpay-report",
+                title: "একপে প্রতিবেদন",
+                slug: "/ekpay-report",
+              },
+            ],
+          },
+        ]
       : []),
 
-    ...(user?.position === "Super Admin"
-      ? [{ key: "maintance-fees", title: "রক্ষণাবেক্ষণ ফি", slug: "/maintance-fees" }]
-      : []),
 
-    ...(user?.position === "Super Admin"
-      ? [{ key: "union-create", title: "ইউনিয়ন তৈরি", slug: "/create-union" }]
-      : []),
+    
+    {
+      key: "reports",
+      title: "প্রতিবেদন",
+      submenu: [
+        { key: "reports", title: "লেনদেনের প্রতিবেদন", slug: "/reports" },
+        { key: "payment-failed", title: "পেমেন্ট ফেইল্ড", slug: "/payment-failed" },
+        { key: "search", title: "সকল প্রতিবেদন", slug: "/up-search" },
 
-    ...(user?.position === "Super Admin"
-      ? [{ key: "ekpay-report", title: "একপে প্রতিবেদন", slug: "/ekpay-report" }]
-      : []),
-    ...(user?.position === "Super Admin"
-      ? [{ key: "supports", title: "সাপোর্ট", slug: "/supports" }]
-      : []),
+      ],
+    },
 
 
+    {
+      key: "management",
+      title: "ম্যানেজমেন্ট",
+      submenu: [
+        { key: "holdingTax", title: "হোল্ডিং ট্যাক্স ম্যানেজ", slug: "/holding-manage" },
+        { key: "sonod-fee", title: "সনদ ফি", slug: "/sonod-fee" },
+        ...(user?.position === "Super Admin"
+          ? [{ key: "tradelicense_fees", title: "ট্রেড লাইসেন্স ফি ব্যবস্থাপনা", slug: "/tradelicense/fees" }]
+          : []),
+      ],
+    },
 
-    { key: "reports", title: "লেনদেনের প্রতিবেদন", slug: "/reports" },
-    { key: "payment-failed", title: "পেমেন্ট ফেইল্ড", slug: "/payment-failed" },
-    { key: "search", title: "সকল প্রতিবেদন", slug: "/up-search" },
-    { key: "holdingTax", title: "হোল্ডিং ট্যাক্স ম্যানেজ", slug: "/holding-manage" },
-    { key: "sonod-fee", title: "সনদ ফি", slug: "/sonod-fee" },
-
-    ...(user?.position === "Super Admin"
-      ? [{ key: "tradelicense_fees", title: "ট্রেড লাইসেন্স ফি ব্যবস্থাপনা", slug: "/tradelicense/fees" },]
-      : []),
 
 
+    {
+      key: "sonod-management",
+      title: "সনদ ম্যানেজমেন্ট",
+      submenu: [
+        ...services.map((service, index) => ({
+          key: `service-${index}`,
+          title: service.title,
+          slug: `/sonod-base-report/${service.title}`,
+        })),
+      ],
+    },
 
-    ...services.map((service, index) => ({
-      key: `service-${index}`,
-      title: service.title,
-      slug: `/sonod-base-report/${service.title}`,
-    })),
+
+
   ];
 
   return (
