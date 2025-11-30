@@ -79,7 +79,7 @@ export const LogViewer: React.FC<LogViewerProps> = ({
       {value.LOG_VIEWER_ENABLED==="true" &&
         <Col>
 
-          <a type="submit" target="_blank" className="btn btn-primary float-end" href={`http://203.161.62.45/log-viewer?token=${localStorage.getItem('adminToken')}`}>
+          <a type="submit" target="_blank" className="btn btn-primary float-end" href={`http://203.161.62.45/log-viewer?token=${localStorage.getItem('token')}`}>
             View Log Viewer
           </a>
 
