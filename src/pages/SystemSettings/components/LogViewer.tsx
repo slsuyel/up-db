@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Form, Button, Spinner } from "react-bootstrap";
+import { Card, Form, Button, Spinner, Row, Col } from "react-bootstrap";
 
 export interface LogViewerValues {
   LOG_VIEWER_ENABLED: "true" | "false";
@@ -59,10 +59,36 @@ export const LogViewer: React.FC<LogViewerProps> = ({
   };
 
   return (
+    <>  
+
+
+
     <Card className="m-3 p-3">
+
+=
       <Card.Body>
-        <h4>Log Viewer Settings</h4>
-        <p>Configure Log Viewer behavior and accessibility.</p>
+
+
+
+      <Row className="mb-3">
+        <Col>
+            <h4>Log Viewer Settings</h4>
+          <p>Configure Log Viewer behavior and accessibility.</p>
+        </Col>
+
+      {value.LOG_VIEWER_ENABLED==="true" &&
+        <Col>
+
+          <a type="submit" target="_blank" className="btn btn-primary float-end" href={`http://203.161.62.45/log-viewer`}>
+            View Log Viewer
+          </a>
+
+        </Col>
+      }
+      
+      </Row>
+
+
 
         <Form onSubmit={handleSubmit}>
           {/* Enabled */}
@@ -262,6 +288,7 @@ export const LogViewer: React.FC<LogViewerProps> = ({
         </Form>
       </Card.Body>
     </Card>
+    </>
   );
 };
 
