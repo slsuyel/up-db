@@ -20,6 +20,7 @@ import SonodSearch from "@/pages/dashboard/Search/SonodSearch";
 import MaintenanceFees from "@/pages/dashboard/MaintenanceFees/MaintenanceFees";
 import SupportPage from "@/pages/Supports/Support";
 import SystemSettings from "@/pages/SystemSettings/SystemSettingsPage";
+import EkpayPaymentReportList from "@/pages/dashboard/Report/EkpayPaymentReportList";
 
 export const adminRoutes = [
   {
@@ -43,6 +44,10 @@ export const adminRoutes = [
   {
     path: "ekpay-report",
     element: <EkpayReports />,
+  },
+  {
+    path: "ekpay-report-list",
+    element: <EkpayPaymentReportList />,
   },
   {
     path: "payment-failed",

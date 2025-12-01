@@ -7,6 +7,7 @@ import { useEffect, useState, type ReactNode } from "react"
 import AddressSelection from "../../../components/reusable/AddressSelection"
 import "../../../styles/ekpay-reports.css"
 import EkpayExcelUpload from "./EkpayExcelUpload"
+import { Link } from "react-router-dom"
 
 interface UnionInfo {
   short_name_e: any
@@ -369,7 +370,13 @@ const EkpayReports: React.FC = () => {
             <i className="fas fa-chart-bar me-2"></i> Ekpay Reports
           </h4>
           <EkpayExcelUpload />
-
+         
+                 <Link
+                        to={`/dashboard/ekpay-report-list`}
+                        className="btn btn-info btn-sm mr-1"
+                      >
+                        <i className="fas fa-list me-1"></i> Ekpay Report List
+                      </Link>
 
         </div>
         <div className="card-body">
