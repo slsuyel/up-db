@@ -7,6 +7,7 @@ import {
 
 import AddressSelectorUnion from "@/components/reusable/AddressSelectorUnion";
 import PouroLocationSelector from "@/components/reusable/PouroLocationSelector";
+import EkpayExcelUpload from "./EkpayExcelUpload";
 
 const formatCurrency = (value: any) => {
   const n = Number(value ?? 0);
@@ -144,6 +145,8 @@ const EkpayPaymentReportList: React.FC = () => {
 
       <h3 className="mb-3">একপে পেমেন্ট রিপোর্ট</h3>
 
+     
+
       <Card className="mb-4 shadow-sm">
         <Card.Body>
           <div className="row">
@@ -160,7 +163,7 @@ const EkpayPaymentReportList: React.FC = () => {
               )}
             </div>
 
-            <div className="col-md-12 mb-3 text-md-end">
+            <div className="col-md-6 mb-3 text-md-start">
               <Button
                 onClick={handleSearch}
                 disabled={!selectedUnion || isFetching}
@@ -182,6 +185,14 @@ const EkpayPaymentReportList: React.FC = () => {
                 রিসেট করুন
               </Button>
             </div>
+
+
+            <div className="col-md-6 mb-3 text-md-end">
+                       <EkpayExcelUpload />
+            </div>
+
+
+
           </div>
         </Card.Body>
       </Card>

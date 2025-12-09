@@ -18,6 +18,8 @@ interface SonodReport {
   pending_count: number
   approved_count: number
   cancel_count: number
+    Last30DaysPending: number
+  Last7DaysPending: number
 }
 
 interface PaymentReport {
@@ -97,6 +99,8 @@ const DividedReportSummary = ({ data, isLoading, adminTotals, title }: any) => {
   let totalCanceled = 0
   let totalPayments = 0
   let totalAmount = 0
+  let Last30DaysPending = 0
+  let Last7DaysPending = 0
 
   Object.entries(data).forEach(([, regionData]: any) => {
     totalPending += regionData?.totals?.total_pending || 0
@@ -215,12 +219,14 @@ const DividedReportSummary = ({ data, isLoading, adminTotals, title }: any) => {
                   <td className="fw-bold text-center" style={newApplicationsCellStyle}>
                     {totalPending}
                   </td>
+                  
                   <td className="fw-bold text-center" style={issuedCertificatesCellStyle}>
                     {totalApproved}
                   </td>
                   <td className="fw-bold text-center" style={canceledApplicationsCellStyle}>
                     {totalCanceled}
                   </td>
+
                   <td className="fw-bold text-center" style={totalFeesCellStyle}>
                     {totalAmount.toFixed(2)}
                   </td>

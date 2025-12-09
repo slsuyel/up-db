@@ -17,7 +17,7 @@ const SummaryItem = ({
   value: number;
 }) => {
   return (
-    <div className="mb-2 mt-2 mb-4">
+    <div className="mb-2 mt-2 mb-4" >
       <div className="border-0 card h-100  py-2 shadow hover-effect">
         <div className="card-body d-flex align-items-center justify-content-around">
           <img
@@ -25,7 +25,7 @@ const SummaryItem = ({
             alt={title}
             style={{ width: "70px", height: "70px" }}
           />
-          <div className="text-end">
+          <div className="text-end" style={{ marginLeft: "15px" }}>
             <h5 className="card-title fw-bold ">{title}</h5>
             <p className="card-text fs-4 mb-0">{value}</p>
           </div>
@@ -53,6 +53,16 @@ const Summary = ({ data, isLoading }: { data: any; isLoading: boolean }) => {
       icon: newApplications,
       title: "নতুন আবেদন",
       value: all.total_pending,
+    },
+    {
+      icon: newApplications,
+      title: "৭ দিনের নতুন আবেদন",
+      value: all.Last7DaysPending,
+    },
+    {
+      icon: newApplications,
+      title: "৩০ দিনের নতুন আবেদন",
+      value: all.Last30DaysPending,
     },
     {
       icon: approvedApplications,

@@ -6,7 +6,7 @@ import type React from "react"
 import { useEffect, useState, type ReactNode } from "react"
 import AddressSelection from "../../../components/reusable/AddressSelection"
 import "../../../styles/ekpay-reports.css"
-import EkpayExcelUpload from "./EkpayExcelUpload"
+
 import { Link } from "react-router-dom"
 
 interface UnionInfo {
@@ -369,7 +369,7 @@ const EkpayReports: React.FC = () => {
           <h4 className="card-title mb-0 text-primary">
             <i className="fas fa-chart-bar me-2"></i> Ekpay Reports
           </h4>
-          <EkpayExcelUpload />
+ 
          
                  <Link
                         to={`/dashboard/ekpay-report-list`}

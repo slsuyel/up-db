@@ -30,7 +30,7 @@ export default function EkpayExcelUpload() {
     };
 
     return (
-        <div className="d-flex justify-content-between align-items-center gap-3">
+        <div className="d-flex justify-content-end align-items-center gap-3">
 
             <Upload
                 beforeUpload={(file) => {

@@ -39,6 +39,7 @@ interface TUnionParishad {
   district_bn_name: string
   division_name: string
   division_bn_name: string
+  approved_sonod_count: number
   AKPAY_MER_REG_ID: string
   AKPAY_MER_PASS_KEY: string
 }
@@ -63,7 +64,7 @@ const UnionCreateByUpazila = () => {
   const [selectedUpazila, setSelectedUpazila] = useState<TUpazila | null>(null)
   const [upazilas, setUpazilas] = useState<TUpazila[]>([])
 
-  const VITE_BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
+  const VITE_BASE_API_URL = import.meta.env.VITE_BASE_API_URL
 
   const [form] = Form.useForm()
 
@@ -84,13 +85,13 @@ const UnionCreateByUpazila = () => {
       }).unwrap()
       console.log(res)
       if (res.status_code === 201) {
-        message.success("Union created successfully!")
+        message.success("ইউনিয়ন সফলভাবে তৈরি করা হয়েছে!")
       } else {
-        message.error(`Failed to create union: ${res.message || "Unknown error"}`)
+        message.error(`ইউনিয়ন তৈরি ব্যর্থ: ${res.message || "অজানা ত্রুটি"}`)
       }
     } catch (error: any) {
-      const errorMessage = error?.data?.message || error?.message || "An error occurred"
-      message.error(`Error: ${errorMessage}`)
+      const errorMessage = error?.data?.message || error?.message || "একটি ত্রুটি ঘটেছে"
+      message.error(`ত্রুটি: ${errorMessage}`)
     }
   }
 
@@ -101,13 +102,13 @@ const UnionCreateByUpazila = () => {
         token: localStorage.getItem("token"),
       }).unwrap()
       if (res.status_code === 200) {
-        message.success("Union Get successfully!")
+        message.success("ইউনিয়নগুলো সফলভাবে পাওয়া গেছে!")
       } else {
-        message.error(`Failed to create union: ${res.message || "Unknown error"}`)
+        message.error(`ডেটা পাওয়া যায়নি: ${res.message || "অজানা ত্রুটি"}`)
       }
     } catch (error: any) {
-      const errorMessage = error?.data?.message || error?.message || "An error occurred"
-      message.error(`Error: ${errorMessage}`)
+      const errorMessage = error?.data?.message || error?.message || "একটি ত্রুটি ঘটেছে"
+      message.error(`ত্রুটি: ${errorMessage}`)
     }
   }
 
@@ -118,7 +119,8 @@ const UnionCreateByUpazila = () => {
   }
 
   const HandleUpManage = (id: number) => {
-    console.log(id)
+    console.log("Manage union id:", id)
+    // এখানে প্রয়োজন অনুযায়ী রিডাইরেক্ট বা অন্য লজিক যোগ করতে পারো
   }
 
   const handleSubmit = async () => {
@@ -132,12 +134,16 @@ const UnionCreateByUpazila = () => {
       console.log(res)
 
       if (res.status_code == 200) {
-        message.success(`Union information updated successfully`)
+        message.success(`ইউনিয়নের তথ্য সফলভাবে আপডেট করা হয়েছে`)
         await HandleShowUnions()
+      } else {
+        message.error(`আপডেট ব্যর্থ: ${res.message || "অজানা ত্রুটি"}`)
       }
       setEkpayEditModal(false)
-    } catch (error) {
+    } catch (error: any) {
       console.error("Validation Failed:", error)
+      const errorMessage = error?.data?.message || error?.message || "একটি ত্রুটি ঘটেছে"
+      message.error(`ত্রুটি: ${errorMessage}`)
     }
   }
 
@@ -182,7 +188,7 @@ const UnionCreateByUpazila = () => {
                 disabled={isLoading}
                 onClick={HandleCreateUnions}
               >
-                Create Unions
+                ইউনিয়ন তৈরি করুন
               </Button>
             </div>
           </div>
@@ -195,7 +201,7 @@ const UnionCreateByUpazila = () => {
             <label htmlFor="">{selectedUpazila?.bn_name} উপজেলার ইউনিয়ন দেখুন</label>
             <div className="d-flex gap-2">
               <Button type="primary" loading={showing} disabled={showing} onClick={HandleShowUnions}>
-                Show Unions
+                ইউনিয়ন দেখুন
               </Button>
 
               <a
@@ -204,7 +210,7 @@ const UnionCreateByUpazila = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Download Pdf
+                পিডিএফ ডাউনলোড করুন
               </a>
               <a
                 className="btn btn-primary btn-sm text-white"
@@ -212,7 +218,7 @@ const UnionCreateByUpazila = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <i className="fa-solid fa-file-excel"></i> Download Exel
+                <i className="fa-solid fa-file-excel"></i> এক্সেল ডাউনলোড করুন
               </a>
             </div>
           </div>
@@ -223,14 +229,15 @@ const UnionCreateByUpazila = () => {
         <table className="table table-bordered table-striped">
           <thead>
             <tr>
-              <th>Full Name</th>
-              <th>Thana</th>
-              <th>District</th>
-              <th>Union Code</th>
-              <th>Phone Numbers</th>
-              <th>AKPAY_MER_REG_ID</th>
-              <th>AKPAY_MER_PASS_KEY</th>
-              <th colSpan={2}>Action</th>
+              <th>ইউনিয়নের নাম</th>
+              <th>থানা</th>
+              <th>জেলা</th>
+              <th>ইউনিয়ন কোড</th>
+              <th>ফোন নম্বরসমূহ</th>
+              <th>ইস্যুকৃত সনদের সংখ্যা</th>
+              <th>মার্চেন্ট রেজিস্ট্রেশন আইডি</th>
+              <th>মার্চেন্ট পাস কী</th>
+              <th colSpan={2}>অ্যাকশন</th>
             </tr>
           </thead>
           <tbody>
@@ -265,11 +272,12 @@ const UnionCreateByUpazila = () => {
                     </>
                   )}
                 </td>
+                <td>{union.approved_sonod_count}</td>
                 <td>{union.AKPAY_MER_REG_ID}</td>
                 <td>{union.AKPAY_MER_PASS_KEY}</td>
                 <td>
                   <button className="btn btn-primary btn-sm" onClick={() => HandleUpManage(union.id)}>
-                    Edit
+                    সম্পাদনা
                   </button>
                 </td>
                 <td>
@@ -280,7 +288,7 @@ const UnionCreateByUpazila = () => {
                       HandleUpEkpayCreadintial()
                     }}
                   >
-                    একপে সেটিং
+                    একপে সেটিংস
                   </button>
                 </td>
               </tr>
@@ -297,10 +305,10 @@ const UnionCreateByUpazila = () => {
           onCancel={handleCancel}
           footer={[
             <Button key="cancel" onClick={handleCancel}>
-              Cancel
+              বাতিল
             </Button>,
             <Button loading={updating} key="submit" type="primary" onClick={handleSubmit}>
-              Submit
+              সংরক্ষণ করুন
             </Button>,
           ]}
         >
@@ -316,32 +324,32 @@ const UnionCreateByUpazila = () => {
             <Form.Item
               className="my-1"
               name="AKPAY_MER_REG_ID"
-              label="Merchant Registration ID"
+              label="একপে মার্চেন্ট রেজিস্ট্রেশন আইডি"
               rules={[
                 {
                   required: false,
-                  message: "Please enter the Merchant Registration ID",
+                  message: "মার্চেন্ট রেজিস্ট্রেশন আইডি লিখুন",
                 },
               ]}
             >
-              <Input placeholder="Enter Merchant Registration ID" />
+              <Input placeholder="মার্চেন্ট রেজিস্ট্রেশন আইডি লিখুন" />
             </Form.Item>
 
             <Form.Item
               className="my-1"
               name="AKPAY_MER_PASS_KEY"
-              label="Merchant Pass Key"
+              label="একপে মার্চেন্ট পাস কী"
               rules={[
                 {
                   required: false,
-                  message: "Please enter the Merchant Pass Key",
+                  message: "মার্চেন্ট পাস কী লিখুন",
                 },
               ]}
             >
-              <Input placeholder="Enter Merchant Pass Key" />
+              <Input placeholder="মার্চেন্ট পাস কী লিখুন" />
             </Form.Item>
-            <Form.Item className="my-1" name="u_code" label="Union Code">
-              <Input placeholder="Enter Union Code" />
+            <Form.Item className="my-1" name="u_code" label="ইউনিয়ন কোড">
+              <Input placeholder="ইউনিয়ন কোড লিখুন" />
             </Form.Item>
           </Form>
         </Modal>

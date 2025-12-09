@@ -22,6 +22,8 @@ interface SonodReport {
   pending_count: number
   approved_count: number
   cancel_count: number
+  Last30DaysPending: number
+  Last7DaysPending: number
 }
 
 interface PaymentReport {
