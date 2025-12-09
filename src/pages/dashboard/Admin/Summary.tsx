@@ -55,16 +55,6 @@ const Summary = ({ data, isLoading }: { data: any; isLoading: boolean }) => {
       value: all.total_pending,
     },
     {
-      icon: newApplications,
-      title: "৭ দিনের নতুন আবেদন",
-      value: all.Last7DaysPending,
-    },
-    {
-      icon: newApplications,
-      title: "৩০ দিনের নতুন আবেদন",
-      value: all.Last30DaysPending,
-    },
-    {
       icon: approvedApplications,
       title: "ইস্যুকৃত সনদ",
       value: all.total_approved,
@@ -79,6 +69,31 @@ const Summary = ({ data, isLoading }: { data: any; isLoading: boolean }) => {
       title: "মোট আদায়কৃত ফি",
       value: all.total_amount,
     },
+
+
+      {
+      icon: newApplications,
+      title: "৭ দিনের নতুন আবেদন",
+      value: all.Last7DaysPending,
+    },
+    {
+      icon: newApplications,
+      title: "৩০ দিনের নতুন আবেদন",
+      value: all.Last30DaysPending,
+    },
+
+    {
+
+      icon: newApplications,
+      title: "৭ দিনের আগের নতুন আবেদন",
+      value: all.Before7DaysPending,
+    },
+    {
+      icon: newApplications,
+      title: "৩০ দিনের আগের নতুন আবেদন",
+      value: all.Before30DaysPending,
+    }
+
   ];
 
   return (

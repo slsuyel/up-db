@@ -24,6 +24,8 @@ interface SonodReport {
   cancel_count: number
   Last30DaysPending: number
   Last7DaysPending: number
+  Before7DaysPending: number
+  Before30DaysPending: number
 }
 
 interface PaymentReport {
