@@ -49,7 +49,7 @@ const UnionCreateByUpazila = () => {
   const [ekpayEditModal, setEkpayEditModal] = useState(false)
   const [selectedUnion, setSelectedUnion] = useState<TUnionParishad | null>(null)
   const navigate = useNavigate()
-  const user = useAppSelector((state: RootState) => state.user.user)
+  const user = useAppSelector((state: RootState) => state.user?.user)
 
   useEffect(() => {
     if (user?.position !== "Super Admin") {

@@ -18,8 +18,8 @@ interface SonodReport {
   pending_count: number
   approved_count: number
   cancel_count: number
-    Last30DaysPending: number
-  Last7DaysPending: number
+  last30DaysPending: number
+  last7DaysPending: number
 }
 
 interface PaymentReport {
@@ -99,8 +99,6 @@ const DividedReportSummary = ({ data, isLoading, adminTotals, title }: any) => {
   let totalCanceled = 0
   let totalPayments = 0
   let totalAmount = 0
-  let Last30DaysPending = 0
-  let Last7DaysPending = 0
 
   Object.entries(data).forEach(([, regionData]: any) => {
     totalPending += regionData?.totals?.total_pending || 0
