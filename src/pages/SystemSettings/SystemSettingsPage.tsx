@@ -86,7 +86,7 @@ const SystemSettingsPage: React.FC = () => {
     // case: raw is an object map OR { data: { ... } }
     if (typeof raw === "object") {
       if ((raw as any).data && typeof (raw as any).data === "object" && !Array.isArray((raw as any).data)) {
-        return { ...( (raw as any).data as Record<string, unknown> ) };
+        return { ...((raw as any).data as Record<string, unknown>) };
       }
       return { ...(raw as Record<string, unknown>) };
     }
@@ -243,7 +243,7 @@ const SystemSettingsPage: React.FC = () => {
   }
 
   return (
-    <Container fluid className="p-4">
+    <Container fluid className="p-2 p-md-4">
       <Row>
         <Col>
           <h2>System Settings</h2>

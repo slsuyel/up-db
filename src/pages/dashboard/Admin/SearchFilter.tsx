@@ -203,9 +203,9 @@ const SearchFilter: React.FC = () => {
 
   // Type assertion with proper null checking
   const admin: AdminReportData | undefined = (data as AdminReportResponse)?.data
-console.log(isUnion);
+  console.log(isUnion);
   return (
-    <div className="bg-white p-3 rounded">
+    <div className="bg-white p-2 p-md-3 rounded">
       <Breadcrumbs current=" সকল প্রতিবেদন" />
       <div className="row mx-auto">
         <div className="col-md-2">

@@ -70,20 +70,20 @@ const ApplicationForm = ({ user }: { user?: TApplicantData }) => {
   //   (user?.successor_list && JSON.parse(user?.successor_list)) || [];
 
 
-    const successorList = Array.isArray(user?.successor_list)
+  const successorList = Array.isArray(user?.successor_list)
     ? user?.successor_list
     : (() => {
-        try {
-          return JSON.parse(user?.successor_list || "[]");
-        } catch {
-          return [];
-        }
-      })();
+      try {
+        return JSON.parse(user?.successor_list || "[]");
+      } catch {
+        return [];
+      }
+    })();
 
 
 
   return (
-    <div className={`${!isDashboard ? "container my-3" : ""}`}>
+    <div className={`p-2 p-md-0 ${!isDashboard ? "container my-3" : ""}`}>
       <Form
         layout="vertical"
         onFinish={onFinish}

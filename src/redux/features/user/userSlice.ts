@@ -9,6 +9,7 @@ interface User {
   district_name: string | null;
   upazila_name: string | null;
   union_name: string | null;
+  image: string | null;
   created_at: string | null;
   updated_at: string | null;
 }

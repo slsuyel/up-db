@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import type React from "react"
 import { useState } from "react"
+import { Modal, Table, Button, Badge } from "react-bootstrap"
 
 // Type definitions
 interface RegionTotals {
@@ -36,341 +36,207 @@ interface RegionData {
   payment_reports?: PaymentReport[]
 }
 
-interface AdminTotals {
-  // Define the structure of admin totals based on your data
-  [key: string]: unknown
-}
-
-interface SummaryProps {
-  data: AdminTotals
-  isLoading: boolean
-}
-
-// Summary component placeholder - replace with your actual Summary component
-const Summary: React.FC<SummaryProps> = ({ isLoading }) => {
-  if (isLoading) return <div className="text-center">Loading summary...</div>
-  return (
-    <div className="card mb-4">
-      <div className="card-header">
-        <h5 className="card-title mb-0">Admin Summary</h5>
-      </div>
-      <div className="card-body">
-        <p className="card-text">Admin totals data would be displayed here</p>
-      </div>
-    </div>
-  )
-}
-
-const DividedReportSummary = ({ data, isLoading, adminTotals, title }: any) => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+const DividedReportSummary = ({ data, isLoading, title }: any) => {
+  const [showModal, setShowModal] = useState(false)
   const [selectedRegionData, setSelectedRegionData] = useState<RegionData | null>(null)
   const [selectedRegionName, setSelectedRegionName] = useState<string>("")
-
-  // Update the বিভাগ column text color - darker purple
-  const regionNameCellStyle = { backgroundColor: "#f3e8ff", color: "#5e35b1" }
-
-  // Update the মোট আবেদন column text color - darker orange
-  const totalApplicationsCellStyle = { backgroundColor: "#fff3e0", color: "#e65100" }
-
-  // Update the নতুন আবেদন column text color - darker teal
-  const newApplicationsCellStyle = { backgroundColor: "#e8f5f0", color: "#00796b" }
-
-  // Update the ইস্যুকৃত সনদ column text color - darker cyan
-  const issuedCertificatesCellStyle = { backgroundColor: "#e5f9fc", color: "#0277bd" }
-
-  // Update the বাতিলকৃত আবেদন column text color - darker red
-  const canceledApplicationsCellStyle = { backgroundColor: "#f8e7e9", color: "#b71c1c" }
-
-  // Update the মোট আদায়কৃত ফি column text color - darker green
-  const totalFeesCellStyle = { backgroundColor: "#e6f4ea", color: "#1b5e20" }
-
-  // Update the অ্যাকশন column text color - darker gray
-  const actionCellStyle = { backgroundColor: "#e9ecef", color: "#37474f" }
+  const [searchTerm, setSearchTerm] = useState("")
 
   if (isLoading) {
     return (
-      <div className="d-flex justify-content-center align-items-center p-5">
-        <p className="text-muted fs-5">বিভাগীয় রিপোর্ট লোড হচ্ছে...</p>
+      <div className="text-center p-5 mt-5">
+        <div className="spinner-grow text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+        <p className="mt-3 text-muted fw-semibold">বিভাগীয় রিপোর্ট প্রস্তুত করা হচ্ছে...</p>
       </div>
     )
   }
 
-  // Calculate totals for the table
+  // Calculate totals and filter data
   let totalPending = 0
   let totalApproved = 0
   let totalCanceled = 0
-  let totalPayments = 0
   let totalAmount = 0
 
-  Object.entries(data).forEach(([, regionData]: any) => {
+  const filteredEntries = Object.entries(data).filter(([name]: any) =>
+    name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  Object.values(data).forEach((regionData: any) => {
     totalPending += regionData?.totals?.total_pending || 0
     totalApproved += regionData?.totals?.total_approved || 0
     totalCanceled += regionData?.totals?.total_cancel || 0
-    totalPayments += regionData?.totals?.total_payments || 0
     totalAmount += Number.parseFloat(regionData?.totals?.total_amount || "0")
   })
 
-  // Function to open modal and set selected region data
   const openModal = (regionName: string, regionData: RegionData) => {
-    console.log("Opening modal for region:", regionName, "with data:", regionData)
     setSelectedRegionName(regionName)
     setSelectedRegionData(regionData)
-    setIsModalOpen(true)
-  }
-
-  // Function to close modal
-  const closeModal = () => {
-    setIsModalOpen(false)
-    setSelectedRegionData(null)
-    setSelectedRegionName("")
+    setShowModal(true)
   }
 
   return (
-    <div className="mt-4">
-      <h2 className="text-center mb-4 fw-semibold">{title}</h2>
-
-      {/* Render Admin Totals using the Summary component */}
-      {adminTotals && <Summary data={adminTotals} isLoading={isLoading} />}
-
-      {/* Display Division Summary as a Table */}
-      <div className="card">
-        <div className="card-header">
-          <h5 className="card-title mb-0">{title}</h5>
+    <div className="mt-5 pt-3">
+      <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
+        <div className="d-flex align-items-center gap-3">
+          <div className="p-2 bg-primary rounded-3 soft-shadow d-flex align-items-center justify-content-center" style={{ width: '45px', height: '45px' }}>
+            <i className="fa-solid fa-chart-column text-white"></i>
+          </div>
+          <div>
+            <h4 className="fw-bold text-dark mb-0 fs-4">
+              {title || "বিভাগীয় রিপোর্ট সারাংশ"}
+            </h4>
+            <p className="text-muted small mb-0 fw-medium">বিভাগ ভিত্তিক আবেদনের বিস্তারিত পরিসংখ্যান রিপোর্ট</p>
+          </div>
         </div>
-        <div className="card-body">
-          <div className="table-responsive">
-            <table className="table table-bordered table-hover">
-              <thead>
+
+        <div className="d-flex align-items-center gap-3">
+          <div className="position-relative search-container">
+            <i className="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted small"></i>
+            <input
+              type="text"
+              className="form-control ps-5 rounded-pill border-0 soft-shadow bg-white"
+              placeholder="বিভাগ খুঁজুন..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ width: '280px', height: '42px', fontSize: '14px' }}
+            />
+          </div>
+          <Badge bg="primary" className="p-2 px-3 rounded-pill bg-opacity-10 text-primary border border-primary border-opacity-10 fw-bold shadow-sm">
+            সর্বমোট বিভাগ: {Object.keys(data).length}
+          </Badge>
+        </div>
+      </div>
+
+      <div className="card border-0 soft-shadow rounded-4 overflow-hidden mb-5 premium-table-card">
+        <div className="table-responsive">
+          <Table hover className="align-middle mb-0 table-premium-dark">
+            <thead>
+              <tr className="bg-primary text-white">
+                <th className="ps-4 py-3 border-0 rounded-start-4">বিভাগ নাম</th>
+                <th className="text-center py-3 border-0">মোট আবেদন</th>
+                <th className="text-center py-3 border-0">নতুন আবেদন</th>
+                <th className="text-center py-3 border-0">ইস্যুকৃত সনদ</th>
+                <th className="text-center py-3 border-0">বাতিল আবেদন</th>
+                <th className="text-center py-3 border-0">সংগৃহীত ফি</th>
+                <th className="text-end pe-4 py-3 border-0 rounded-end-4">রিপোর্ট</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredEntries.map(([regionName, regionData]: any) => {
+                const totals = regionData?.totals
+                const totalApps = (totals?.total_pending || 0) + (totals?.total_approved || 0) + (totals?.total_cancel || 0)
+
+                return (
+                  <tr key={regionName} className="border-bottom border-light">
+                    <td className="ps-4 py-4">
+                      <span className="fw-bold text-dark d-block fs-6 mb-0">{regionName}</span>
+                      <span className="text-muted extra-small text-uppercase fw-semibold" style={{ fontSize: '10px', letterSpacing: '0.5px' }}>Division Records List</span>
+                    </td>
+                    <td className="text-center">
+                      <span className="badge-soft-primary fw-bold p-2 px-3 rounded-pill fs-7">
+                        {totalApps}
+                      </span>
+                    </td>
+                    <td className="text-center">
+                      <span className="badge-soft-warning fw-bold p-2 px-3 rounded-pill fs-7">
+                        {totals?.total_pending || 0}
+                      </span>
+                    </td>
+                    <td className="text-center">
+                      <span className="badge-soft-success fw-bold p-2 px-3 rounded-pill fs-7">
+                        {totals?.total_approved || 0}
+                      </span>
+                    </td>
+                    <td className="text-center">
+                      <span className="badge-soft-danger fw-bold p-2 px-3 rounded-pill fs-7">
+                        {totals?.total_cancel || 0}
+                      </span>
+                    </td>
+                    <td className="text-center">
+                      <div className="fw-bold text-primary fs-6">
+                        ৳ {parseFloat(totals?.total_amount || "0").toLocaleString()}
+                      </div>
+                    </td>
+                    <td className="text-end pe-4">
+                      <Button
+                        variant="primary"
+                        className="btn-sm rounded-pill px-4 fw-bold soft-shadow border-0 py-2 d-inline-flex align-items-center gap-2"
+                        onClick={() => openModal(regionName, regionData)}
+                        style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px', background: 'linear-gradient(45deg, #4e73df, #224abe)' }}
+                      >
+                        <i className="fa-solid fa-file-invoice small"></i> বিস্তারিত
+                      </Button>
+                    </td>
+                  </tr>
+                )
+              })}
+              {filteredEntries.length === 0 && (
                 <tr>
-                  <th scope="col" style={{ backgroundColor: "#6f42c1", color: "white" }} className="text-center">
-                    বিভাগ
-                  </th>
-                  <th scope="col" style={{ backgroundColor: "#fd7e14", color: "white" }} className="text-center">
-                    মোট আবেদন
-                  </th>
-                  <th scope="col" style={{ backgroundColor: "#20c997", color: "white" }} className="text-center">
-                    নতুন আবেদন
-                  </th>
-                  <th scope="col" style={{ backgroundColor: "#0dcaf0", color: "white" }} className="text-center">
-                    ইস্যুকৃত সনদ
-                  </th>
-                  <th scope="col" style={{ backgroundColor: "#dc3545", color: "white" }} className="text-center">
-                    বাতিলকৃত আবেদন
-                  </th>
-                  <th scope="col" style={{ backgroundColor: "#198754", color: "white" }} className="text-center">
-                    মোট আদায়কৃত ফি
-                  </th>
-                  <th scope="col" style={{ backgroundColor: "#6c757d", color: "white" }} className="text-center">
-                    অ্যাকশন
-                  </th>
+                  <td colSpan={7} className="text-center py-5">
+                    <i className="fa-solid fa-folder-open text-muted fs-1 mb-3 opacity-25"></i>
+                    <p className="text-muted mb-0 fw-medium">দুঃখিত, এই নামে কোন বিভাগ খুঁজে পাওয়া যায়নি</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+            <tfoot className="total-row-premium">
+              <tr className="bg-light">
+                <td className="ps-4 py-4 fw-bold fs-6 text-dark border-0 rounded-start-4">মোট ভিত্তিক পরিসংখ্যান রিপোর্ট</td>
+                <td className="text-center py-4 fs-5 fw-extrabold text-primary border-0">{totalPending + totalApproved + totalCanceled}</td>
+                <td className="text-center py-4 fs-5 fw-extrabold text-warning border-0">{totalPending}</td>
+                <td className="text-center py-4 fs-5 fw-extrabold text-success border-0">{totalApproved}</td>
+                <td className="text-center py-4 fs-5 fw-extrabold text-danger border-0">{totalCanceled}</td>
+                <td className="text-center py-4 fs-5 fw-extrabold text-primary border-0 bg-white shadow-sm rounded-3">৳ {totalAmount.toLocaleString()}</td>
+                <td className="pe-4 border-0 rounded-end-4"></td>
+              </tr>
+            </tfoot>
+          </Table>
+        </div>
+      </div>
+
+      <Modal show={showModal} onHide={() => setShowModal(false)} size="xl" centered scrollable>
+        <Modal.Header closeButton className="border-0 pb-0">
+          <Modal.Title className="fw-bold">{selectedRegionName} - বিস্তারিত রিপোর্ট</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="px-4 pb-4">
+          <div className="table-responsive rounded border border-light">
+            <Table hover className="align-middle mb-0">
+              <thead className="bg-light">
+                <tr>
+                  <th className="border-0 text-muted small fw-bold py-3">সনদের নাম</th>
+                  <th className="text-center border-0 text-muted small fw-bold py-3">অপেক্ষমাণ</th>
+                  <th className="text-center border-0 text-muted small fw-bold py-3">অনুমোদিত</th>
+                  <th className="text-center border-0 text-muted small fw-bold py-3">বাতিল</th>
+                  <th className="text-center border-0 text-muted small fw-bold py-3">পেমেন্টস</th>
+                  <th className="text-end border-0 text-muted small fw-bold py-3 pe-3">মোট অর্থ</th>
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(data).map(([regionName, regionData]: any, index) => {
-                  const regionTotals = regionData?.totals || {
-                    total_pending: 0,
-                    total_approved: 0,
-                    total_cancel: 0,
-                    total_payments: 0,
-                    total_amount: "0",
-                  }
-
+                {selectedRegionData?.sonod_reports?.map((report, idx) => {
+                  const payment = selectedRegionData.payment_reports?.find(p => p.sonod_type === report.sonod_name)
                   return (
-                    <tr key={regionName} style={{ backgroundColor: index % 2 === 0 ? "#f8f9fa" : "white" }}>
-                      <td className="fw-semibold" style={regionNameCellStyle}>
-                        {regionName}
-                      </td>
-                      <td style={totalApplicationsCellStyle} className="text-center">
-                        {regionTotals.total_pending + regionTotals.total_approved + regionTotals.total_cancel}
-                      </td>
-                      <td style={newApplicationsCellStyle} className="text-center">
-                        {regionTotals.total_pending}
-                      </td>
-                      <td style={issuedCertificatesCellStyle} className="text-center">
-                        {regionTotals.total_approved}
-                      </td>
-                      <td style={canceledApplicationsCellStyle} className="text-center">
-                        {regionTotals.total_cancel}
-                      </td>
-                      <td style={totalFeesCellStyle} className="text-center fw-bold">
-                        {regionTotals.total_amount}
-                      </td>
-                      <td style={actionCellStyle} className="text-center">
-                        <button
-                          type="button"
-                          className="btn btn-primary btn-sm"
-                          onClick={() => openModal(regionName, regionData)}
-                        >
-                          বিস্তারিত রিপোর্ট দেখুন
-                        </button>
+                    <tr key={idx}>
+                      <td className="fw-semibold text-dark py-3">{report.sonod_name}</td>
+                      <td className="text-center">{report.pending_count}</td>
+                      <td className="text-center text-success">{report.approved_count}</td>
+                      <td className="text-center text-danger">{report.cancel_count}</td>
+                      <td className="text-center">{payment?.total_payments || 0}</td>
+                      <td className="text-end fw-bold text-primary pe-3">
+                        ৳ {parseFloat(payment?.total_amount || "0").toLocaleString()}
                       </td>
                     </tr>
                   )
                 })}
               </tbody>
-              <tfoot>
-                <tr style={{ backgroundColor: "#343a40" }}>
-                  <th scope="row" className="text-white fw-bold text-center">
-                    মোট
-                  </th>
-                  <td className="fw-bold text-center" style={totalApplicationsCellStyle}>
-                    {totalPending + totalApproved + totalCanceled}
-                  </td>
-                  <td className="fw-bold text-center" style={newApplicationsCellStyle}>
-                    {totalPending}
-                  </td>
-                  
-                  <td className="fw-bold text-center" style={issuedCertificatesCellStyle}>
-                    {totalApproved}
-                  </td>
-                  <td className="fw-bold text-center" style={canceledApplicationsCellStyle}>
-                    {totalCanceled}
-                  </td>
-
-                  <td className="fw-bold text-center" style={totalFeesCellStyle}>
-                    {totalAmount.toFixed(2)}
-                  </td>
-                  <td className="text-center">-</td>
-                </tr>
-              </tfoot>
-            </table>
+            </Table>
           </div>
-        </div>
-      </div>
-
-      {/* Bootstrap Modal */}
-      {isModalOpen && (
-        <div className="modal fade show d-block" tabIndex={-1} style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-          <div className="modal-dialog modal-xl modal-dialog-scrollable">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">{selectedRegionName} - বিভাগীয় রিপোর্ট</h5>
-                <button type="button" className="btn-close" aria-label="Close" onClick={closeModal}></button>
-              </div>
-              <div className="modal-body">
-                {selectedRegionData && (
-                  <div className="table-responsive">
-                    <table className="table table-bordered table-striped table-hover">
-                      <thead>
-                        <tr>
-                          <th
-                            scope="col"
-                            rowSpan={2}
-                            className="align-middle text-center"
-                            style={{ backgroundColor: "#6c757d", color: "white" }}
-                          >
-                            সনদের নাম
-                          </th>
-                          <th
-                            scope="col"
-                            colSpan={3}
-                            className="text-center"
-                            style={{ backgroundColor: "#0d6efd", color: "white" }}
-                          >
-                            সনদ রিপোর্ট
-                          </th>
-                          <th
-                            scope="col"
-                            colSpan={2}
-                            className="text-center"
-                            style={{ backgroundColor: "#198754", color: "white" }}
-                          >
-                            পেমেন্ট রিপোর্ট
-                          </th>
-                        </tr>
-                        <tr>
-                          <th scope="col" style={{ backgroundColor: "#b6d7ff", color: "#0d47a1" }}>
-                            অপেক্ষমাণ
-                          </th>
-                          <th scope="col" style={{ backgroundColor: "#b6d7ff", color: "#0d47a1" }}>
-                            অনুমোদিত
-                          </th>
-                          <th scope="col" style={{ backgroundColor: "#b6d7ff", color: "#0d47a1" }}>
-                            বাতিল
-                          </th>
-                          <th scope="col" style={{ backgroundColor: "#c3e6cb", color: "#1b5e20" }}>
-                            পেমেন্টস
-                          </th>
-                          <th scope="col" style={{ backgroundColor: "#c3e6cb", color: "#1b5e20" }}>
-                            অর্থ
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {selectedRegionData.sonod_reports?.map((report, index) => {
-                          const paymentReport = selectedRegionData.payment_reports?.find(
-                            (payment) => payment.sonod_type === report.sonod_name,
-                          )
-
-                          return (
-                            <tr key={index} style={{ backgroundColor: index % 2 === 0 ? "#f8f9fa" : "white" }}>
-                              <td className="fw-semibold" style={{ backgroundColor: "#e9ecef", color: "#212529" }}>
-                                {report.sonod_name}
-                              </td>
-                              <td style={{ backgroundColor: "#f0f8ff", color: "#0d47a1" }}>{report.pending_count}</td>
-                              <td style={{ backgroundColor: "#f0f8ff", color: "#0d47a1" }}>{report.approved_count}</td>
-                              <td style={{ backgroundColor: "#f0f8ff", color: "#0d47a1" }}>{report.cancel_count}</td>
-                              <td style={{ backgroundColor: "#f0fff4", color: "#1b5e20" }}>
-                                {paymentReport ? paymentReport.total_payments : 0}
-                              </td>
-                              <td style={{ backgroundColor: "#f0fff4", color: "#1b5e20" }}>
-                                {paymentReport ? paymentReport.total_amount : "0"}
-                              </td>
-                            </tr>
-                          )
-                        })}
-                      </tbody>
-                      <tfoot>
-                        <tr style={{ backgroundColor: "#343a40" }}>
-                          <th scope="row" className="text-white fw-bold text-center">
-                            মোট
-                          </th>
-                          <td className="fw-bold text-center" style={{ backgroundColor: "#b6d7ff", color: "#0d47a1" }}>
-                            {selectedRegionData.sonod_reports?.reduce((sum, report) => sum + report.pending_count, 0) ||
-                              0}
-                          </td>
-                          <td className="fw-bold text-center" style={{ backgroundColor: "#b6d7ff", color: "#0d47a1" }}>
-                            {selectedRegionData.sonod_reports?.reduce(
-                              (sum, report) => sum + report.approved_count,
-                              0,
-                            ) || 0}
-                          </td>
-                          <td className="fw-bold text-center" style={{ backgroundColor: "#b6d7ff", color: "#0d47a1" }}>
-                            {selectedRegionData.sonod_reports?.reduce((sum, report) => sum + report.cancel_count, 0) ||
-                              0}
-                          </td>
-                          <td className="fw-bold text-center" style={{ backgroundColor: "#c3e6cb", color: "#1b5e20" }}>
-                            {selectedRegionData.payment_reports?.reduce(
-                              (sum, payment) => sum + payment.total_payments,
-                              0,
-                            ) || 0}
-                          </td>
-                          <td className="fw-bold text-center" style={{ backgroundColor: "#c3e6cb", color: "#1b5e20" }}>
-                            {selectedRegionData.payment_reports
-                              ?.reduce((sum, payment) => sum + Number.parseFloat(payment.total_amount || "0"), 0)
-                              .toFixed(2) || "0.00"}
-                          </td>
-                        </tr>
-                      </tfoot>
-                    </table>
-
-                    {(!selectedRegionData.sonod_reports || selectedRegionData.sonod_reports.length === 0) && (
-                      <div className="text-center py-5 text-muted">
-                        <p>কোন বিস্তারিত রিপোর্ট পাওয়া যায়নি</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={closeModal}>
-                  বন্ধ করুন
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+        </Modal.Body>
+        <Modal.Footer className="border-0 pt-0">
+          <Button variant="secondary" className="px-4" onClick={() => setShowModal(false)}>বন্ধ করুন</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   )
 }

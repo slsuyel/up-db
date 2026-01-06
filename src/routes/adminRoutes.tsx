@@ -21,6 +21,7 @@ import MaintenanceFees from "@/pages/dashboard/MaintenanceFees/MaintenanceFees";
 import SupportPage from "@/pages/Supports/Support";
 import SystemSettings from "@/pages/SystemSettings/SystemSettingsPage";
 import EkpayPaymentReportList from "@/pages/dashboard/Report/EkpayPaymentReportList";
+import NotFound from "@/pages/dashboard/NotFound";
 
 export const adminRoutes = [
   {
@@ -114,5 +115,9 @@ export const adminRoutes = [
   {
     path: "system-settings",
     element: <SystemSettings />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ];

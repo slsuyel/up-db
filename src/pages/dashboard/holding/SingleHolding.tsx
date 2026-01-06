@@ -59,9 +59,9 @@ const SingleHolding = () => {
     const holding: THolding = data?.data;
 
     return (
-        <div>
-            <div className="card">
-                <div className="card-body">
+        <div className="p-2 p-md-0">
+            <div className="card shadow-sm border-0">
+                <div className="card-body p-3 p-md-4">
                     <div className="d-flex justify-content-between mb-3">
                         <h5 className="card-title">
                             মালিক নিজে বসবাসকারী এর হোল্ডিং ট্যাক্স

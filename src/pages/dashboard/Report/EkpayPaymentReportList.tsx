@@ -128,7 +128,7 @@ const EkpayPaymentReportList: React.FC = () => {
   const paginationEntries = getPaginationEntries(lastPage || 1, page);
 
   return (
-    <div className="p-4">
+    <div className="p-2 p-md-4">
       {/* Pagination CSS */}
       <style>{`
         .custom-pagination .page-item .page-link {

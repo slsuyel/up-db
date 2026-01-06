@@ -4,7 +4,7 @@
 import useAllServices from "@/hooks/useAllServices"
 import { useState, useEffect } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
-import { Card, Button, Form, Badge, Spinner, Row, Col, Container } from "react-bootstrap"
+import { Card, Button, Form, Badge, Spinner, Row, Col } from "react-bootstrap"
 import { message, Tooltip } from "antd"
 
 interface SonodData {
@@ -142,7 +142,7 @@ export default function SonodSearch() {
   };
 
   return (
-    <div className="p-4 bg-light min-vh-100">
+    <div className="p-2 p-md-4 bg-light min-vh-100">
       <style>{`
                 .detail-label {
                     font-size: 13px;
@@ -276,7 +276,7 @@ export default function SonodSearch() {
                 <Tooltip title="কপি করতে ক্লিক করুন">
                   <p
                     className="text-muted mb-0 fw-semibold copyable-text"
-                    onClick={() => handleCopy(result.data.sonod_Id)}
+                    onClick={() => "id" in result.data && handleCopy(result.data.sonod_Id)}
                   >
                     সনদ আইডিঃ {result.data.sonod_Id} <i className="far fa-copy ms-1 small"></i>
                   </p>
@@ -295,16 +295,16 @@ export default function SonodSearch() {
                   <div className="mb-4">
                     <div className="detail-label"><i className="fas fa-user me-2"></i>আবেদনকারীর নাম</div>
                     <Tooltip title="কপি করতে ক্লিক করুন">
-                      <div className="detail-value copyable-text" onClick={() => handleCopy(result.data.applicant_name)}>
-                        {result.data.applicant_name}
+                      <div className="detail-value copyable-text" onClick={() => "id" in result.data && handleCopy(result.data.applicant_name)}>
+                        {"id" in result.data && result.data.applicant_name}
                       </div>
                     </Tooltip>
                   </div>
                   <div className="mb-4">
                     <div className="detail-label"><i className="fas fa-id-card me-2"></i>জাতীয় পরিচয়পত্র নম্বর</div>
                     <Tooltip title="কপি করতে ক্লিক করুন">
-                      <div className="detail-value copyable-text" onClick={() => handleCopy(result.data.applicant_national_id_number)}>
-                        {result.data.applicant_national_id_number}
+                      <div className="detail-value copyable-text" onClick={() => "id" in result.data && handleCopy(result.data.applicant_national_id_number)}>
+                        {"id" in result.data && result.data.applicant_national_id_number}
                       </div>
                     </Tooltip>
                   </div>
@@ -312,8 +312,8 @@ export default function SonodSearch() {
                     <div className="mb-4">
                       <div className="detail-label"><i className="fas fa-baby me-2"></i>জন্ম নিবন্ধন নম্বর</div>
                       <Tooltip title="কপি করতে ক্লিক করুন">
-                        <div className="detail-value copyable-text" onClick={() => handleCopy(result.data.applicant_birth_certificate_number)}>
-                          {result.data.applicant_birth_certificate_number}
+                        <div className="detail-value copyable-text" onClick={() => "id" in result.data && result.data.applicant_birth_certificate_number && handleCopy(result.data.applicant_birth_certificate_number)}>
+                          {"id" in result.data && result.data.applicant_birth_certificate_number}
                         </div>
                       </Tooltip>
                     </div>
@@ -321,8 +321,8 @@ export default function SonodSearch() {
                   <div className="mb-0">
                     <div className="detail-label"><i className="fas fa-venus-mars me-2"></i>লিঙ্গ</div>
                     <Tooltip title="কপি করতে ক্লিক করুন">
-                      <div className="detail-value copyable-text" onClick={() => handleCopy(result.data.applicant_gender)}>
-                        {result.data.applicant_gender}
+                      <div className="detail-value copyable-text" onClick={() => "id" in result.data && handleCopy(result.data.applicant_gender)}>
+                        {"id" in result.data && result.data.applicant_gender}
                       </div>
                     </Tooltip>
                   </div>
@@ -333,8 +333,8 @@ export default function SonodSearch() {
                   <div className="mb-4">
                     <div className="detail-label"><i className="fas fa-university me-2"></i>ইউনিয়ন</div>
                     <Tooltip title="কপি করতে ক্লিক করুন">
-                      <div className="detail-value copyable-text" onClick={() => handleCopy(result.data.unioun_name)}>
-                        {result.data.unioun_name}
+                      <div className="detail-value copyable-text" onClick={() => "id" in result.data && handleCopy(result.data.unioun_name)}>
+                        {"id" in result.data && result.data.unioun_name}
                       </div>
                     </Tooltip>
                   </div>
@@ -342,8 +342,8 @@ export default function SonodSearch() {
                     <div className="mb-4">
                       <div className="detail-label"><i className="fas fa-birthday-cake me-2"></i>জন্ম তারিখ</div>
                       <Tooltip title="কপি করতে ক্লিক করুন">
-                        <div className="detail-value copyable-text" onClick={() => handleCopy(result.data.applicant_date_of_birth)}>
-                          {result.data.applicant_date_of_birth}
+                        <div className="detail-value copyable-text" onClick={() => "id" in result.data && result.data.applicant_date_of_birth && handleCopy(result.data.applicant_date_of_birth)}>
+                          {"id" in result.data && result.data.applicant_date_of_birth}
                         </div>
                       </Tooltip>
                     </div>
@@ -351,16 +351,16 @@ export default function SonodSearch() {
                   <div className="mb-4">
                     <div className="detail-label"><i className="fas fa-calendar-alt me-2"></i>অর্থবছর</div>
                     <Tooltip title="কপি করতে ক্লিক করুন">
-                      <div className="detail-value copyable-text" onClick={() => handleCopy(result.data.orthoBchor)}>
-                        {result.data.orthoBchor}
+                      <div className="detail-value copyable-text" onClick={() => "id" in result.data && handleCopy(result.data.orthoBchor)}>
+                        {"id" in result.data && result.data.orthoBchor}
                       </div>
                     </Tooltip>
                   </div>
                   <div className="mb-0">
                     <div className="detail-label"><i className="fas fa-history me-2"></i>ইস্যু বছর</div>
                     <Tooltip title="কপি করতে ক্লিক করুন">
-                      <div className="detail-value copyable-text" onClick={() => handleCopy(result.data.year)}>
-                        {result.data.year}
+                      <div className="detail-value copyable-text" onClick={() => "id" in result.data && handleCopy(result.data.year)}>
+                        {"id" in result.data && result.data.year}
                       </div>
                     </Tooltip>
                   </div>
@@ -377,8 +377,8 @@ export default function SonodSearch() {
                     <div className="p-4 bg-white rounded-3 shadow-sm border-start border-4 border-primary">
                       <div className="detail-label text-primary mb-3"><i className="fas fa-users me-2"></i>উত্তরাধিকারী তালিকা</div>
                       <Tooltip title="কপি করতে ক্লিক করুন">
-                        <div className="detail-value copyable-text" style={{ fontSize: '16px', color: '#1e293b', lineHeight: '1.6' }} onClick={() => handleCopy(result.data.successor_list)}>
-                          {result.data.successor_list}
+                        <div className="detail-value copyable-text" style={{ fontSize: '16px', color: '#1e293b', lineHeight: '1.6' }} onClick={() => "id" in result.data && handleCopy(result.data.successor_list)}>
+                          {"id" in result.data && result.data.successor_list}
                         </div>
                       </Tooltip>
                     </div>
@@ -393,15 +393,14 @@ export default function SonodSearch() {
                 <div
                   className="text-primary fw-bold copyable-text px-4 py-2 bg-primary bg-opacity-10 rounded-3 shadow-sm mb-3 mb-md-0"
                   style={{ fontSize: '18px', border: '1px solid rgba(13, 110, 253, 0.3)' }}
-                  onClick={() => handleCopy(result.data.id.toString())}
+                  onClick={() => "id" in result.data && handleCopy(result.data.id.toString())}
                 >
                   <span className="small text-muted me-2" style={{ fontSize: '14px' }}>DATABASE ID:</span> {result.data.id} <i className="far fa-copy ms-2 small"></i>
                 </div>
               </Tooltip>
               <div className="d-flex gap-2 action-buttons">
                 <Button
-                  as={Link}
-                  to={`/dashboard/sonod/${encodeURIComponent(result.data.sonod_name)}/action/edit/${result.data.id}`}
+                  onClick={() => "id" in result.data && navigate(`/dashboard/sonod/${encodeURIComponent(result.data.sonod_name)}/action/edit/${result.data.id}`)}
                   variant="outline-info"
                   className="fw-bold"
                 >

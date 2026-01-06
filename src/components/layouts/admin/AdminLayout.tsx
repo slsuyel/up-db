@@ -1,96 +1,151 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Layout } from "antd";
-
+import React, { useState, useEffect } from "react";
+import { Layout, ConfigProvider, Drawer } from "antd";
 import { Outlet } from "react-router-dom";
-
-import Navbar from "./Navbar";
-import { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
+import Navbar from "./Navbar";
 import { useSiteSettingQuery } from "@/redux/api/auth/authApi";
 import { useAppDispatch } from "@/redux/features/hooks";
 import { setData, setIsUnion } from "@/redux/features/user/siteSettingSlice";
+
 const { Header, Content, Footer } = Layout;
-const UserLayout = () => {
-  const dispatch = useAppDispatch(); 
-  const token = localStorage.getItem(`token`)
-  const { data } = useSiteSettingQuery({token})
-  const theme = false;
-  const [scrollY, setScrollY] = useState(0);
+
+const AdminLayout: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const token = localStorage.getItem(`token`);
+  const { data } = useSiteSettingQuery({ token });
+
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
     if (data?.data) {
-      dispatch(setData(data.data)); 
-      const unionItem = data.data.find((item: { key: string; }) => item.key === 'union');
+      dispatch(setData(data.data));
+      const unionItem = data.data.find((item: any) => item.key === 'union');
       const isUnion = unionItem ? unionItem.value === 'true' : false;
-      dispatch(setIsUnion(isUnion));  
+      dispatch(setIsUnion(isUnion));
     }
   }, [data, dispatch]);
-  
-
-
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 992);
     };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-
   return (
-    <Layout >
-      <Sidebar />
-      <Layout>
-        <Header
-          style={{
-            display: "flex",
-            alignItems: "center",
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: "#38bdf8",
+          borderRadius: 8,
+        },
+      }}
+    >
+      <Layout style={{ minHeight: '100vh', background: '#f8fafc' }}>
+        {/* Desktop Sidebar - Side-load for fixed positioning */}
+        {!isMobile && (
+          <div style={{
+            width: "280px",
+            height: "100vh",
             position: "fixed",
-            // justifyContent: 'end',
-            width: "100%",
-            zIndex: 1000,
-            backgroundColor: !theme
-              ? scrollY > 0
-                ? "rgba(0, 0, 0, 0.8)"
-                : "#001529"
-              : scrollY > 0
-                ? "#fffcfc8a"
-                : "white",
+            left: 0,
+            top: 0,
+            zIndex: 1001,
+            flexShrink: 0
+          }}>
+            <Sidebar />
+          </div>
+        )}
 
-            backdropFilter: scrollY > 0 ? "blur(4px)" : "none",
-            transition: "background-color 0.3s, backdrop-filter 0.3s",
-          }}
-        >
-          <Navbar />
-        </Header>
-        <Content
-          style={{ margin: "24px 0px 0" }}
-          className={`${!theme ? "dark " : ""}`}
-        >
-          <div
+        {/* Mobile Sidebar (Drawer) */}
+        {isMobile && (
+          <Drawer
+            placement="left"
+            onClose={() => setIsMobileMenuOpen(false)}
+            open={isMobileMenuOpen}
+            styles={{ body: { padding: 0 } }}
+            width={280}
+            closable={false}
+          >
+            <Sidebar onClose={() => setIsMobileMenuOpen(false)} />
+          </Drawer>
+        )}
+
+        {/* Main Wrapper */}
+        <Layout style={{
+          marginLeft: isMobile ? 0 : "280px",
+          transition: "margin 0.2s cubic-bezier(0.645, 0.045, 0.355, 1)",
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          background: '#f8fafc'
+        }}>
+          <Header
             style={{
-              padding: 24,
-              minHeight: 360,
-              marginTop: "50px",
+              padding: 0,
+              height: "70px",
+              background: "#1e293b",
+              position: "fixed",
+              top: 0,
+              right: 0,
+              zIndex: 1000,
+              width: isMobile ? "100%" : "calc(100% - 280px)",
+              transition: "width 0.2s cubic-bezier(0.645, 0.045, 0.355, 1)",
+              lineHeight: "normal",
             }}
           >
-            <Outlet />
-          </div>
-        </Content>
-        <Footer className={`${!theme ? "dark border-top" : ""}`}>
-          <footer>
-            <div className="float-right d-none d-sm-inline">Version 1.0.0 </div>
-            <strong>Copyright © 2020-2026 সফটওয়েব সিস্টেম সল্যুশন</strong>
-            {""} || All rights reserved.
-          </footer>
-        </Footer>
+            <Navbar onMenuClick={() => setIsMobileMenuOpen(true)} />
+          </Header>
+
+          <Content
+            style={{
+              padding: isMobile ? '8px' : '24px',
+              marginTop: '70px',
+              flex: 1,
+              background: 'transparent'
+            }}
+          >
+            <div
+              className="animate__animated animate__fadeIn"
+              style={{
+                padding: isMobile ? '12px' : '30px',
+                background: '#fff',
+                borderRadius: '16px',
+                boxShadow: '0 4px 25px rgba(0,0,0,0.02)',
+                minHeight: '100%',
+              }}
+            >
+              <Outlet />
+            </div>
+          </Content>
+
+          <Footer
+            style={{
+              textAlign: 'center',
+              padding: '24px',
+              background: '#fff',
+              borderTop: '1px solid rgba(0, 0, 0, 0.05)',
+              color: 'rgba(0,0,0,0.45)',
+              fontSize: '13px'
+            }}
+          >
+            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 container-fluid">
+              <div>
+                <strong>Copyright © 2026</strong> || সফটওয়েব সিস্টেম সল্যুশন
+              </div>
+              <div style={{ fontWeight: 500 }}>
+                Digital Union Management System v1.2.0
+              </div>
+            </div>
+          </Footer>
+        </Layout>
       </Layout>
-    </Layout>
+    </ConfigProvider>
   );
 };
 
-export default UserLayout;
+export default AdminLayout;

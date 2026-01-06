@@ -44,7 +44,7 @@ const UnionReports = () => {
   };
 
   return (
-    <div className="container bg-white p-4 rounded shadow-sm">
+    <div className="bg-white p-2 p-md-4 rounded shadow-sm">
       <Breadcrumbs current="লেনদেনের প্রতিবেদন" />
       <h4 className="mb-4 border-bottom pb-2 text-primary">
         {" "}

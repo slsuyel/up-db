@@ -49,7 +49,7 @@ const HoldingTax = () => {
   };
 
   return (
-    <div className="card p-3 border-0">
+    <div className="card p-2 p-md-3 border-0">
       <Breadcrumbs current="হোল্ডিং ট্যাক্স" />
 
       <div className="col-md-12 mb-3">

@@ -44,7 +44,7 @@ const HoldingAdd = () => {
   };
 
   return (
-    <div className="card p-4 mt-4">
+    <div className="card p-2 p-md-4 mt-2 mt-md-4 border-0 shadow-sm">
       <h4 className="mb-3">হোল্ডিং ট্যাক্স</h4>
       <Form
         form={form}

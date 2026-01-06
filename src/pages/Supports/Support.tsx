@@ -146,7 +146,7 @@ const SupportPage: React.FC = () => {
     }
 
     return (
-        <div className="p-4">
+        <div className="p-2 p-md-4">
             <style>{`
                 .support-table {
                     font-size: 15px;

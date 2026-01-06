@@ -39,11 +39,11 @@ const HoldingShow = () => {
   return (
     <>
       <Breadcrumbs current="হোল্ডিং ট্যাক্স" />
-      <div className="col-12 row mx-auto">
-        <div className="card">
-          <div className="card-header">
-            <div className="d-flex justify-content-between align-items-center">
-              <h3>হোল্ডিং ট্যাক্স</h3>
+      <div className="col-12 p-2 p-md-0">
+        <div className="card shadow-sm border-0">
+          <div className="card-header bg-white py-3">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+              <h3 className="mb-0">হোল্ডিং ট্যাক্স</h3>
               <div>
                 <Link
                   to="/holding/tax/bokeya/list?word=1&union=test"
@@ -52,36 +52,27 @@ const HoldingShow = () => {
                   className="btn btn-success"
                 >
                   বকেয়া রিপোর্ট
-                </Link>{" "}
-                {/* <Link
-                                    to={`/dashboard/holding/list/add/${word}`}
-                                    className="btn btn-info"
-                                >
-                                    হোল্ডিং ট্যাক্স যোগ করুন
-                                </Link> */}
+                </Link>
               </div>
             </div>
             <form
               onSubmit={handleSearch}
-              className="d-flex gap-4 my-4 align-items-center"
+              className="row g-3 my-3"
             >
-              <div className="form-group mt-0 w-50">
-                <div className="d-flex">
-                  <input
-                    type="text"
-                    id="userdata"
-                    placeholder="এখানে আপনার হোল্ডিং নং/নাম/জাতীয় পরিচয় পত্র নম্বর/মোবাইল নম্বর (যে কোন একটি তথ্য) এন্ট্রি করুন"
-                    className="form-control"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
+              <div className="col-12 col-md-9">
+                <input
+                  type="text"
+                  id="userdata"
+                  placeholder="খুঁজুন (হোল্ডিং নং/নাম/এনআইডি/মোবাইল)"
+                  className="form-control"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-              <div className="form-group text-center mt-0">
+              <div className="col-12 col-md-3">
                 <button
                   type="submit"
-                  className="btn btn-info text-center"
-                  style={{ fontSize: "20px", padding: "5px 23px" }}
+                  className="btn btn-info w-100"
                 >
                   খুঁজুন
                 </button>
