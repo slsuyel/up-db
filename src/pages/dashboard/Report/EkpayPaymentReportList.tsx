@@ -8,6 +8,7 @@ import {
 import AddressSelectorUnion from "@/components/reusable/AddressSelectorUnion";
 import PouroLocationSelector from "@/components/reusable/PouroLocationSelector";
 import EkpayExcelUpload from "./EkpayExcelUpload";
+import EkpayGoogleSheetUpload from "./EkpayGoogleSheetUpload";
 
 const formatCurrency = (value: any) => {
   const n = Number(value ?? 0);
@@ -105,10 +106,10 @@ const EkpayPaymentReportList: React.FC = () => {
         prev.map((row) =>
           String(row.id) === idStr
             ? {
-                ...row,
-                server_amount: serverAmount ?? row.server_amount,
-                difference_amount: differenceAmount ?? row.difference_amount,
-              }
+              ...row,
+              server_amount: serverAmount ?? row.server_amount,
+              difference_amount: differenceAmount ?? row.difference_amount,
+            }
             : row
         )
       );
@@ -141,40 +142,132 @@ const EkpayPaymentReportList: React.FC = () => {
           background: #0d6efd !important;
           color: #fff !important;
         }
+        @media (max-width: 768px) {
+          .report-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+          }
+          .upload-buttons {
+            width: 100%;
+            justify-content: flex-start !important;
+            flex-wrap: wrap;
+          }
+          .upload-buttons > div {
+            flex: 1;
+          }
+          .upload-buttons button {
+            width: 100%;
+          }
+          .filter-buttons {
+            flex-direction: column;
+          }
+          .filter-buttons button {
+            width: 100%;
+          }
+          .table-responsive {
+             border: none;
+          }
+          .table-responsive table, 
+          .table-responsive thead, 
+          .table-responsive tbody, 
+          .table-responsive th, 
+          .table-responsive td, 
+          .table-responsive tr {
+            display: block;
+          }
+          .table-responsive thead tr {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+          }
+          .table-responsive tr {
+            border: 1px solid #dee2e6;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            background: #fff;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+          }
+          .table-responsive td {
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50% !important;
+            text-align: right !important;
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+            min-height: 40px;
+          }
+          .table-responsive td:last-child {
+            border-bottom: 0;
+          }
+          .table-responsive td:before {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 45%;
+            padding-right: 10px;
+            white-space: nowrap;
+            content: attr(data-label);
+            font-weight: bold;
+            text-align: left;
+            color: #666;
+          }
+        }
       `}</style>
 
-      <h3 className="mb-3">একপে পেমেন্ট রিপোর্ট</h3>
+      <div className="d-flex justify-content-between align-items-center mb-4 report-header">
+        <h3 className="mb-0 text-primary fw-bold">একপে পেমেন্ট রিপোর্ট</h3>
+        <div className="d-flex gap-2 upload-buttons">
+          <EkpayGoogleSheetUpload />
+          <EkpayExcelUpload />
+        </div>
+      </div>
 
-     
 
-      <Card className="mb-4 shadow-sm">
+
+      <Card className="mb-4 shadow-sm border-0 bg-light">
         <Card.Body>
-          <div className="row">
-            <div className="col-md-12 mb-3">
-              {isUnion ? (
-                <AddressSelectorUnion
-                  onUnionChange={(union) => setSelectedUnion(union?.name || "")}
-                />
-              ) : (
-                <PouroLocationSelector
-                  onUnionChange={(union) => setSelectedUnion(union?.name || "")}
-                  showLabels
-                />
-              )}
+          <div className="row g-3 align-items-end">
+            <div className="col-12">
+              <label className="form-label fw-bold mb-2">ইউনিয়ন বাছাই করুন</label>
+              <div className="bg-white p-3 rounded border">
+                {isUnion ? (
+                  <AddressSelectorUnion
+                    onUnionChange={(union) => setSelectedUnion(union?.name || "")}
+                  />
+                ) : (
+                  <PouroLocationSelector
+                    onUnionChange={(union) => setSelectedUnion(union?.name || "")}
+                    showLabels
+                  />
+                )}
+              </div>
             </div>
 
-            <div className="col-md-6 mb-3 text-md-start">
+            <div className="col-12 d-flex justify-content-center gap-2 mt-3 filter-buttons">
               <Button
                 onClick={handleSearch}
                 disabled={!selectedUnion || isFetching}
                 variant="primary"
-                className="me-2"
+                className="px-5 shadow-sm btn-lg"
               >
-                {isFetching ? "অনুসন্ধান চলছে..." : "অনুসন্ধান করুন"}
+                {isFetching ? (
+                  <>
+                    <Spinner as="span" animation="border" size="sm" className="me-2" />
+                    অনুসন্ধান চলছে...
+                  </>
+                ) : (
+                  <>
+                    <i className="fas fa-search me-2"></i> অনুসন্ধান করুন
+                  </>
+                )}
               </Button>
 
               <Button
                 variant="outline-secondary"
+                className="px-4 btn-lg"
                 onClick={() => {
                   setSelectedUnion("");
                   setPage(1);
@@ -185,139 +278,142 @@ const EkpayPaymentReportList: React.FC = () => {
                 রিসেট করুন
               </Button>
             </div>
-
-
-            <div className="col-md-6 mb-3 text-md-end">
-                       <EkpayExcelUpload />
-            </div>
-
-
-
           </div>
         </Card.Body>
       </Card>
 
-      <Card className="shadow-sm">
-        <Card.Body>
-          {isLoading || isFetching ? (
-            <div className="text-center my-4">
-              <Spinner animation="border" />
-              <div>লোড হচ্ছে...</div>
-            </div>
-          ) : isError ? (
-            <div className="text-danger">ডেটা লোড করতে সমস্যা হয়েছে।</div>
-          ) : (
-            <>
-              <div className="table-responsive">
-                <Table striped hover bordered className="table-sm">
-                  <thead className="table-dark">
-                    <tr>
-                      <th>আইডি</th>
-                      <th>ইউনিয়ন</th>
-                      <th>শুরুর তারিখ</th>
-                      <th>শেষ তারিখ</th>
-                      <th className="text-end">একপে টাকা</th>
-                      <th className="text-end">সার্ভার টাকা</th>
-                      <th className="text-end">ডিফারেন্স</th>
-                      <th>হিসাব</th>
-                      <th>তৈরির সময়</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {localReports.length === 0 ? (
+      {(isLoading || isFetching || localReports.length > 0) && (
+        <Card className="shadow-sm border-0">
+          <Card.Body>
+            {isLoading || isFetching ? (
+              <div className="text-center my-4">
+                <Spinner animation="border" />
+                <div>লোড হচ্ছে...</div>
+              </div>
+            ) : isError ? (
+              <div className="text-danger">ডেটা লোড করতে সমস্যা হয়েছে।</div>
+            ) : (
+              <>
+                <div className="table-responsive">
+                  <Table striped hover bordered className="table-sm">
+                    <thead className="table-dark">
                       <tr>
-                        <td colSpan={9} className="text-center py-4">
-                          কোন তথ্য পাওয়া যায়নি।
-                        </td>
+                        <th>আইডি</th>
+                        <th>ইউনিয়ন</th>
+                        <th>শুরুর তারিখ</th>
+                        <th>শেষ তারিখ</th>
+                        <th className="text-end">একপে টাকা</th>
+                        <th className="text-end">সার্ভার টাকা</th>
+                        <th className="text-end">ডিফারেন্স</th>
+                        <th>হিসাব</th>
+                        <th>তৈরির সময়</th>
                       </tr>
-                    ) : (
-                      localReports.map((item) => {
-                        const idStr = String(item.id);
-                        const diff = Number(item.difference_amount ?? 0);
-                        const isRowLoading = loadingCalcIds.has(idStr);
+                    </thead>
 
-                        return (
-                          <tr key={item.id}>
-                            <td>{item.id}</td>
-                            <td>{item.union}</td>
-                            <td>{item.start_date}</td>
-                            <td>{item.end_date}</td>
-                            <td className="text-end">{formatCurrency(item.ekpay_amount)}</td>
-                            <td className="text-end">{formatCurrency(item.server_amount)}</td>
+                    <tbody>
+                      {localReports.length === 0 ? (
+                        <tr>
+                          <td colSpan={9} className="text-center py-4">
+                            কোন তথ্য পাওয়া যায়নি।
+                          </td>
+                        </tr>
+                      ) : (
+                        localReports.map((item) => {
+                          const idStr = String(item.id);
+                          const diff = Number(item.difference_amount ?? 0);
+                          const isRowLoading = loadingCalcIds.has(idStr);
 
-                            <td className="text-end">
-                              <Badge bg={diff > 0 ? "success" : diff < 0 ? "danger" : "secondary"}>
-                                {formatCurrency(diff)}
-                              </Badge>
-                            </td>
+                          return (
+                            <tr key={item.id}>
+                              <td data-label="আইডি">{item.id}</td>
+                              <td data-label="ইউনিয়ন">{item.union}</td>
+                              <td data-label="শুরুর তারিখ">{item.start_date}</td>
+                              <td data-label="শেষ তারিখ">{item.end_date}</td>
+                              <td data-label="একপে টাকা" className="text-end">{formatCurrency(item.ekpay_amount)}</td>
+                              <td data-label="সার্ভার টাকা" className="text-end">{formatCurrency(item.server_amount)}</td>
 
-                            <td className="text-end">
-                              <Button
-                                size="sm"
-                                disabled={isRowLoading}
-                                onClick={() => handleCalculateServerAmount(item.id)}
-                              >
-                                {isRowLoading ? (
-                                  <>
-                                    <Spinner
-                                      as="span"
-                                      animation="border"
-                                      size="sm"
-                                      className="me-1"
-                                    />
-                                    হিসাব হচ্ছে...
-                                  </>
-                                ) : (
-                                  "হিসাব করুন"
-                                )}
-                              </Button>
-                            </td>
+                              <td data-label="ডিফারেন্স" className="text-end">
+                                <Badge bg={diff > 0 ? "success" : diff < 0 ? "danger" : "secondary"}>
+                                  {formatCurrency(diff)}
+                                </Badge>
+                              </td>
 
-                            <td>{formatDate(item.created_at)}</td>
-                          </tr>
-                        );
-                      })
+                              <td data-label="হিসাব" className="text-end">
+                                <Button
+                                  size="sm"
+                                  disabled={isRowLoading}
+                                  onClick={() => handleCalculateServerAmount(item.id)}
+                                >
+                                  {isRowLoading ? (
+                                    <>
+                                      <Spinner
+                                        as="span"
+                                        animation="border"
+                                        size="sm"
+                                        className="me-1"
+                                      />
+                                      হিসাব হচ্ছে...
+                                    </>
+                                  ) : (
+                                    "হিসাব করুন"
+                                  )}
+                                </Button>
+                              </td>
+
+                              <td data-label="তৈরির সময়">{formatDate(item.created_at)}</td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </Table>
+                </div>
+
+                <div className="d-flex justify-content-between align-items-center mt-3">
+                  <small className="text-muted">
+                    পৃষ্ঠা {page} / {lastPage}
+                  </small>
+
+                  <Pagination className="mb-0 pagination-sm custom-pagination">
+                    <Pagination.Prev
+                      onClick={() => handlePageChange(page - 1)}
+                      disabled={page <= 1}
+                    />
+
+                    {paginationEntries.map((entry, idx) =>
+                      entry === "..." ? (
+                        <Pagination.Ellipsis key={idx} disabled />
+                      ) : (
+                        <Pagination.Item
+                          key={entry}
+                          active={entry === page}
+                          onClick={() => handlePageChange(Number(entry))}
+                        >
+                          {entry}
+                        </Pagination.Item>
+                      )
                     )}
-                  </tbody>
-                </Table>
-              </div>
 
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <small className="text-muted">
-                  পৃষ্ঠা {page} / {lastPage}
-                </small>
+                    <Pagination.Next
+                      onClick={() => handlePageChange(page + 1)}
+                      disabled={page >= lastPage}
+                    />
+                  </Pagination>
+                </div>
+              </>
+            )}
+          </Card.Body>
+        </Card>
+      )}
 
-                <Pagination className="mb-0 pagination-sm custom-pagination">
-                  <Pagination.Prev
-                    onClick={() => handlePageChange(page - 1)}
-                    disabled={page <= 1}
-                  />
-
-                  {paginationEntries.map((entry, idx) =>
-                    entry === "..." ? (
-                      <Pagination.Ellipsis key={idx} disabled />
-                    ) : (
-                      <Pagination.Item
-                        key={entry}
-                        active={entry === page}
-                        onClick={() => handlePageChange(Number(entry))}
-                      >
-                        {entry}
-                      </Pagination.Item>
-                    )
-                  )}
-
-                  <Pagination.Next
-                    onClick={() => handlePageChange(page + 1)}
-                    disabled={page >= lastPage}
-                  />
-                </Pagination>
-              </div>
-            </>
-          )}
-        </Card.Body>
-      </Card>
+      {localReports.length === 0 && !isLoading && !isFetching && (
+        <div className="text-center py-5">
+          <div className="mb-3">
+            <i className="fas fa-search text-muted" style={{ fontSize: '3rem' }}></i>
+          </div>
+          <p className="text-muted">তালিক দেখতে ইউনিয়ন নির্বাচন করে অনুসন্ধান করুন</p>
+        </div>
+      )}
     </div>
   );
 };

@@ -42,10 +42,18 @@ const paymentApi = apiSlice.injectEndpoints({
       invalidatesTags: ["holding_pay"],
     }),
     ekpayReportUpload: builder.mutation({
-      query: ({formData,token}) => ({
+      query: ({ formData, token }) => ({
         url: `admin/ekpay-reports/excel/upload`,
         method: "POST",
         body: formData,
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    }),
+    ekpayGoogleSheetUpload: builder.mutation({
+      query: ({ data, token }) => ({
+        url: `admin/ekpay-reports/v2/google-sheet/upload`,
+        method: "POST",
+        body: data,
         headers: { Authorization: `Bearer ${token}` },
       }),
     }),
@@ -58,4 +66,5 @@ export const {
   useFailedPaymentQuery,
   usePayTaxMutation,
   useEkpayReportUploadMutation,
+  useEkpayGoogleSheetUploadMutation,
 } = paymentApi;

@@ -8,15 +8,18 @@ export const EkpayApis = apiSlice.injectEndpoints({
 
         // get Ekpay payment report list
         getEkpayList: builder.query<{ data: any }, { unionName: string, page: number }>({
-            query: ({ unionName, page }) => ({
-                url: `/admin/ekpay-reports/union/${unionName}?page=${page}`,
-                headers: {
-                    authorization: `Bearer ${token}`,
-                },
-            }),
+            query: ({ unionName, page }) => {
+                const sanitizedUnion = unionName.replace(/\s+/g, '').toLowerCase();
+                return {
+                    url: `/admin/ekpay-reports/union/${sanitizedUnion}?page=${page}`,
+                    headers: {
+                        authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                };
+            },
         }),
 
- 
+
         // get My server amount
         getMyServerAmount: builder.query<{ data: any }, { id: string }>({
             query: ({ id }) => ({
@@ -32,12 +35,12 @@ export const EkpayApis = apiSlice.injectEndpoints({
 
 
     }),
-    overrideExisting: false, 
+    overrideExisting: false,
 });
 
 export const {
     useLazyGetEkpayListQuery,
     useLazyGetMyServerAmountQuery,
-} = EkpayApis ;
+} = EkpayApis;
 
-export default EkpayApis ;
+export default EkpayApis;

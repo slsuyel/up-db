@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useGetAllSupportsQuery, useUpdateSupportStatusMutation } from "@/redux/api/supports/supportsApi";
-import { Modal, Form, Badge } from "react-bootstrap";
+import { Table, Modal, Form, Badge, Card, Button, Spinner } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button } from "antd";
+import { message, Tooltip } from "antd";
 import { useAppSelector } from "@/redux/features/hooks";
 import { RootState } from "@/redux/features/store";
+import { useNavigate } from "react-router-dom";
 
 interface Support {
     id: number;
@@ -25,18 +26,29 @@ const SupportPage: React.FC = () => {
     const isUnion = useAppSelector(
         (state: RootState) => state.siteSetting.isUnion
     );
+    const navigate = useNavigate();
     const { data, isLoading, isError, refetch } = useGetAllSupportsQuery(undefined);
     const [updateSupportStatus, { isLoading: updating }] = useUpdateSupportStatusMutation();
 
     const [showModal, setShowModal] = useState(false);
     const [selectedSupport, setSelectedSupport] = useState<Support | null>(null);
     const [status, setStatus] = useState<string>("pending");
-    const [message, setMessage] = useState<string>("");
+    const [messageText, setMessageText] = useState<string>("");
+
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [statusFilter, setStatusFilter] = useState<string>("all");
+
+    const handleCopy = (text: string) => {
+        if (text) {
+            navigator.clipboard.writeText(text);
+            message.success("ক্লিপবোর্ডে কপি হয়েছে!");
+        }
+    };
 
     const handleOpenModal = (support: Support) => {
         setSelectedSupport(support);
         setStatus(support.status);
-        setMessage("");
+        setMessageText("");
         setShowModal(true);
     };
 
@@ -46,7 +58,7 @@ const SupportPage: React.FC = () => {
                 const res = await updateSupportStatus({
                     support_id: selectedSupport.id,
                     status,
-                    message,
+                    message: messageText,
                 }).unwrap();
 
                 console.log(res);
@@ -63,16 +75,56 @@ const SupportPage: React.FC = () => {
     };
 
     const renderStatusBadge = (status: string) => {
+        const badgeStyle = { fontSize: '14px', padding: '8px 15px', fontWeight: '700', minWidth: '120px' };
         switch (status) {
             case "pending":
-                return <Badge bg="warning">Pending</Badge>;
+                return <Badge bg="warning" text="dark" className="rounded-pill shadow-sm border border-warning" style={badgeStyle}><i className="fas fa-history fa-spin me-2"></i> পেন্ডিং</Badge>;
             case "reviewed":
-                return <Badge bg="info">Reviewed</Badge>;
+                return <Badge bg="info" className="rounded-pill shadow-sm border border-info" style={badgeStyle}><i className="fas fa-search me-2"></i> চেক করা হচ্ছে</Badge>;
             case "resolved":
-                return <Badge bg="success">Resolved</Badge>;
+                return <Badge bg="success" className="rounded-pill shadow-sm border border-success" style={badgeStyle}><i className="fas fa-check-double me-2"></i> সমাধান হয়েছে</Badge>;
             default:
-                return <Badge bg="secondary">{status}</Badge>;
+                return <Badge bg="secondary" className="rounded-pill shadow-sm" style={badgeStyle}><i className="fas fa-info-circle me-2"></i> {status}</Badge>;
         }
+    };
+
+    const filteredData = data?.data.filter((support: Support) => {
+        const matchesSearch =
+            support.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            support.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            support.phone.includes(searchTerm) ||
+            support.support_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (support.sonod_id && support.sonod_id.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (support.union_name && support.union_name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+        const matchesStatus = statusFilter === "all" || support.status === statusFilter;
+
+        return matchesSearch && matchesStatus;
+    }) || [];
+
+    const renderTypeBadge = (type: string) => {
+        const typeLower = type ? type.toLowerCase() : "";
+        const badgeStyle = { fontSize: '13px', padding: '7px 15px', fontWeight: '700', letterSpacing: '0.3px' };
+
+        if (typeLower.includes("payment") || typeLower.includes("পেমেন্ট") || typeLower.includes("টাকা")) {
+            return <Badge bg="success" className="rounded-pill shadow-sm border border-success" style={badgeStyle}><i className="fas fa-wallet me-2"></i> {type}</Badge>;
+        } else if (typeLower.includes("tech") || typeLower.includes("টেকনিক্যাল") || typeLower.includes("সফটওয়্যার")) {
+            return <Badge bg="danger" className="rounded-pill shadow-sm border border-danger" style={badgeStyle}><i className="fas fa-microchip me-2"></i> {type}</Badge>;
+        } else if (typeLower.includes("sonod") || typeLower.includes("সনদ") || typeLower.includes("সার্টিফিকেট")) {
+            return <Badge bg="primary" className="rounded-pill shadow-sm border border-primary" style={badgeStyle}><i className="fas fa-file-contract me-2"></i> {type}</Badge>;
+        } else if (typeLower.includes("edit") || typeLower.includes("এডিট") || typeLower.includes("সংশোধন")) {
+            return <Badge bg="warning" text="dark" className="rounded-pill shadow-sm border border-warning" style={badgeStyle}><i className="fas fa-pen-nib me-2"></i> {type}</Badge>;
+        } else if (typeLower.includes("login") || typeLower.includes("লগইন") || typeLower.includes("পাসওয়ার্ড")) {
+            return <Badge bg="dark" className="rounded-pill shadow-sm border border-light" style={badgeStyle}><i className="fas fa-user-lock me-2"></i> {type}</Badge>;
+        } else if (typeLower.includes("mobile") || typeLower.includes("মোবাইল") || typeLower.includes("sms")) {
+            return <Badge bg="info" className="rounded-pill shadow-sm border border-info" style={badgeStyle}><i className="fas fa-sms me-2"></i> {type}</Badge>;
+        } else if (typeLower.includes("complain") || typeLower.includes("অভিযোগ") || typeLower.includes("সমস্যা")) {
+            return <Badge bg="danger" className="rounded-pill shadow-sm border border-danger" style={badgeStyle}><i className="fas fa-bullhorn me-2"></i> {type}</Badge>;
+        } else if (typeLower.includes("report") || typeLower.includes("রিপোর্ট")) {
+            return <Badge bg="secondary" className="rounded-pill shadow-sm border border-secondary" style={badgeStyle}><i className="fas fa-chart-pie me-2"></i> {type}</Badge>;
+        }
+
+        return <Badge bg="light" text="dark" className="rounded-pill shadow-sm border border-dark" style={badgeStyle}><i className="fas fa-hashtag me-2"></i> {type}</Badge>;
     };
 
     if (isLoading) {
@@ -94,135 +146,289 @@ const SupportPage: React.FC = () => {
     }
 
     return (
-        <div className="container mt-4">
-            <h2 className="mb-4">Support Requests</h2>
+        <div className="p-4">
+            <style>{`
+                .support-table {
+                    font-size: 15px;
+                }
+                .support-table th {
+                    padding: 15px 10px !important;
+                    font-size: 15px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+                .support-table td {
+                    padding: 15px 10px !important;
+                    vertical-align: middle;
+                }
+                .copyable-text {
+                    cursor: pointer;
+                    color: #0d6efd;
+                    transition: opacity 0.2s;
+                }
+                .copyable-text:hover {
+                    opacity: 0.7;
+                    text-decoration: underline;
+                }
+                @media (max-width: 768px) {
+                    .report-header {
+                        flex-direction: column;
+                        align-items: flex-start !important;
+                        gap: 1rem;
+                    }
+                    .table-responsive {
+                        border: none;
+                    }
+                    .table-responsive table, 
+                    .table-responsive thead, 
+                    .table-responsive tbody, 
+                    .table-responsive th, 
+                    .table-responsive td, 
+                    .table-responsive tr {
+                        display: block;
+                    }
+                    .table-responsive thead tr {
+                        position: absolute;
+                        top: -9999px;
+                        left: -9999px;
+                    }
+                    .table-responsive tr {
+                        border: 1px solid #dee2e6;
+                        margin-bottom: 1rem;
+                        border-radius: 8px;
+                        background: #fff;
+                        padding: 10px;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                    }
+                    .table-responsive td {
+                        border: none;
+                        border-bottom: 1px solid #eee;
+                        position: relative;
+                        padding-left: 50% !important;
+                        text-align: right !important;
+                        padding-top: 10px !important;
+                        padding-bottom: 10px !important;
+                        min-height: 40px;
+                        font-size: 14px;
+                    }
+                    .table-responsive td:last-child {
+                        border-bottom: 0;
+                    }
+                    .table-responsive td:before {
+                        position: absolute;
+                        top: 10px;
+                        left: 10px;
+                        width: 45%;
+                        padding-right: 10px;
+                        white-space: nowrap;
+                        content: attr(data-label);
+                        font-weight: bold;
+                        text-align: left;
+                        color: #666;
+                    }
+                }
+            `}</style>
 
-            {/* Table View for Desktop */}
-            <div className="table-responsive d-none d-md-block">
-                <table className="table table-striped table-bordered text-center align-middle">
-                    <thead className="table-dark">
-                        <tr>
-                            <th>#</th>
-
-                            <th>Sender Info</th>
-                            <th>Sonod Info </th>
-
-                            <th>Type</th>
-                            <th>Status</th>
-                            <th>Description</th>
-                            <th>Created At</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody className=" text-capitalize">
-                        {data?.data.map((support: Support) => (
-                            <tr key={support.id}>
-                                <td>{support.support_id}</td>
-                                <td className="text-start">
-
-                                    <p className="mb-0 fw-semibold">{support.name}</p>
-                                    <p className="mb-0 text-muted small">{support.email}</p>
-                                    <p className="mb-0 text-muted small">
-                                        <a href={`tel:${support.phone}`} className="text-muted text-decoration-none">
-                                            {support.phone}
-                                        </a>
-                                    </p>
-                                </td>
-                                <td>
-                                    <p className="mb-0">{support.sonod_id || "-"}</p>
-                                    <p className="mb-0">{support.sonod_name}</p>
-                                    <p className="mb-0">{support.union_name || "-"}</p>
-                                    {support?.sonod_id && <a target="_blank" href={`${isUnion ? `https://uniontax.gov.bd/sonod/search?sonodType=${support.sonod_name}&sonodNo=${support.sonod_id}` : `https://pouroseba.gov.bd/sonod/search?sonodType=${support.sonod_name}&sonodNo=${support.sonod_id}`}`}>
-                                        <i className="fa-solid fa-file-pdf"></i>
-                                    </a>}
-                                </td>
-
-                                <td>{support.type}</td>
-                                <td>{renderStatusBadge(support.status)}</td>
-                                <td>{support.description}</td>
-                                <td>{new Date(support.created_at).toLocaleString()}</td>
-                                <td>
-                                    <Button className="bg-primary text-white" onClick={() => handleOpenModal(support)}>
-                                        Update
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            <div className="d-flex justify-content-between align-items-center mb-4 report-header">
+                <h3 className="mb-0 text-primary fw-bold">সাপোর্ট রিকোয়েস্ট সমূহ</h3>
+                <div className="bg-white px-3 py-2 rounded shadow-sm border small fw-semibold text-primary">
+                    মোট: {filteredData.length.toLocaleString('bn-BD')} টি
+                </div>
             </div>
 
-            {/* Card View for Mobile */}
-            <div className="d-block d-md-none">
-                {data?.data.map((support: Support) => (
-                    <div key={support.id} className="card mb-3 shadow-sm">
-                        <div className="card-body">
-                            <h6 className="fw-semibold mb-1">{support.name}</h6>
-                            <p className="mb-0 text-muted small">{support.email}</p>
-                            <p className="mb-1 text-muted small">
-                                <a href={`tel:${support.phone}`} className="text-muted text-decoration-none">
-                                    {support.phone}
-                                </a>
-                            </p>
-                            <p className="mb-1"><strong>Union:</strong> {support.union_name || "-"}</p>
-                            <p className="mb-1"><strong>Sonod:</strong> {support.sonod_name}</p>
-                            <p className="mb-1"><strong>Support ID:</strong> {support.support_id}</p>
-                            <p className="mb-1"><strong>Type:</strong> {support.type}</p>
-                            <p className="mb-1"><strong>Status:</strong> {renderStatusBadge(support.status)}</p>
-                            <p className="mb-1"><strong>Description:</strong> {support.description}</p>
-                            <p className="mb-2 text-muted small">{new Date(support.created_at).toLocaleString()}</p>
-                            <Button
-                                className="bg-primary text-white w-100"
-                                onClick={() => handleOpenModal(support)}
+            <Card className="mb-4 shadow-sm border-0 bg-light">
+                <Card.Body>
+                    <div className="row g-3">
+                        <div className="col-md-8">
+                            <Form.Label className="fw-bold mb-2">সার্চ করুন</Form.Label>
+                            <div className="input-group">
+                                <span className="input-group-text bg-white border-end-0">
+                                    <i className="fas fa-search text-muted"></i>
+                                </span>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="আইডি, নাম, ফোন, ইমেইল অথবা ইউনিয়ন দিয়ে খুঁজুন..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="border-start-0 ps-0"
+                                />
+                            </div>
+                        </div>
+                        <div className="col-md-4">
+                            <Form.Label className="fw-bold mb-2">স্ট্যাটাস ফিল্টার</Form.Label>
+                            <Form.Select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
                             >
-                                Update
-                            </Button>
+                                <option value="all">সকল স্ট্যাটাস</option>
+                                <option value="pending">পেন্ডিং</option>
+                                <option value="reviewed">পর্যালোচনা করা হয়েছে</option>
+                                <option value="resolved">সমাধান করা হয়েছে</option>
+                            </Form.Select>
                         </div>
                     </div>
-                ))}
-            </div>
+                </Card.Body>
+            </Card>
 
-            {/* Modal (unchanged) */}
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Update Support Status</Modal.Title>
+            <Card className="shadow-sm border-0">
+                <Card.Body className="p-0">
+                    <div className="table-responsive">
+                        <Table striped hover bordered className="mb-0 support-table">
+                            <thead className="table-dark">
+                                <tr>
+                                    <th>আইডি</th>
+                                    <th>প্রেরকের তথ্য</th>
+                                    <th>সনদের বিবরণ</th>
+                                    <th>ধরণ</th>
+                                    <th>স্ট্যাটাস</th>
+                                    <th>বিস্তারিত বর্ণনা</th>
+                                    <th>প্রেরণের সময়</th>
+                                    <th className="text-end">অ্যাকশন</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredData.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={8} className="text-center py-4 text-muted">
+                                            কোন তথ্য পাওয়া যায়নি।
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredData.map((support: Support) => (
+                                        <tr key={support.id}>
+                                            <td data-label="আইডি" className="fw-bold">#{support.support_id}</td>
+                                            <td data-label="প্রেরকের তথ্য">
+                                                <div className="d-flex flex-column">
+                                                    <span className="fw-bold fs-6">{support.name}</span>
+                                                    <span className="text-muted">
+                                                        <i className="fas fa-envelope me-1"></i>{support.email}
+                                                    </span>
+                                                    <a href={`tel:${support.phone}`} className="text-decoration-none text-muted">
+                                                        <i className="fas fa-phone me-1"></i>{support.phone}
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td data-label="সনদের বিবরণ">
+                                                <div className="d-flex flex-column gap-1">
+                                                    <Tooltip title="কপি করতে ক্লিক করুন">
+                                                        <span
+                                                            className="copyable-text fw-bold"
+                                                            onClick={() => handleCopy(support.sonod_id || '')}
+                                                        >
+                                                            <i className="far fa-copy me-1"></i> {support.sonod_id || "-"}
+                                                        </span>
+                                                    </Tooltip>
+                                                    <span>
+                                                        <i className="fas fa-file-alt me-1 text-muted"></i>{support.sonod_name}
+                                                    </span>
+                                                    <span className="text-muted small">{support.union_name || "-"}</span>
+                                                </div>
+                                            </td>
+
+                                            <td data-label="ধরণ">
+                                                {renderTypeBadge(support.type)}
+                                            </td>
+                                            <td data-label="স্ট্যাটাস">{renderStatusBadge(support.status)}</td>
+                                            <td data-label="বিস্তারিত বর্ণনা">
+                                                <Tooltip title={support.description}>
+                                                    <div
+                                                        className="copyable-text text-muted text-truncate"
+                                                        style={{ maxWidth: '180px' }}
+                                                        onClick={() => handleCopy(support.description)}
+                                                    >
+                                                        {support.description}
+                                                    </div>
+                                                </Tooltip>
+                                            </td>
+                                            <td data-label="প্রেরণের সময়">
+                                                <div className="text-muted">
+                                                    <i className="far fa-calendar-alt me-1"></i>
+                                                    {new Date(support.created_at).toLocaleDateString('bn-BD')}<br />
+                                                    <span className="opacity-75 small">{new Date(support.created_at).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' })}</span>
+                                                </div>
+                                            </td>
+                                            <td data-label="অ্যাকশন" className="text-end">
+                                                <div className="d-flex gap-2 justify-content-end align-items-center">
+                                                    {support?.sonod_id && (
+                                                        <Button
+                                                            variant="outline-danger"
+                                                            size="sm"
+                                                            as="a"
+                                                            target="_blank"
+                                                            href={`${isUnion ? `https://uniontax.gov.bd/sonod/search?sonodType=${support.sonod_name}&sonodNo=${support.sonod_id}` : `https://pouroseba.gov.bd/sonod/search?sonodType=${support.sonod_name}&sonodNo=${support.sonod_id}`}`}
+                                                            title="পিডিএফ দেখুন"
+                                                        >
+                                                            <i className="fas fa-file-pdf"></i>
+                                                        </Button>
+                                                    )}
+                                                    <Button
+                                                        variant="outline-info"
+                                                        size="sm"
+                                                        onClick={() => handleOpenModal(support)}
+                                                        title="রেকর্ড আপডেট"
+                                                    >
+                                                        <i className="fas fa-history"></i>
+                                                    </Button>
+                                                    <Button
+                                                        variant="primary"
+                                                        size="sm"
+                                                        onClick={() => navigate(`/dashboard/sonod-search?sonod_name=${support.sonod_name}&sonod_Id=${support.sonod_id || ''}`)}
+                                                    >
+                                                        এডিট
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </Table>
+                    </div>
+                </Card.Body>
+            </Card>
+
+            {/* Modal */}
+            <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                <Modal.Header closeButton className="bg-light">
+                    <Modal.Title className="fw-bold">সাপোর্ট রিকোয়েস্ট স্ট্যাটাস আপডেট</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
                         <Form.Group className="mb-3">
-                            <Form.Label>Status</Form.Label>
-                            <Form.Select value={status} onChange={(e) => setStatus(e.target.value)}>
-                                <option value="pending">Pending</option>
-                                <option value="reviewed">Reviewed</option>
-                                <option value="resolved">Resolved</option>
+                            <Form.Label className="fw-bold small">নতুন স্ট্যাটাস</Form.Label>
+                            <Form.Select
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value)}
+                            >
+                                <option value="pending">পেন্ডিং</option>
+                                <option value="reviewed">পর্যালোচনা করা হয়েছে</option>
+                                <option value="resolved">সমাধান করা হয়েছে</option>
                             </Form.Select>
                         </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Message</Form.Label>
+                        <Form.Group className="mb-2">
+                            <Form.Label className="fw-bold small">অ্যাডমিন রেসপন্স মেসেজ</Form.Label>
                             <Form.Control
                                 as="textarea"
-                                rows={3}
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
-                                placeholder="Enter admin message"
+                                rows={4}
+                                value={messageText}
+                                onChange={(e) => setMessageText(e.target.value)}
+                                placeholder="এখানে আপনার মন্তব্য লিখুন..."
                             />
                         </Form.Group>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={() => setShowModal(false)}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>বাতিল করুন</Button>
                     <Button
-                        className="bg-primary text-white"
-                        loading={updating}
+                        variant="primary"
                         disabled={updating}
                         onClick={handleUpdate}
                     >
-                        Update
+                        {updating ? <Spinner as="span" animation="border" size="sm" /> : "সেভ করুন"}
                     </Button>
                 </Modal.Footer>
             </Modal>
         </div>
-
     );
 };
 
