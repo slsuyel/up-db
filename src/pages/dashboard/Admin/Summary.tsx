@@ -12,11 +12,13 @@ const SummaryItem = ({
   title,
   value,
   variant = "primary",
+  loading = false,
 }: {
   icon: string;
   title: string;
   value: number;
   variant?: string;
+  loading?: boolean;
 }) => {
   return (
     <div className="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
@@ -25,7 +27,11 @@ const SummaryItem = ({
           <div className="d-flex align-items-center justify-content-between">
             <div>
               <p className="text-uppercase fw-bold text-muted mb-2 opacity-75" style={{ fontSize: '1.1rem' }}>{title}</p>
-              <h3 className="fw-extrabold mb-0" style={{ fontSize: '1.8rem' }}>{value.toLocaleString()}</h3>
+              {loading ? (
+                <Spinner animation="border" size="sm" variant="dark" className="mt-1" />
+              ) : (
+                <h3 className="fw-extrabold mb-0" style={{ fontSize: '1.8rem' }}>{value.toLocaleString()}</h3>
+              )}
             </div>
             <div className="p-3 rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center" style={{ width: "65px", height: "65px" }}>
               <img
@@ -52,15 +58,7 @@ const SummaryItem = ({
 };
 
 const Summary = ({ data, isLoading }: { data: any; isLoading: boolean }) => {
-  if (isLoading) {
-    return (
-      <div className="d-flex justify-content-center p-5">
-        <Spinner animation="grow" variant="primary" />
-      </div>
-    );
-  }
-
-  const all = data;
+  const all = data || {};
 
   const summaryItems = [
     {
@@ -129,6 +127,7 @@ const Summary = ({ data, isLoading }: { data: any; isLoading: boolean }) => {
             title={item.title}
             value={item.value}
             variant={item.variant}
+            loading={isLoading && !data}
           />
         ))}
       </div>

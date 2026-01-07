@@ -22,7 +22,7 @@ const defaultValues: StripeValues = {
 
 export const StripeSettings: React.FC<StripeSettingsProps> = ({
   value = defaultValues,
-  onChange = () => {},
+  onChange = () => { },
   onSave = null,
   isSaving = false,
 }) => {
@@ -42,14 +42,14 @@ export const StripeSettings: React.FC<StripeSettingsProps> = ({
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   return (
-    <Card className="m-3 p-3">
+    <Card className="m-3 p-3 border-0 shadow-sm rounded-4">
       <Card.Body>
-        <h4>Stripe Settings</h4>
+        <h5 className="fw-bold mb-4">স্ট্রাইপ পেমেন্ট সেটিংস</h5>
 
         <Form onSubmit={handleSubmit}>
           {/* Publishable Key */}
           <Form.Group className="mb-3" controlId="stripeKey">
-            <Form.Label>Publishable Key</Form.Label>
+            <Form.Label>পাবলিশেবল কী (Publishable Key)</Form.Label>
             <Form.Control
               placeholder="pk_live_..."
               value={value.STRIPE_KEY}
@@ -61,7 +61,7 @@ export const StripeSettings: React.FC<StripeSettingsProps> = ({
 
           {/* Secret Key */}
           <Form.Group className="mb-3" controlId="stripeSecret">
-            <Form.Label>Secret Key</Form.Label>
+            <Form.Label>সিক্রেট কী (Secret Key)</Form.Label>
             <div className="input-group">
               <Form.Control
                 type={showPassword ? "text" : "password"}
@@ -75,14 +75,14 @@ export const StripeSettings: React.FC<StripeSettingsProps> = ({
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? "লুকান" : "দেখুন"}
               </Button>
             </div>
           </Form.Group>
 
           {/* Webhook Secret */}
           <Form.Group className="mb-3" controlId="webhookSecret">
-            <Form.Label>Webhook Secret</Form.Label>
+            <Form.Label>ওয়েবহুক সিক্রেট (Webhook Secret)</Form.Label>
             <Form.Control
               placeholder="whsec_..."
               value={value.STRIPE_WEBHOOK_SECRET}
@@ -95,11 +95,11 @@ export const StripeSettings: React.FC<StripeSettingsProps> = ({
           {/* Save Button */}
           {onSave ? (
             <Button type="submit" disabled={isSaving}>
-              {isSaving ? <Spinner size="sm" animation="border" /> : "Save"}
+              {isSaving ? <Spinner size="sm" animation="border" /> : "সংরক্ষণ করুন"}
             </Button>
           ) : (
-            <div className="text-muted">
-              Use <strong>Save Active Tab</strong> (parent button) to update settings.
+            <div className="text-muted small mt-3">
+              পরিবর্তনগুলো সেভ করতে উপরের <strong>"সংরক্ষণ করুন"</strong> বাটনটি ব্যবহার করুন।
             </div>
           )}
         </Form>

@@ -3,7 +3,7 @@ import { Checkbox, Input, message } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useUserLoginMutation } from "@/redux/api/auth/authApi";
+import { useTokenCheckQuery, useUserLoginMutation } from "@/redux/api/auth/authApi";
 
 const Login = () => {
   const [userLogin, { isLoading }] = useUserLoginMutation();
@@ -13,7 +13,19 @@ const Login = () => {
   const from = location.state?.from?.pathname || "/dashboard";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false); // Check if there's a saved email in localStorage when the component mounts
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const token = localStorage.getItem("token");
+  const { data: tokenData, isSuccess: isTokenValid } = useTokenCheckQuery(
+    { token },
+    { skip: !token }
+  );
+
+  useEffect(() => {
+    if (token && isTokenValid && tokenData?.status_code === 200) {
+      navigate("/dashboard");
+    }
+  }, [token, isTokenValid, tokenData, navigate]);
 
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail");
@@ -60,8 +72,8 @@ const Login = () => {
               alt="Bangladesh Government"
               className="mb-2"
             />
-            <h4 className="fw-bold mb-0">স্মার্ট বাংলাদেশ</h4> 
-            <p className="text-muted">ক্যাশ লেস, পেপার লেস সেবা সিস্টেম</p> 
+            <h4 className="fw-bold mb-0">স্মার্ট বাংলাদেশ</h4>
+            <p className="text-muted">ক্যাশ লেস, পেপার লেস সেবা সিস্টেম</p>
           </div>
 
           <form onSubmit={handleSubmit}>

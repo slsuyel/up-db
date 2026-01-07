@@ -20,7 +20,7 @@ const defaultValues: SMSNOCValues = {
 
 export const SMSNOCSettings: React.FC<SMSNOCSettingsProps> = ({
   value = defaultValues,
-  onChange = () => {},
+  onChange = () => { },
   onSave = null,
   isSaving = false,
 }) => {
@@ -39,15 +39,15 @@ export const SMSNOCSettings: React.FC<SMSNOCSettingsProps> = ({
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   return (
-    <Card className="m-3 p-3">
+    <Card className="m-3 p-3 border-0 shadow-sm rounded-4">
       <Card.Body>
-        <h4>SMSNOC Settings</h4>
-        <p>Configure API key, sender ID, and related SMSNOC settings.</p>
+        <h5 className="fw-bold mb-4">এসএমএস নক (SMSNOC) সেটিংস</h5>
+        <p className="text-muted small mb-4">API কী এবং সেন্ডার আইডি কনফিগার করুন।</p>
 
         <Form onSubmit={handleSubmit}>
           {/* API Key */}
           <Form.Group className="mb-3" controlId="smsncoApiKey">
-            <Form.Label>SMSNOC API Key</Form.Label>
+            <Form.Label>SMSNOC API কী</Form.Label>
             <div className="input-group">
               <Form.Control
                 type={showPassword ? "text" : "password"}
@@ -55,20 +55,21 @@ export const SMSNOCSettings: React.FC<SMSNOCSettingsProps> = ({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   handleChange("SMSNOC_API_KEY", e.target.value)
                 }
+                placeholder="আপনার SMSNOC API Key"
               />
               <Button
                 variant="outline-secondary"
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? "লুকান" : "দেখুন"}
               </Button>
             </div>
           </Form.Group>
 
           {/* Sender ID */}
           <Form.Group className="mb-3" controlId="smsncoSenderId">
-            <Form.Label>SMSNOC Sender ID</Form.Label>
+            <Form.Label>SMSNOC সেন্ডার আইডি (Sender ID)</Form.Label>
             <Form.Control
               placeholder="8809617XXXXXX"
               value={value.SMSNOC_SENDER_ID}
@@ -80,11 +81,11 @@ export const SMSNOCSettings: React.FC<SMSNOCSettingsProps> = ({
 
           {onSave ? (
             <Button type="submit" disabled={isSaving}>
-              {isSaving ? <Spinner size="sm" animation="border" /> : "Save"}
+              {isSaving ? <Spinner size="sm" animation="border" /> : "সংরক্ষণ করুন"}
             </Button>
           ) : (
-            <div className="text-muted">
-              Use <strong>Save Active Tab</strong> button to persist changes.
+            <div className="text-muted small mt-3">
+              পরিবর্তনগুলো সেভ করতে উপরের <strong>"সংরক্ষণ করুন"</strong> বাটনটি ব্যবহার করুন।
             </div>
           )}
         </Form>

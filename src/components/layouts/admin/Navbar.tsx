@@ -54,7 +54,8 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
     },
     ...pathSnippets.map((snippet, index) => {
       const url = `/${pathSnippets.slice(0, index + 1).join("/")}`;
-      const title = snippet.charAt(0).toUpperCase() + snippet.slice(1).replace(/-/g, " ");
+      const decodedSnippet = decodeURIComponent(snippet);
+      const title = decodedSnippet.charAt(0).toUpperCase() + decodedSnippet.slice(1).replace(/-/g, " ");
       return {
         title: index === pathSnippets.length - 1 ? title : <Link to={url}>{title}</Link>,
       };

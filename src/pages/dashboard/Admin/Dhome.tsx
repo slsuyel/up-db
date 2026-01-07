@@ -3,7 +3,7 @@ import { useAdminReportMutation } from "@/redux/api/auth/authApi";
 import { TAdminData } from "@/types/global";
 import Summary from "./Summary";
 import DividedReportSummary from "./DividedReportSummary";
-import Loader from "@/components/reusable/Loader";
+
 
 const Dhome = () => {
   const [adminReport, { isLoading }] = useAdminReportMutation();
@@ -53,10 +53,6 @@ const Dhome = () => {
     }
   }, [token, adminReport]);
 
-  if (isLoading) {
-    return <Loader />;
-  }
-
   const currentDate = new Date().toLocaleDateString('bn-BD', {
     weekday: 'long',
     year: 'numeric',
@@ -69,7 +65,7 @@ const Dhome = () => {
       {/* Main Content Sections */}
       <div className="row g-0">
         <div className="col-12">
-          {adminTotals && (
+          {(adminTotals || isLoading) && (
             <section className="mb-5 bg-white p-4 rounded-4 border premium-border soft-shadow">
               <div className="d-flex flex-column flex-md-row align-items-md-center mb-4 ps-1 justify-content-between gap-3">
                 <div className="d-flex align-items-center">
@@ -93,7 +89,7 @@ const Dhome = () => {
             </section>
           )}
 
-          {adminDividedReports && (
+          {(adminDividedReports || isLoading) && (
             <section className="mb-4 bg-white p-4 rounded-4 border premium-border soft-shadow">
               <DividedReportSummary
                 data={adminDividedReports}

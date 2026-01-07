@@ -20,7 +20,7 @@ const defaultValues: EkpayValues = {
 
 export const EkpaySettings: React.FC<EkpaySettingsProps> = ({
   value = defaultValues,
-  onChange = () => {},
+  onChange = () => { },
   onSave = null,
   isSaving = false,
 }) => {
@@ -37,15 +37,15 @@ export const EkpaySettings: React.FC<EkpaySettingsProps> = ({
   };
 
   return (
-    <Card className="m-3 p-3">
+    <Card className="m-3 p-3 border-0 shadow-sm rounded-4">
       <Card.Body>
-        <h4>EKPay Settings</h4>
-        <p>Configure IPN URL and white-listed IPs for EKPay integration.</p>
+        <h5 className="fw-bold mb-4">একপে সেটিংস</h5>
+        <p className="text-muted small mb-4">একপে ইন্টিগ্রেশনের জন্য IPN URL এবং হোয়াইটলিস্ট আইপি কনফিগার করুন।</p>
 
         <Form onSubmit={handleSubmit}>
           {/* IPN URL */}
           <Form.Group className="mb-3" controlId="ekpayIpnUrl">
-            <Form.Label>EKPay IPN URL</Form.Label>
+            <Form.Label>একপে আইপিএন (IPN) URL</Form.Label>
             <Form.Control
               placeholder="https://api.example.com/ipn"
               value={value.EKPAY_IPN_URL ?? ""}
@@ -57,7 +57,7 @@ export const EkpaySettings: React.FC<EkpaySettingsProps> = ({
 
           {/* White List IP */}
           <Form.Group className="mb-3" controlId="whiteListIp">
-            <Form.Label>White List IP</Form.Label>
+            <Form.Label>হোয়াইটলিস্ট আইপি (White List IP)</Form.Label>
             <Form.Control
               placeholder="203.161.62.45"
               value={value.WHITE_LIST_IP ?? ""}
@@ -69,11 +69,11 @@ export const EkpaySettings: React.FC<EkpaySettingsProps> = ({
 
           {onSave ? (
             <Button type="submit" disabled={isSaving}>
-              {isSaving ? <Spinner size="sm" animation="border" /> : "Save"}
+              {isSaving ? <Spinner size="sm" animation="border" /> : "সংরক্ষণ করুন"}
             </Button>
           ) : (
-            <div className="text-muted">
-              Use <strong>Save Active Tab</strong> button to persist changes.
+            <div className="text-muted small mt-3">
+              পরিবর্তনগুলো সেভ করতে উপরের <strong>"সংরক্ষণ করুন"</strong> বাটনটি ব্যবহার করুন।
             </div>
           )}
         </Form>

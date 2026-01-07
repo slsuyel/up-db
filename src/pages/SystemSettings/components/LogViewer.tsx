@@ -42,7 +42,7 @@ const defaultValues: LogViewerValues = {
 
 export const LogViewer: React.FC<LogViewerProps> = ({
   value = defaultValues,
-  onChange = () => {},
+  onChange = () => { },
   onSave = null,
   isSaving = false,
 }) => {
@@ -59,235 +59,233 @@ export const LogViewer: React.FC<LogViewerProps> = ({
   };
 
   return (
-    <>  
+    <>
+      <Card className="m-3 p-3 border-0 shadow-sm rounded-4">
+        <Card.Body>
+          <Row className="mb-3">
+            <Col>
+              <h5 className="fw-bold">লগ ভিউয়ার কনফিগারেশন</h5>
+              <p className="text-muted small">লগ ভিউয়ার আচরণ এবং অ্যাক্সেসিবিলিটি কনফিগার করুন।</p>
+            </Col>
 
+            {value.LOG_VIEWER_ENABLED === "true" && (
+              <Col>
+                <a
+                  type="submit"
+                  target="_blank"
+                  className="btn btn-primary float-end"
+                  href={`http://203.161.62.45/log-viewer?token=${localStorage.getItem(
+                    "token"
+                  )}`}
+                >
+                  লগ ভিউয়ার দেখুন
+                </a>
+              </Col>
+            )}
+          </Row>
 
+          <Form onSubmit={handleSubmit}>
+            {/* Enabled */}
+            <Form.Group className="mb-3" controlId="lvEnabled">
+              <Form.Label>লগ ভিউয়ার চালু করুন (Enable Log Viewer)</Form.Label>
+              <Form.Select
+                value={value.LOG_VIEWER_ENABLED}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  handleChange("LOG_VIEWER_ENABLED", e.target.value)
+                }
+              >
+                <option value="true">হ্যাঁ (True)</option>
+                <option value="false">না (False)</option>
+              </Form.Select>
+            </Form.Group>
 
-    <Card className="m-3 p-3">
+            {/* API Only */}
+            <Form.Group className="mb-3" controlId="lvApiOnly">
+              <Form.Label>শুধুমাত্র API মোড (API Only Mode)</Form.Label>
+              <Form.Select
+                value={value.LOG_VIEWER_API_ONLY}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  handleChange("LOG_VIEWER_API_ONLY", e.target.value)
+                }
+              >
+                <option value="true">হ্যাঁ (True)</option>
+                <option value="false">না (False)</option>
+              </Form.Select>
+            </Form.Group>
 
-=
-      <Card.Body>
+            {/* Require Auth */}
+            <Form.Group className="mb-3" controlId="lvRequireAuth">
+              <Form.Label>প্রোডাকশনে অথেন্টিকেশন আবশ্যক</Form.Label>
+              <Form.Select
+                value={value.LOG_VIEWER_REQUIRE_AUTH_IN_PRODUCTION}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  handleChange(
+                    "LOG_VIEWER_REQUIRE_AUTH_IN_PRODUCTION",
+                    e.target.value
+                  )
+                }
+              >
+                <option value="true">হ্যাঁ (True)</option>
+                <option value="false">না (False)</option>
+              </Form.Select>
+            </Form.Group>
 
+            {/* Route Path */}
+            <Form.Group className="mb-3" controlId="lvRoutePath">
+              <Form.Label>রাউট পাথ (Route Path)</Form.Label>
+              <Form.Control
+                placeholder="log-viewer"
+                value={value.LOG_VIEWER_ROUTE_PATH}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleChange("LOG_VIEWER_ROUTE_PATH", e.target.value)
+                }
+              />
+            </Form.Group>
 
+            {/* Assets Path */}
+            <Form.Group className="mb-3" controlId="lvAssetsPath">
+              <Form.Label>অ্যাসেট পাথ (Assets Path)</Form.Label>
+              <Form.Control
+                placeholder="public/vendor/log-viewer"
+                value={value.LOG_VIEWER_ASSETS_PATH}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleChange("LOG_VIEWER_ASSETS_PATH", e.target.value)
+                }
+              />
+            </Form.Group>
 
-      <Row className="mb-3">
-        <Col>
-            <h4>Log Viewer Settings</h4>
-          <p>Configure Log Viewer behavior and accessibility.</p>
-        </Col>
+            {/* Datetime Format */}
+            <Form.Group className="mb-3" controlId="lvDatetimeFormat">
+              <Form.Label>তারিখ-সময় ফরম্যাট (DateTime Format)</Form.Label>
+              <Form.Control
+                placeholder="Y-m-d H:i:s"
+                value={value.LOG_VIEWER_DATETIME_FORMAT}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleChange("LOG_VIEWER_DATETIME_FORMAT", e.target.value)
+                }
+              />
+            </Form.Group>
 
-      {value.LOG_VIEWER_ENABLED==="true" &&
-        <Col>
+            {/* Cache Key Prefix */}
+            <Form.Group className="mb-3" controlId="lvCachePrefix">
+              <Form.Label>ক্যাশ কী প্রিফিক্স (Cache Key Prefix)</Form.Label>
+              <Form.Control
+                value={value.LOG_VIEWER_CACHE_KEY_PREFIX}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleChange("LOG_VIEWER_CACHE_KEY_PREFIX", e.target.value)
+                }
+              />
+            </Form.Group>
 
-          <a type="submit" target="_blank" className="btn btn-primary float-end" href={`http://203.161.62.45/log-viewer?token=${localStorage.getItem('token')}`}>
-            View Log Viewer
-          </a>
+            {/* Chunk Size */}
+            <Form.Group className="mb-3" controlId="lvChunkSize">
+              <Form.Label>লেজি স্ক্যান চাঙ্ক সাইজ (MB)</Form.Label>
+              <Form.Control
+                type="number"
+                value={value.LOG_VIEWER_LAZY_SCAN_CHUNK_SIZE_IN_MB}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleChange(
+                    "LOG_VIEWER_LAZY_SCAN_CHUNK_SIZE_IN_MB",
+                    e.target.value
+                  )
+                }
+              />
+            </Form.Group>
 
-        </Col>
-      }
+            {/* Strip Extracted Context */}
+            <Form.Group className="mb-3" controlId="lvStripContext">
+              <Form.Label>স্ট্রিপ এক্সট্রাক্টেড কনটেক্সট</Form.Label>
+              <Form.Select
+                value={value.LOG_VIEWER_STRIP_EXTRACTED_CONTEXT}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  handleChange(
+                    "LOG_VIEWER_STRIP_EXTRACTED_CONTEXT",
+                    e.target.value
+                  )
+                }
+              >
+                <option value="true">হ্যাঁ (True)</option>
+                <option value="false">না (False)</option>
+              </Form.Select>
+            </Form.Group>
 
-      </Row>
+            {/* Exclude IP */}
+            <Form.Group className="mb-3" controlId="lvExcludeIp">
+              <Form.Label>আইডেন্টিফায়ার থেকে আইপি বাদ দিন</Form.Label>
+              <Form.Select
+                value={value.LOG_VIEWER_EXCLUDE_IP_FROM_IDENTIFIERS}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  handleChange(
+                    "LOG_VIEWER_EXCLUDE_IP_FROM_IDENTIFIERS",
+                    e.target.value
+                  )
+                }
+              >
+                <option value="true">হ্যাঁ (True)</option>
+                <option value="false">না (False)</option>
+              </Form.Select>
+            </Form.Group>
 
+            {/* Root Folder Prefix */}
+            <Form.Group className="mb-3" controlId="lvRootPrefix">
+              <Form.Label>রুট ফোল্ডার প্রিফিক্স (Root Folder Prefix)</Form.Label>
+              <Form.Control
+                value={value.LOG_VIEWER_ROOT_FOLDER_PREFIX}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleChange("LOG_VIEWER_ROOT_FOLDER_PREFIX", e.target.value)
+                }
+              />
+            </Form.Group>
 
+            {/* Verify SSL in Production */}
+            <Form.Group className="mb-3" controlId="lvVerifySsl">
+              <Form.Label>SSL সার্টিফিকেট যাচাই করুন (প্রোডাকশন)</Form.Label>
+              <Form.Select
+                value={
+                  value.LOG_VIEWER_HOSTS_PRODUCTION_VERIFY_SERVER_CERTIFICATE
+                }
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  handleChange(
+                    "LOG_VIEWER_HOSTS_PRODUCTION_VERIFY_SERVER_CERTIFICATE",
+                    e.target.value
+                  )
+                }
+              >
+                <option value="true">হ্যাঁ (True)</option>
+                <option value="false">না (False)</option>
+              </Form.Select>
+            </Form.Group>
 
-        <Form onSubmit={handleSubmit}>
-          {/* Enabled */}
-          <Form.Group className="mb-3" controlId="lvEnabled">
-            <Form.Label>Enable Log Viewer</Form.Label>
-            <Form.Select
-              value={value.LOG_VIEWER_ENABLED}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange("LOG_VIEWER_ENABLED", e.target.value)
-              }
-            >
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </Form.Select>
-          </Form.Group>
+            {/* Hide Unknown Files */}
+            <Form.Group className="mb-3" controlId="lvHideUnknown">
+              <Form.Label>অজানা ফাইল লুকান (Hide Unknown Files)</Form.Label>
+              <Form.Select
+                value={value.LOG_VIEWER_HIDE_UNKNOWN_FILES}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  handleChange("LOG_VIEWER_HIDE_UNKNOWN_FILES", e.target.value)
+                }
+              >
+                <option value="true">হ্যাঁ (True)</option>
+                <option value="false">না (False)</option>
+              </Form.Select>
+            </Form.Group>
 
-          {/* API Only */}
-          <Form.Group className="mb-3" controlId="lvApiOnly">
-            <Form.Label>API Only Mode</Form.Label>
-            <Form.Select
-              value={value.LOG_VIEWER_API_ONLY}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange("LOG_VIEWER_API_ONLY", e.target.value)
-              }
-            >
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </Form.Select>
-          </Form.Group>
-
-          {/* Require Auth */}
-          <Form.Group className="mb-3" controlId="lvRequireAuth">
-            <Form.Label>Require Auth in Production</Form.Label>
-            <Form.Select
-              value={value.LOG_VIEWER_REQUIRE_AUTH_IN_PRODUCTION}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange(
-                  "LOG_VIEWER_REQUIRE_AUTH_IN_PRODUCTION",
-                  e.target.value
-                )
-              }
-            >
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </Form.Select>
-          </Form.Group>
-
-          {/* Route Path */}
-          <Form.Group className="mb-3" controlId="lvRoutePath">
-            <Form.Label>Route Path</Form.Label>
-            <Form.Control
-              placeholder="log-viewer"
-              value={value.LOG_VIEWER_ROUTE_PATH}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleChange("LOG_VIEWER_ROUTE_PATH", e.target.value)
-              }
-            />
-          </Form.Group>
-
-          {/* Assets Path */}
-          <Form.Group className="mb-3" controlId="lvAssetsPath">
-            <Form.Label>Assets Path</Form.Label>
-            <Form.Control
-              placeholder="public/vendor/log-viewer"
-              value={value.LOG_VIEWER_ASSETS_PATH}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleChange("LOG_VIEWER_ASSETS_PATH", e.target.value)
-              }
-            />
-          </Form.Group>
-
-          {/* Datetime Format */}
-          <Form.Group className="mb-3" controlId="lvDatetimeFormat">
-            <Form.Label>Date-Time Format</Form.Label>
-            <Form.Control
-              placeholder="Y-m-d H:i:s"
-              value={value.LOG_VIEWER_DATETIME_FORMAT}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleChange("LOG_VIEWER_DATETIME_FORMAT", e.target.value)
-              }
-            />
-          </Form.Group>
-
-          {/* Cache Key Prefix */}
-          <Form.Group className="mb-3" controlId="lvCachePrefix">
-            <Form.Label>Cache Key Prefix</Form.Label>
-            <Form.Control
-              value={value.LOG_VIEWER_CACHE_KEY_PREFIX}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleChange("LOG_VIEWER_CACHE_KEY_PREFIX", e.target.value)
-              }
-            />
-          </Form.Group>
-
-          {/* Chunk Size */}
-          <Form.Group className="mb-3" controlId="lvChunkSize">
-            <Form.Label>Lazy Scan Chunk Size (MB)</Form.Label>
-            <Form.Control
-              type="number"
-              value={value.LOG_VIEWER_LAZY_SCAN_CHUNK_SIZE_IN_MB}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleChange(
-                  "LOG_VIEWER_LAZY_SCAN_CHUNK_SIZE_IN_MB",
-                  e.target.value
-                )
-              }
-            />
-          </Form.Group>
-
-          {/* Strip Extracted Context */}
-          <Form.Group className="mb-3" controlId="lvStripContext">
-            <Form.Label>Strip Extracted Context</Form.Label>
-            <Form.Select
-              value={value.LOG_VIEWER_STRIP_EXTRACTED_CONTEXT}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange(
-                  "LOG_VIEWER_STRIP_EXTRACTED_CONTEXT",
-                  e.target.value
-                )
-              }
-            >
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </Form.Select>
-          </Form.Group>
-
-          {/* Exclude IP */}
-          <Form.Group className="mb-3" controlId="lvExcludeIp">
-            <Form.Label>Exclude IP From Identifiers</Form.Label>
-            <Form.Select
-              value={value.LOG_VIEWER_EXCLUDE_IP_FROM_IDENTIFIERS}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange(
-                  "LOG_VIEWER_EXCLUDE_IP_FROM_IDENTIFIERS",
-                  e.target.value
-                )
-              }
-            >
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </Form.Select>
-          </Form.Group>
-
-          {/* Root Folder Prefix */}
-          <Form.Group className="mb-3" controlId="lvRootPrefix">
-            <Form.Label>Root Folder Prefix</Form.Label>
-            <Form.Control
-              value={value.LOG_VIEWER_ROOT_FOLDER_PREFIX}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleChange("LOG_VIEWER_ROOT_FOLDER_PREFIX", e.target.value)
-              }
-            />
-          </Form.Group>
-
-          {/* Verify SSL in Production */}
-          <Form.Group className="mb-3" controlId="lvVerifySsl">
-            <Form.Label>Verify SSL Certificate (Production)</Form.Label>
-            <Form.Select
-              value={
-                value.LOG_VIEWER_HOSTS_PRODUCTION_VERIFY_SERVER_CERTIFICATE
-              }
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange(
-                  "LOG_VIEWER_HOSTS_PRODUCTION_VERIFY_SERVER_CERTIFICATE",
-                  e.target.value
-                )
-              }
-            >
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </Form.Select>
-          </Form.Group>
-
-          {/* Hide Unknown Files */}
-          <Form.Group className="mb-3" controlId="lvHideUnknown">
-            <Form.Label>Hide Unknown Files</Form.Label>
-            <Form.Select
-              value={value.LOG_VIEWER_HIDE_UNKNOWN_FILES}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange("LOG_VIEWER_HIDE_UNKNOWN_FILES", e.target.value)
-              }
-            >
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </Form.Select>
-          </Form.Group>
-
-          {onSave ? (
-            <Button type="submit" disabled={isSaving}>
-              {isSaving ? <Spinner size="sm" animation="border" /> : "Save"}
-            </Button>
-          ) : (
-            <div className="text-muted">
-              Use <strong>Save Active Tab</strong> button to update all Log Viewer settings.
-            </div>
-          )}
-        </Form>
-      </Card.Body>
-    </Card>
+            {onSave ? (
+              <Button type="submit" disabled={isSaving}>
+                {isSaving ? (
+                  <Spinner size="sm" animation="border" />
+                ) : (
+                  "সংরক্ষণ করুন"
+                )}
+              </Button>
+            ) : (
+              <div className="text-muted small mt-3">
+                পরিবর্তনগুলো সেভ করতে উপরের <strong>"সংরক্ষণ করুন"</strong> বাটনটি ব্যবহার করুন।
+              </div>
+            )}
+          </Form>
+        </Card.Body>
+      </Card>
     </>
   );
 };

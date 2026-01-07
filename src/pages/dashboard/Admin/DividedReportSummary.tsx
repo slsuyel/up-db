@@ -42,33 +42,24 @@ const DividedReportSummary = ({ data, isLoading, title }: any) => {
   const [selectedRegionName, setSelectedRegionName] = useState<string>("")
   const [searchTerm, setSearchTerm] = useState("")
 
-  if (isLoading) {
-    return (
-      <div className="text-center p-5 mt-5">
-        <div className="spinner-grow text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-        <p className="mt-3 text-muted fw-semibold">বিভাগীয় রিপোর্ট প্রস্তুত করা হচ্ছে...</p>
-      </div>
-    )
-  }
-
   // Calculate totals and filter data
   let totalPending = 0
   let totalApproved = 0
   let totalCanceled = 0
   let totalAmount = 0
 
-  const filteredEntries = Object.entries(data).filter(([name]: any) =>
+  const filteredEntries = data ? Object.entries(data).filter(([name]: any) =>
     name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) : [];
 
-  Object.values(data).forEach((regionData: any) => {
-    totalPending += regionData?.totals?.total_pending || 0
-    totalApproved += regionData?.totals?.total_approved || 0
-    totalCanceled += regionData?.totals?.total_cancel || 0
-    totalAmount += Number.parseFloat(regionData?.totals?.total_amount || "0")
-  })
+  if (data) {
+    Object.values(data).forEach((regionData: any) => {
+      totalPending += regionData?.totals?.total_pending || 0
+      totalApproved += regionData?.totals?.total_approved || 0
+      totalCanceled += regionData?.totals?.total_cancel || 0
+      totalAmount += Number.parseFloat(regionData?.totals?.total_amount || "0")
+    })
+  }
 
   const openModal = (regionName: string, regionData: RegionData) => {
     setSelectedRegionName(regionName)
@@ -104,7 +95,7 @@ const DividedReportSummary = ({ data, isLoading, title }: any) => {
             />
           </div>
           <Badge bg="primary" className="p-2 px-3 rounded-pill bg-opacity-10 text-primary border border-primary border-opacity-10 fw-bold shadow-sm">
-            সর্বমোট বিভাগ: {Object.keys(data).length}
+            সর্বমোট বিভাগ: {Object.keys(data || {}).length}
           </Badge>
         </div>
       </div>
@@ -124,6 +115,16 @@ const DividedReportSummary = ({ data, isLoading, title }: any) => {
               </tr>
             </thead>
             <tbody>
+              {isLoading && !data && (
+                <tr>
+                  <td colSpan={7} className="text-center py-5">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <p className="mt-2 text-muted small">ডেটা লোড হচ্ছে...</p>
+                  </td>
+                </tr>
+              )}
               {filteredEntries.map(([regionName, regionData]: any) => {
                 const totals = regionData?.totals
                 const totalApps = (totals?.total_pending || 0) + (totals?.total_approved || 0) + (totals?.total_cancel || 0)
@@ -172,7 +173,7 @@ const DividedReportSummary = ({ data, isLoading, title }: any) => {
                   </tr>
                 )
               })}
-              {filteredEntries.length === 0 && (
+              {!isLoading && filteredEntries.length === 0 && (
                 <tr>
                   <td colSpan={7} className="text-center py-5">
                     <i className="fa-solid fa-folder-open text-muted fs-1 mb-3 opacity-25"></i>

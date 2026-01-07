@@ -26,7 +26,7 @@ const defaultValues: BkashValues = {
 
 export const BkashSettings: React.FC<BkashSettingsProps> = ({
   value = defaultValues,
-  onChange = () => {},
+  onChange = () => { },
   onSave = null,
   isSaving = false,
 }) => {
@@ -43,26 +43,27 @@ export const BkashSettings: React.FC<BkashSettingsProps> = ({
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   return (
-    <Card className="m-3 p-3">
+    <Card className="m-3 p-3 border-0 shadow-sm rounded-4">
       <Card.Body>
-        <h4>Bkash Settings</h4>
-        <p>Configure your Bkash credentials, sandbox/live environment, and API base URL.</p>
+        <h5 className="fw-bold mb-4">বিকাশ পেমেন্ট সেটিংস</h5>
+        <p className="text-muted small mb-4">বিকাশ ক্রেডেনশিয়াল এবং API বেস URL কনফিগার করুন।</p>
 
         <Form onSubmit={handleSubmit}>
           {/* App Key */}
           <Form.Group className="mb-3" controlId="bkashAppKey">
-            <Form.Label>Bkash App Key</Form.Label>
+            <Form.Label>বিকাশ অ্যাপ কী (App Key)</Form.Label>
             <Form.Control
               value={value.BKASH_APP_KEY ?? ""}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange("BKASH_APP_KEY", e.target.value)
               }
+              placeholder="আপনার বিকাশ App Key"
             />
           </Form.Group>
 
           {/* App Secret */}
           <Form.Group className="mb-3" controlId="bkashAppSecret">
-            <Form.Label>Bkash App Secret</Form.Label>
+            <Form.Label>বিকাশ অ্যাপ সিক্রেট (App Secret)</Form.Label>
             <div className="input-group">
               <Form.Control
                 type={showSecret ? "text" : "password"}
@@ -70,31 +71,33 @@ export const BkashSettings: React.FC<BkashSettingsProps> = ({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   handleChange("BKASH_APP_SECRET", e.target.value)
                 }
+                placeholder="আপনার বিকাশ App Secret"
               />
               <Button
                 variant="outline-secondary"
                 onClick={() => setShowSecret((s) => !s)}
                 type="button"
               >
-                {showSecret ? "Hide" : "Show"}
+                {showSecret ? "লুকান" : "দেখুন"}
               </Button>
             </div>
           </Form.Group>
 
           {/* Username */}
           <Form.Group className="mb-3" controlId="bkashUsername">
-            <Form.Label>Bkash Username</Form.Label>
+            <Form.Label>বিকাশ ইউজারনেম (Username)</Form.Label>
             <Form.Control
               value={value.BKASH_USERNAME ?? ""}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange("BKASH_USERNAME", e.target.value)
               }
+              placeholder="আপনার বিকাশ ইউজারনেম"
             />
           </Form.Group>
 
           {/* Password */}
           <Form.Group className="mb-3" controlId="bkashPassword">
-            <Form.Label>Bkash Password</Form.Label>
+            <Form.Label>বিকাশ পাসওয়ার্ড (Password)</Form.Label>
             <div className="input-group">
               <Form.Control
                 type={showPassword ? "text" : "password"}
@@ -102,35 +105,37 @@ export const BkashSettings: React.FC<BkashSettingsProps> = ({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   handleChange("BKASH_PASSWORD", e.target.value)
                 }
+                placeholder="আপনার বিকাশ পাসওয়ার্ড"
               />
               <Button
                 variant="outline-secondary"
                 onClick={() => setShowPassword((s) => !s)}
                 type="button"
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? "লুকান" : "দেখুন"}
               </Button>
             </div>
           </Form.Group>
 
           {/* Base URL */}
           <Form.Group className="mb-3" controlId="bkashBaseUrl">
-            <Form.Label>Bkash API Base URL</Form.Label>
+            <Form.Label>বিকাশ API বেস URL</Form.Label>
             <Form.Control
               value={value.BKASH_BASE_URL ?? ""}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange("BKASH_BASE_URL", e.target.value)
               }
+              placeholder="উদাঃ https://checkout.sandbox.bka.sh/v1.2.0-beta"
             />
           </Form.Group>
 
           {onSave ? (
             <Button type="submit" disabled={isSaving}>
-              {isSaving ? <Spinner size="sm" animation="border" /> : "Save"}
+              {isSaving ? <Spinner size="sm" animation="border" /> : "সংরক্ষণ করুন"}
             </Button>
           ) : (
-            <div className="text-muted">
-              Use <strong>Save Active Tab</strong> button to persist changes.
+            <div className="text-muted small mt-3">
+              পরিবর্তনগুলো সেভ করতে উপরের <strong>"সংরক্ষণ করুন"</strong> বাটনটি ব্যবহার করুন।
             </div>
           )}
         </Form>

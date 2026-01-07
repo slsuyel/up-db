@@ -16,7 +16,8 @@ import { Spinner } from "react-bootstrap";
 const SonodManagement = () => {
   const [sonod_Id, setSonod_Id] = useState("");
   const [searchSonodId, setSearchSonodId] = useState("");
-  const { sonodName, condition, union } = useParams();
+  const { sonodName: encodedSonodName, condition, union } = useParams();
+  const sonodName = decodeURIComponent(encodedSonodName || "");
   const token = localStorage.getItem("token");
   const { data, isLoading, isFetching } = useAllSonodQuery({
     sonodName: sonodName,

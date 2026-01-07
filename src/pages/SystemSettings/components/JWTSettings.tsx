@@ -22,7 +22,7 @@ const defaultValues: JWTValues = {
 
 export const JWTSettings: React.FC<JWTSettingsProps> = ({
   value = defaultValues,
-  onChange = () => {},
+  onChange = () => { },
   onSave = null,
   isSaving = false,
 }) => {
@@ -40,14 +40,14 @@ export const JWTSettings: React.FC<JWTSettingsProps> = ({
   };
 
   return (
-    <Card className="m-3 p-3">
+    <Card className="m-3 p-3 border-0 shadow-sm rounded-4">
       <Card.Body>
-        <h4>JWT Settings</h4>
+        <h5 className="fw-bold mb-4">জেডব্লিউটি (JWT) সেটিংস</h5>
 
         <Form onSubmit={handleSubmit}>
           {/* JWT TTL */}
           <Form.Group className="mb-3" controlId="jwtTtl">
-            <Form.Label>JWT TTL (Minutes)</Form.Label>
+            <Form.Label>JWT TTL (মিনিট)</Form.Label>
             <Form.Control
               type="number"
               placeholder="60"
@@ -60,7 +60,7 @@ export const JWTSettings: React.FC<JWTSettingsProps> = ({
 
           {/* JWT Refresh TTL */}
           <Form.Group className="mb-3" controlId="jwtRefreshTtl">
-            <Form.Label>JWT Refresh TTL (Minutes)</Form.Label>
+            <Form.Label>JWT রিফ্রেশ TTL (মিনিট)</Form.Label>
             <Form.Control
               type="number"
               placeholder="20160"
@@ -73,25 +73,25 @@ export const JWTSettings: React.FC<JWTSettingsProps> = ({
 
           {/* JWT Blacklist Enabled */}
           <Form.Group className="mb-3" controlId="jwtBlacklist">
-            <Form.Label>Enable Blacklist</Form.Label>
+            <Form.Label>ব্ল্যাকলিস্ট চালু করুন (Enable Blacklist)</Form.Label>
             <Form.Select
               value={value.JWT_BLACKLIST_ENABLED}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 handleChange("JWT_BLACKLIST_ENABLED", e.target.value)
               }
             >
-              <option value="true">true</option>
-              <option value="false">false</option>
+              <option value="true">হ্যাঁ (True)</option>
+              <option value="false">না (False)</option>
             </Form.Select>
           </Form.Group>
 
           {onSave ? (
             <Button type="submit" disabled={isSaving}>
-              {isSaving ? <Spinner size="sm" animation="border" /> : "Save"}
+              {isSaving ? <Spinner size="sm" animation="border" /> : "সংরক্ষণ করুন"}
             </Button>
           ) : (
-            <div className="text-muted">
-              Use <strong>Save Active Tab</strong> button to persist changes.
+            <div className="text-muted small mt-3">
+              পরিবর্তনগুলো সেভ করতে উপরের <strong>"সংরক্ষণ করুন"</strong> বাটনটি ব্যবহার করুন।
             </div>
           )}
         </Form>

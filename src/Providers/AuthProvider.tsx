@@ -26,11 +26,11 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
   }, [token, isError, data, navigate, dispatch]);
 
-  if (isLoading) {
+  if (isLoading && !token) {
     return <Loader />;
   }
 
-  if (data && data.status_code === 200) {
+  if (token) {
     return <>{children}</>;
   }
 

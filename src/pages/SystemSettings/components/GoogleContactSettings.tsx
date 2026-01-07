@@ -22,7 +22,7 @@ const defaultValues: GoogleContactValues = {
 
 export const GoogleContactSettings: React.FC<GoogleContactSettingsProps> = ({
   value = defaultValues,
-  onChange = () => {},
+  onChange = () => { },
   onSave = null,
   isSaving = false,
 }) => {
@@ -41,15 +41,15 @@ export const GoogleContactSettings: React.FC<GoogleContactSettingsProps> = ({
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   return (
-    <Card className="m-3 p-3">
+    <Card className="m-3 p-3 border-0 shadow-sm rounded-4">
       <Card.Body>
-        <h4>Google Contact Settings</h4>
-        <p>Configure Google OAuth Client, Secret, and Redirect URL.</p>
+        <h5 className="fw-bold mb-4">গুগল কন্টাক্ট সেটিংস</h5>
+        <p className="text-muted small mb-4">গুগল OAuth ক্লায়েন্ট, সিক্রেট এবং রিডাইরেক্ট URL কনফিগার করুন।</p>
 
         <Form onSubmit={handleSubmit}>
           {/* Client ID */}
           <Form.Group className="mb-3" controlId="googleClientId">
-            <Form.Label>Google Client ID</Form.Label>
+            <Form.Label>গুগল ক্লায়েন্ট আইডি (Google Client ID)</Form.Label>
             <Form.Control
               placeholder="your-client-id.apps.googleusercontent.com"
               value={value.GOOGLE_CLIENT_ID}
@@ -61,7 +61,7 @@ export const GoogleContactSettings: React.FC<GoogleContactSettingsProps> = ({
 
           {/* Client Secret */}
           <Form.Group className="mb-3" controlId="googleClientSecret">
-            <Form.Label>Google Client Secret</Form.Label>
+            <Form.Label>গুগল ক্লায়েন্ট সিক্রেট (Google Client Secret)</Form.Label>
             <div className="input-group">
               <Form.Control
                 type={showPassword ? "text" : "password"}
@@ -75,14 +75,14 @@ export const GoogleContactSettings: React.FC<GoogleContactSettingsProps> = ({
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? "লুকান" : "দেখুন"}
               </Button>
             </div>
           </Form.Group>
 
           {/* Redirect URI */}
           <Form.Group className="mb-3" controlId="googleRedirectUri">
-            <Form.Label>Redirect URI</Form.Label>
+            <Form.Label>রিডাইরেক্ট URI (Redirect URI)</Form.Label>
             <Form.Control
               placeholder="https://example.com/google/callback"
               value={value.GOOGLE_REDIRECT_URI}
@@ -94,11 +94,11 @@ export const GoogleContactSettings: React.FC<GoogleContactSettingsProps> = ({
 
           {onSave ? (
             <Button type="submit" disabled={isSaving}>
-              {isSaving ? <Spinner size="sm" animation="border" /> : "Save"}
+              {isSaving ? <Spinner size="sm" animation="border" /> : "সংরক্ষণ করুন"}
             </Button>
           ) : (
-            <div className="text-muted">
-              Use <strong>Save Active Tab</strong> button to persist changes.
+            <div className="text-muted small mt-3">
+              পরিবর্তনগুলো সেভ করতে উপরের <strong>"সংরক্ষণ করুন"</strong> বাটনটি ব্যবহার করুন।
             </div>
           )}
         </Form>

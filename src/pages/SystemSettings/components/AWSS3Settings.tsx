@@ -28,7 +28,7 @@ const defaultValues: AWSS3Values = {
 
 export const AWSS3Settings: React.FC<AWSS3SettingsProps> = ({
   value = defaultValues,
-  onChange = () => {},
+  onChange = () => { },
   onSave = null,
   isSaving = false,
 }) => {
@@ -45,85 +45,90 @@ export const AWSS3Settings: React.FC<AWSS3SettingsProps> = ({
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   return (
-    <Card className="m-3 p-3">
+    <Card className="m-3 p-3 border-0 shadow-sm rounded-4">
       <Card.Body>
-        <h4>AWS S3 Settings</h4>
+        <h5 className="fw-bold mb-4">এডাব্লিউএস (AWS) S3 সেটিংস</h5>
 
         <Form onSubmit={handleSubmit}>
           {/* AWS Access Key */}
           <Form.Group className="mb-3" controlId="awsAccessKeyId">
-            <Form.Label>AWS Access Key ID</Form.Label>
+            <Form.Label>AWS অ্যাক্সেস কী আইডি</Form.Label>
             <Form.Control
               value={value.AWS_ACCESS_KEY_ID ?? ""}
               onChange={(e) => handleChange("AWS_ACCESS_KEY_ID", e.target.value)}
+              placeholder="আপনার AWS Access Key ID"
             />
           </Form.Group>
 
           {/* Secret Access Key */}
           <Form.Group className="mb-3" controlId="awsSecretAccessKey">
-            <Form.Label>AWS Secret Access Key</Form.Label>
+            <Form.Label>AWS সিক্রেট অ্যাক্সেস কী</Form.Label>
             <div className="input-group">
               <Form.Control
                 type={showPassword ? "text" : "password"}
                 value={value.AWS_SECRET_ACCESS_KEY ?? ""}
                 onChange={(e) => handleChange("AWS_SECRET_ACCESS_KEY", e.target.value)}
+                placeholder="আপনার AWS Secret Access Key"
               />
               <Button
                 variant="outline-secondary"
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? "লুকান" : "দেখুন"}
               </Button>
             </div>
           </Form.Group>
 
           {/* Region */}
           <Form.Group className="mb-3" controlId="awsDefaultRegion">
-            <Form.Label>AWS Default Region</Form.Label>
+            <Form.Label>AWS ডিফল্ট রিজিয়ন</Form.Label>
             <Form.Control
               value={value.AWS_DEFAULT_REGION ?? ""}
               onChange={(e) => handleChange("AWS_DEFAULT_REGION", e.target.value)}
+              placeholder="উদাঃ ap-southeast-1"
             />
           </Form.Group>
 
           {/* Bucket */}
           <Form.Group className="mb-3" controlId="awsBucket">
-            <Form.Label>AWS Bucket Name</Form.Label>
+            <Form.Label>AWS বাকেট নাম</Form.Label>
             <Form.Control
               value={value.AWS_BUCKET ?? ""}
               onChange={(e) => handleChange("AWS_BUCKET", e.target.value)}
+              placeholder="আপনার s3 bucket এর নাম"
             />
           </Form.Group>
 
           {/* Path Style Endpoint */}
           <Form.Group className="mb-3" controlId="awsUsePathStyle">
-            <Form.Label>Use Path Style Endpoint</Form.Label>
+            <Form.Label>পাথ স্টাইল এন্ডপয়েন্ট ব্যবহার করুন</Form.Label>
             <Form.Select
               value={value.AWS_USE_PATH_STYLE_ENDPOINT}
               onChange={(e) => handleChange("AWS_USE_PATH_STYLE_ENDPOINT", e.target.value)}
             >
-              <option value="true">true</option>
-              <option value="false">false</option>
+              <option value="true">হ্যাঁ (True)</option>
+              <option value="false">না (False)</option>
             </Form.Select>
           </Form.Group>
 
           {/* File Load Base URL */}
           <Form.Group className="mb-3" controlId="awsFileLoadBase">
-            <Form.Label>File Load Base URL</Form.Label>
+            <Form.Label>ফাইল লোড বেস URL</Form.Label>
             <Form.Control
               value={value.AWS_FILE_LOAD_BASE ?? ""}
               onChange={(e) => handleChange("AWS_FILE_LOAD_BASE", e.target.value)}
+              placeholder="ফাইলের বেস URL (ঐচ্ছিক)"
             />
           </Form.Group>
 
           {onSave ? (
             <Button type="submit" disabled={isSaving}>
-              {isSaving ? <Spinner size="sm" animation="border" /> : "Save"}
+              {isSaving ? <Spinner size="sm" animation="border" /> : "সংরক্ষণ করুন"}
             </Button>
           ) : (
-            <div className="text-muted">
-              Use the parent <strong>Save Active Tab</strong> button to persist changes.
+            <div className="text-muted small mt-3">
+              পরিবর্তনগুলো সেভ করতে উপরের <strong>"সংরক্ষণ করুন"</strong> বাটনটি ব্যবহার করুন।
             </div>
           )}
         </Form>

@@ -4,13 +4,15 @@ import {
   Container,
   Row,
   Col,
-  Tabs,
+  Nav,
+  Tab,
   Button,
   Spinner,
   ToastContainer,
   Toast,
+  Card,
+  Badge,
 } from "react-bootstrap";
-import ProtectedTab from "./ProtectedTab";
 
 import EmailSettings from "./components/EmailSettings";
 import AWSS3Settings from "./components/AWSS3Settings";
@@ -22,7 +24,7 @@ import JWTSettings from "./components/JWTSettings";
 import GoogleContactSettings from "./components/GoogleContactSettings";
 import LogViewer from "./components/LogViewer";
 
-// RTK hooks (adjust path if needed)
+// RTK hooks
 import {
   useGetSystemSettingQuery,
   useUpdateMultipleSettingsMutation,
@@ -30,6 +32,19 @@ import {
 
 type SettingItem = { key: string; value: unknown };
 type SettingsResponse = { data?: SettingItem[] | Record<string, unknown> } | SettingItem[] | Record<string, unknown>;
+
+// Mock Permissions (Simulated)
+const userPermissions: Record<string, boolean> = {
+  email: true,
+  aws: true,
+  stripe: true,
+  ekpay: true,
+  bkash: true,
+  sms: true,
+  jwt: true,
+  googleContact: true,
+  logViewer: true,
+};
 
 const SystemSettingsPage: React.FC = () => {
   const [activeKey, setActiveKey] = useState<string>("email");
@@ -67,7 +82,6 @@ const SystemSettingsPage: React.FC = () => {
   const normalizeSettingsResponse = (raw: SettingsResponse | null): Record<string, unknown> => {
     if (!raw) return {};
 
-    // case: raw has .data array
     if ((raw as any).data && Array.isArray((raw as any).data)) {
       return ((raw as any).data as SettingItem[]).reduce((acc: Record<string, unknown>, cur: SettingItem) => {
         if (cur && cur.key !== undefined) acc[cur.key] = cur.value;
@@ -75,7 +89,6 @@ const SystemSettingsPage: React.FC = () => {
       }, {});
     }
 
-    // case: raw itself is an array of {key, value}
     if (Array.isArray(raw)) {
       return (raw as SettingItem[]).reduce((acc: Record<string, unknown>, cur: SettingItem) => {
         if (cur && cur.key !== undefined) acc[cur.key] = cur.value;
@@ -83,7 +96,6 @@ const SystemSettingsPage: React.FC = () => {
       }, {});
     }
 
-    // case: raw is an object map OR { data: { ... } }
     if (typeof raw === "object") {
       if ((raw as any).data && typeof (raw as any).data === "object" && !Array.isArray((raw as any).data)) {
         return { ...((raw as any).data as Record<string, unknown>) };
@@ -200,150 +212,175 @@ const SystemSettingsPage: React.FC = () => {
 
     try {
       await updateMultipleSettings({ settings: payloadArray }).unwrap();
-      setToast({ show: true, message: "Saved successfully", variant: "success" });
+      setToast({ show: true, message: "সেটিংস সফলভাবে সংরক্ষিত হয়েছে", variant: "success" });
     } catch (err) {
       console.error("Save failed", err);
-      setToast({ show: true, message: "Save failed", variant: "danger" });
+      setToast({ show: true, message: "সংরক্ষণ ব্যর্থ হয়েছে", variant: "danger" });
     }
   }
 
-  // Clear cache handler (always show success at end per your request)
+  // Clear cache handler
   const [clearingCache, setClearingCache] = useState<boolean>(false);
 
   async function handleClearCache() {
     setClearingCache(true);
 
     try {
-      // fire GET clear-cache (no strict checking; we will show success anyway)
       await fetch(`${import.meta.env.VITE_BASE_DOC_URL}/clear-cache`, {
         method: "GET",
-        // include credentials/header if required:
-        // credentials: "include",
       });
     } catch (err) {
-      // log but do not show error to the user (you requested always-success behavior)
       console.error("Clear cache failed (ignored):", err);
     } finally {
       setClearingCache(false);
-
       setToast({
         show: true,
-        message: "Cache cleared successfully!",
+        message: "ক্যাশ সফলভাবে ক্লিয়ার করা হয়েছে!",
         variant: "success",
       });
-
-      // trigger refetch of settings so UI updates
       try {
         await refetch();
       } catch (e) {
-        // ignore refetch errors
-        // console.warn("Refetch after clear-cache failed:", e);
+        // ignore
       }
     }
   }
 
+  // Menus configuration
+  const menus = [
+    { key: "email", label: "ইমেইল সেটিংস", perm: "email" },
+    { key: "aws", label: "AWS S3", perm: "aws" },
+    { key: "stripe", label: "স্ট্রাইপ পেমেন্ট", perm: "stripe" },
+    { key: "ekpay", label: "একপে পেমেন্ট", perm: "ekpay" },
+    { key: "bkash", label: "বিকাশ পেমেন্ট", perm: "bkash" },
+    { key: "sms", label: "SMSNOC", perm: "sms" },
+    { key: "jwt", label: "JWT টোকেন", perm: "jwt" },
+    { key: "google", label: "গুগল কন্টাক্ট", perm: "googleContact" },
+    { key: "logs", label: "লগ ভিউয়ার", perm: "logViewer" },
+  ];
+
   return (
     <Container fluid className="p-2 p-md-4">
-      <Row>
-        <Col>
-          <h2>System Settings</h2>
-          <p className="text-muted">Manage global system configuration.</p>
-        </Col>
-      </Row>
-
-      <Row className="mb-3">
-        <Col>
-          <Button onClick={handleSaveActiveTab} disabled={isSaving || loadingSettings}>
-            {isSaving ? (
-              <>
-                <Spinner as="span" animation="border" size="sm" /> Saving...
-              </>
-            ) : (
-              "Save Active Tab"
-            )}
+      {/* Header Section */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 className="fw-bold mb-1">সিস্টেম সেটিংস</h2>
+          <p className="text-muted mb-0">গ্লোবাল সিস্টেম কনফিগারেশন ম্যানেজ করুন।</p>
+        </div>
+        <div className="d-flex gap-2">
+          <Button
+            variant="outline-secondary"
+            onClick={handleClearCache}
+            disabled={clearingCache}
+            className="d-flex align-items-center gap-2"
+          >
+            {clearingCache && <Spinner as="span" animation="border" size="sm" />}
+            ক্যাশ ক্লিয়ার করুন
           </Button>
-        </Col>
-
-        <Col>
-          <Button onClick={handleClearCache} disabled={clearingCache}>
-            {clearingCache ? (
-              <>
-                <Spinner as="span" animation="border" size="sm" /> Clearing...
-              </>
-            ) : (
-              "Clear Cache and Refresh Settings"
-            )}
+          <Button
+            variant="primary"
+            onClick={handleSaveActiveTab}
+            disabled={isSaving || loadingSettings}
+            className="d-flex align-items-center gap-2 text-white"
+          >
+            {isSaving && <Spinner as="span" animation="border" size="sm" />}
+            সেটিংস সংরক্ষণ করুন
           </Button>
-        </Col>
-      </Row>
+        </div>
+      </div>
 
-      <Row>
-        <Col>
-          {loadingSettings ? (
-            <div>Loading settings...</div>
-          ) : isError ? (
-            <div className="text-danger">Failed to load settings</div>
-          ) : (
-            <Tabs
-              activeKey={activeKey}
-              onSelect={(k: string | null) => k && setActiveKey(k)}
-              className="mb-3"
-              mountOnEnter
-              unmountOnExit
-            >
-              <ProtectedTab eventKey="email" title="Email Settings" permissionKey="email">
-                <EmailSettings value={drafts.email} onChange={(v) => updateDraft("email", v)} />
-              </ProtectedTab>
+      {loadingSettings ? (
+        <div className="text-center py-5">
+          <Spinner animation="border" variant="primary" />
+          <p className="mt-2 text-muted">সেটিংস লোড হচ্ছে...</p>
+        </div>
+      ) : isError ? (
+        <div className="text-danger">সেটিংস লোড করতে ব্যর্থ হয়েছে। অনুগ্রহ করে রিলোড করুন।</div>
+      ) : (
+        <Tab.Container activeKey={activeKey} onSelect={(k) => k && setActiveKey(k)}>
+          <Row>
+            {/* Sidebar Navigation */}
+            <Col md={3} className="mb-3 mb-md-0">
+              <Card className="border-0 shadow-sm rounded-4 overflow-hidden">
+                <Card.Body className="p-0">
+                  <Nav variant="pills" className="flex-column p-2 bg-white rounded-4">
+                    {menus.map((menu) => {
+                      const allowed = userPermissions[menu.perm];
+                      return (
+                        <Nav.Item key={menu.key}>
+                          <Nav.Link
+                            eventKey={menu.key}
+                            disabled={!allowed}
+                            className={`mb-1 fw-medium text-start px-3 py-2 ${activeKey === menu.key ? "bg-primary text-white" : "text-dark"
+                              }`}
+                            style={{ borderRadius: "8px", transition: "all 0.2s" }}
+                          >
+                            <div className="d-flex justify-content-between align-items-center">
+                              {menu.label}
+                              {!allowed && <Badge bg="secondary" style={{ fontSize: "0.6rem" }}>Locked</Badge>}
+                            </div>
+                          </Nav.Link>
+                        </Nav.Item>
+                      );
+                    })}
+                  </Nav>
+                </Card.Body>
+              </Card>
+            </Col>
 
-              <ProtectedTab eventKey="aws" title="AWS S3 Settings" permissionKey="aws">
-                <AWSS3Settings value={drafts.aws} onChange={(v) => updateDraft("aws", v)} />
-              </ProtectedTab>
-
-              <ProtectedTab eventKey="stripe" title="Stripe Settings" permissionKey="stripe">
-                <StripeSettings value={drafts.stripe} onChange={(v) => updateDraft("stripe", v)} />
-              </ProtectedTab>
-
-              <ProtectedTab eventKey="ekpay" title="EKPay Settings" permissionKey="ekpay">
-                <EkpaySettings value={drafts.ekpay} onChange={(v) => updateDraft("ekpay", v)} />
-              </ProtectedTab>
-
-              <ProtectedTab eventKey="bkash" title="Bkash Settings" permissionKey="bkash">
-                <BkashSettings value={drafts.bkash} onChange={(v) => updateDraft("bkash", v)} />
-              </ProtectedTab>
-
-              <ProtectedTab eventKey="sms" title="SMSNOC" permissionKey="sms">
-                <SMSNOCSettings value={drafts.sms} onChange={(v) => updateDraft("sms", v)} />
-              </ProtectedTab>
-
-              <ProtectedTab eventKey="jwt" title="JWT Settings" permissionKey="jwt">
-                <JWTSettings value={drafts.jwt} onChange={(v) => updateDraft("jwt", v)} />
-              </ProtectedTab>
-
-              <ProtectedTab eventKey="google" title="Google Contact Settings" permissionKey="googleContact">
-                <GoogleContactSettings value={drafts.google} onChange={(v) => updateDraft("google", v)} />
-              </ProtectedTab>
-
-              <ProtectedTab eventKey="logs" title="Log Viewer" permissionKey="logViewer">
-                <LogViewer value={drafts.logs} onChange={(v) => updateDraft("logs", v)} />
-              </ProtectedTab>
-            </Tabs>
-          )}
-        </Col>
-      </Row>
-
-      <Row className="mb-3">
-        <Col>
-          <Button onClick={handleSaveActiveTab} disabled={isSaving || loadingSettings}>
-            {isSaving ? (
-              <>
-                <Spinner as="span" animation="border" size="sm" /> Saving...
-              </>
-            ) : (
-              "Save Active Tab"
-            )}
-          </Button>
-        </Col>
-      </Row>
+            {/* Content Area */}
+            <Col md={9}>
+              <Tab.Content>
+                <Tab.Pane eventKey="email">
+                  {userPermissions.email ? (
+                    <EmailSettings value={drafts.email} onChange={(v) => updateDraft("email", v)} onSave={handleSaveActiveTab} isSaving={isSaving} />
+                  ) : <AccessDenied />}
+                </Tab.Pane>
+                <Tab.Pane eventKey="aws">
+                  {userPermissions.aws ? (
+                    <AWSS3Settings value={drafts.aws} onChange={(v) => updateDraft("aws", v)} onSave={handleSaveActiveTab} isSaving={isSaving} />
+                  ) : <AccessDenied />}
+                </Tab.Pane>
+                <Tab.Pane eventKey="stripe">
+                  {userPermissions.stripe ? (
+                    <StripeSettings value={drafts.stripe} onChange={(v) => updateDraft("stripe", v)} onSave={handleSaveActiveTab} isSaving={isSaving} />
+                  ) : <AccessDenied />}
+                </Tab.Pane>
+                <Tab.Pane eventKey="ekpay">
+                  {userPermissions.ekpay ? (
+                    <EkpaySettings value={drafts.ekpay} onChange={(v) => updateDraft("ekpay", v)} onSave={handleSaveActiveTab} isSaving={isSaving} />
+                  ) : <AccessDenied />}
+                </Tab.Pane>
+                <Tab.Pane eventKey="bkash">
+                  {userPermissions.bkash ? (
+                    <BkashSettings value={drafts.bkash} onChange={(v) => updateDraft("bkash", v)} onSave={handleSaveActiveTab} isSaving={isSaving} />
+                  ) : <AccessDenied />}
+                </Tab.Pane>
+                <Tab.Pane eventKey="sms">
+                  {userPermissions.sms ? (
+                    <SMSNOCSettings value={drafts.sms} onChange={(v) => updateDraft("sms", v)} onSave={handleSaveActiveTab} isSaving={isSaving} />
+                  ) : <AccessDenied />}
+                </Tab.Pane>
+                <Tab.Pane eventKey="jwt">
+                  {userPermissions.jwt ? (
+                    <JWTSettings value={drafts.jwt} onChange={(v) => updateDraft("jwt", v)} onSave={handleSaveActiveTab} isSaving={isSaving} />
+                  ) : <AccessDenied />}
+                </Tab.Pane>
+                <Tab.Pane eventKey="google">
+                  {userPermissions.googleContact ? (
+                    <GoogleContactSettings value={drafts.google} onChange={(v) => updateDraft("google", v)} onSave={handleSaveActiveTab} isSaving={isSaving} />
+                  ) : <AccessDenied />}
+                </Tab.Pane>
+                <Tab.Pane eventKey="logs">
+                  {userPermissions.logViewer ? (
+                    <LogViewer value={drafts.logs} onChange={(v) => updateDraft("logs", v)} onSave={handleSaveActiveTab} isSaving={isSaving} />
+                  ) : <AccessDenied />}
+                </Tab.Pane>
+              </Tab.Content>
+            </Col>
+          </Row>
+        </Tab.Container>
+      )}
 
       <ToastContainer position="bottom-end" className="p-3">
         <Toast
@@ -359,5 +396,14 @@ const SystemSettingsPage: React.FC = () => {
     </Container>
   );
 };
+
+const AccessDenied = () => (
+  <Card className="border-0 shadow-sm rounded-4 p-4 text-center">
+    <Card.Body>
+      <h5 className="text-danger fw-bold">প্রবেশাধিকার নেই</h5>
+      <p className="text-muted">আপনার এই সেটিংস দেখার অনুমতি নেই।</p>
+    </Card.Body>
+  </Card>
+);
 
 export default SystemSettingsPage;
