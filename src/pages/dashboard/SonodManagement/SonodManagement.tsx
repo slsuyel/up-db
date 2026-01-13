@@ -65,7 +65,7 @@ const SonodManagement = () => {
           className="my-2 p-3 p-md-4 rounded shadow-sm bg-white d-flex flex-wrap gap-2"
           onFinish={handleSearch}
         >
-          <Form.Item className="mb-0 flex-grow-1" style={{ minWidth: '200px' }}>
+          <Form.Item className="mb-0 flex-grow-1" style={{ minWidth: "200px" }}>
             <Input
               allowClear
               style={{ height: 40 }}
@@ -89,100 +89,100 @@ const SonodManagement = () => {
       </div>
       <hr />
 
-      {
-        isFetching ? (
-          <div className="d-flex justify-content-center my-5 s">
-            {" "}
-            <Spinner />
-          </div>
-        ) : (
-          <>
-            {isMobile ? (
-              <Card title="সনদ নাম্বার দিয়ে খুঁজুন" className="sonodCard">
-                <div className="sonodCardBody">
-                  {allSonod.map((item) => (
-                    <Card key={item.id} style={{ marginBottom: 16 }}>
-                      <p>
-                        <strong>সনদ নাম্বার:</strong> {item.sonod_Id}
-                      </p>
-                      <p>
-                        <strong>নাম:</strong> {item.applicant_name}
-                      </p>
-                      <p>
-                        <strong>পিতার/স্বামীর নাম:</strong>{" "}
-                        {item.applicant_father_name}
-                      </p>
-                      <p>
-                        <strong>গ্রাম/মহল্লা:</strong>{" "}
-                        {item.applicant_present_word_number}
-                      </p>
-                      <p>
-                        <strong>আবেদনের তারিখ:</strong> {item.created_at}
-                      </p>
-                      <SonodActionBtn
-                        condition={condition}
-                        item={item}
-                        sonodName={sonodName}
-                      />
-                      <p
-                        className={`mt-2 fs-6 text-white text-center py-2 ${item.payment_status === "Paid"
+      {isFetching ? (
+        <div className="d-flex justify-content-center my-5 s">
+          {" "}
+          <Spinner />
+        </div>
+      ) : (
+        <>
+          {isMobile ? (
+            <Card title="সনদ নাম্বার দিয়ে খুঁজুন" className="sonodCard">
+              <div className="sonodCardBody">
+                {allSonod.map((item) => (
+                  <Card key={item.id} style={{ marginBottom: 16 }}>
+                    <p>
+                      <strong>সনদ নাম্বার:</strong> {item.sonod_Id}
+                    </p>
+                    <p>
+                      <strong>নাম:</strong> {item.applicant_name}
+                    </p>
+                    <p>
+                      <strong>পিতার/স্বামীর নাম:</strong>{" "}
+                      {item.applicant_father_name}
+                    </p>
+                    <p>
+                      <strong>গ্রাম/মহল্লা:</strong>{" "}
+                      {item.applicant_present_word_number}
+                    </p>
+                    <p>
+                      <strong>আবেদনের তারিখ:</strong> {item.created_at}
+                    </p>
+                    <SonodActionBtn
+                      condition={condition}
+                      item={item}
+                      sonodName={sonodName}
+                    />
+                    <p
+                      className={`mt-2 fs-6 text-white text-center py-2 ${
+                        item.payment_status === "Paid"
                           ? "bg-success"
                           : "bg-danger"
-                          }`}
-                      >
-                        <strong>ফি:</strong> {item.payment_status}
-                      </p>
-                    </Card>
-                  ))}
-                </div>
-              </Card>
-            ) : (
-              <div className="table-responsive">
-                <table className="table table-bordered">
-                  <thead>
-                    <tr className="text-center">
-                      <th scope="col">সনদ নাম্বার</th>
-                      <th scope="col">নাম</th>
-                      <th scope="col">পিতার/স্বামীর নাম</th>
-                      <th scope="col">গ্রাম/মহল্লা</th>
-                      <th scope="col">আবেদনের তারিখ</th>
-                      <th scope="col">ফি</th>
-                      <th scope="col">কার্যক্রম</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allSonod.map((item) => (
-                      <tr key={item.id} className="text-center">
-                        <td>{item.sonod_Id}</td>
-                        <td>{item.applicant_name}</td>
-                        <td>{item.applicant_father_name}</td>
-                        <td>{item.applicant_present_word_number}</td>
-                        <td>{item.created_at}</td>
-                        <td
-                          className={` fs-6 text-white ${item.payment_status === "Paid"
+                      }`}
+                    >
+                      <strong>ফি:</strong> {item.payment_status}
+                    </p>
+                  </Card>
+                ))}
+              </div>
+            </Card>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <thead>
+                  <tr className="text-center">
+                    <th scope="col">সনদ নাম্বার</th>
+                    <th scope="col">নাম</th>
+                    <th scope="col">পিতার/স্বামীর নাম</th>
+                    <th scope="col">গ্রাম/মহল্লা</th>
+                    <th scope="col">আবেদনের তারিখ</th>
+                    <th scope="col">ফি</th>
+                    <th scope="col">কার্যক্রম</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allSonod.map((item) => (
+                    <tr key={item.id} className="text-center">
+                      <td>{item.sonod_Id}</td>
+                      <td>{item.applicant_name}</td>
+                      <td>{item.applicant_father_name}</td>
+                      <td>{item.applicant_present_word_number}</td>
+                      <td>{item.created_at}</td>
+                      <td
+                        className={` fs-6 text-white ${
+                          item.payment_status === "Paid"
                             ? "bg-success"
                             : "bg-danger"
-                            }`}
-                        >
-                          {item.payment_status}
-                        </td>
-                        <td>
-                          <SonodActionBtn
-                            condition={condition}
-                            item={item}
-                            sonodName={sonodName}
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </>
-        )
-      }
-    </div >
+                        }`}
+                      >
+                        {item.payment_status}
+                      </td>
+                      <td>
+                        <SonodActionBtn
+                          condition={condition}
+                          item={item}
+                          sonodName={sonodName}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 };
 

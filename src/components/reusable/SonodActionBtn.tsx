@@ -32,7 +32,7 @@ const SonodActionBtn = ({
   return (
     <>
       <div
-        className="d-flex justify-content-center flex-wrap gap-2"
+        className="d-flex justify-content-center align-items-center flex-wrap gap-2"
         role="group"
         aria-label="Actions"
       >
@@ -42,6 +42,15 @@ const SonodActionBtn = ({
             className="btn btn-info btn-sm mr-1"
           >
             এডিট করুন
+          </Link>
+        )}
+
+        {item.hasEnData == 1 && (
+          <Link
+            className="text-decoration-none"
+            to={`/dashboard/sonod/${sonodName}/action/edit-english/${item.id}`}
+          >
+            ইংরেজি সনদ এডিট করুন
           </Link>
         )}
 
@@ -68,7 +77,7 @@ const SonodActionBtn = ({
           রশিদ প্রিন্ট
         </Link>
 
-        {condition == "approved" && (
+        {/* {condition == "approved" && (
           <Link
             target="_blank"
             to={`${VITE_BASE_DOC_URL}/sonod/download/${item.id}`}
@@ -76,6 +85,27 @@ const SonodActionBtn = ({
           >
             সনদ
           </Link>
+        )} */}
+
+        {condition === "approved" && (
+          <td>
+            <Link
+              target="_blank"
+              to={`${VITE_BASE_DOC_URL}/sonod/download/${item.id}`}
+              className="btn btn-success btn-sm me-1"
+            >
+              বাংলা সনদ
+            </Link>
+            {item.hasEnData == 1 && (
+              <Link
+                target="_blank"
+                to={`${VITE_BASE_DOC_URL}/sonod/download/${item.id}?en=true`}
+                className="btn btn-success btn-sm mr-1"
+              >
+                ইংরেজি সনদ
+              </Link>
+            )}
+          </td>
         )}
       </div>
 
