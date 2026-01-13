@@ -548,6 +548,17 @@ export default function SonodSearch() {
               </Tooltip>
               <div className="d-flex gap-2 action-buttons">
                 {/* Edit (internal route) */}
+
+                <Link
+                  to={`/dashboard/sonod/${encodeURIComponent(
+                    result.data.sonod_name
+                  )}/action/admin-edit/${result.data.id}`}
+                  className="btn btn-outline-info fw-bold text-decoration-none"
+                >
+                  <i className="fas fa-edit me-2"></i>
+                  Admin এডিট
+                </Link>
+
                 {"id" in result.data && (
                   <Link
                     to={`/dashboard/sonod/${encodeURIComponent(

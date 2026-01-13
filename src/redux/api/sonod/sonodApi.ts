@@ -114,6 +114,17 @@ const sonodApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["sonod-action"],
     }),
+    sonodUpdateCancel: builder.mutation({
+      query: ({ id, data, token }) => ({
+        url: `admin/sonod/update-or-cancel/${id}`,
+        method: "POST",
+        body: data,
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }),
+      invalidatesTags: ["sonod-action"],
+    }),
   }),
 });
 
@@ -129,4 +140,5 @@ export const {
   useUpdateSonodFeesMutation,
   useRenewPreviousHoldingMutation,
   useEnglishSonodUpdateMutation,
+  useSonodUpdateCancelMutation,
 } = sonodApi;
