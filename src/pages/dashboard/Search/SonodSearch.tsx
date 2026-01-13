@@ -1,62 +1,62 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-"use client"
+"use client";
 
-import useAllServices from "@/hooks/useAllServices"
-import { useState, useEffect } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
-import { Card, Button, Form, Badge, Spinner, Row, Col } from "react-bootstrap"
-import { message, Tooltip } from "antd"
+import useAllServices from "@/hooks/useAllServices";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { Card, Button, Form, Badge, Spinner, Row, Col } from "react-bootstrap";
+import { message, Tooltip } from "antd";
 
 interface SonodData {
-  id: number
-  unioun_name: string
-  year: string
-  sonod_Id: string
-  sonod_name: string
-  applicant_national_id_number: string
-  applicant_birth_certificate_number: string | null
-  applicant_name: string
-  applicant_date_of_birth: string | null
-  applicant_gender: string
-  payment_status: string
-  stutus: string
-  successor_list: string
-  orthoBchor: string
-  renewed_id: number | null
-  renewed: number
-  hasEnData: number
-  renew_able: boolean
-  download_url: string
-  download_url_en: string
+  id: number;
+  unioun_name: string;
+  year: string;
+  sonod_Id: string;
+  sonod_name: string;
+  applicant_national_id_number: string;
+  applicant_birth_certificate_number: string | null;
+  applicant_name: string;
+  applicant_date_of_birth: string | null;
+  applicant_gender: string;
+  payment_status: string;
+  stutus: string;
+  successor_list: string;
+  orthoBchor: string;
+  renewed_id: number | null;
+  renewed: number;
+  hasEnData: number;
+  renew_able: boolean;
+  download_url: string;
+  download_url_en: string;
 }
 
 interface ErrorDetail {
-  code: number
-  message: string
-  errMsg: string
+  code: number;
+  message: string;
+  errMsg: string;
 }
 
 interface ApiResponse {
-  data: SonodData | { message: string; data: null }
-  isError: boolean
-  error: ErrorDetail | null
-  status_code: number
+  data: SonodData | { message: string; data: null };
+  isError: boolean;
+  error: ErrorDetail | null;
+  status_code: number;
 }
 
 export default function SonodSearch() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const services = useAllServices()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const services = useAllServices();
 
-  const searchParams = new URLSearchParams(location.search)
-  const urlSonodName = searchParams.get("sonod_name") || ""
-  const urlSonodId = searchParams.get("sonod_Id") || ""
+  const searchParams = new URLSearchParams(location.search);
+  const urlSonodName = searchParams.get("sonod_name") || "";
+  const urlSonodId = searchParams.get("sonod_Id") || "";
 
-  const [sonodName, setSonodName] = useState<string>(urlSonodName)
-  const [sonodId, setSonodId] = useState<string>(urlSonodId)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [result, setResult] = useState<ApiResponse | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [sonodName, setSonodName] = useState<string>(urlSonodName);
+  const [sonodId, setSonodId] = useState<string>(urlSonodId);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [result, setResult] = useState<ApiResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const VITE_BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
   const VITE_BASE_DOC_URL = import.meta.env.VITE_BASE_DOC_URL;
@@ -69,76 +69,120 @@ export default function SonodSearch() {
   };
 
   const fetchData = async (name: string, id: string) => {
-    if (!id && !name) return
+    if (!id && !name) return;
 
-    setIsLoading(true)
-    setError(null)
-    setResult(null)
+    setIsLoading(true);
+    setError(null);
+    setResult(null);
 
     try {
-      const encodedName = encodeURIComponent(name)
-      const url = `${VITE_BASE_API_URL}/sonod/search?sonod_name=${encodedName}&sonod_Id=${id}`
+      const encodedName = encodeURIComponent(name);
+      const url = `${VITE_BASE_API_URL}/sonod/search?sonod_name=${encodedName}&sonod_Id=${id}`;
 
-      const response = await fetch(url)
-      const data = await response.json()
-      setResult(data)
+      const response = await fetch(url);
+      const data = await response.json();
+      setResult(data);
     } catch (err) {
-      setError("সার্ভারে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।")
+      setError("সার্ভারে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleSearch = () => {
     if (!sonodId && !sonodName) {
-      message.warning("অনুগ্রহ করে সনদ নাম বা সনদ আইডি প্রদান করুন")
-      return
+      message.warning("অনুগ্রহ করে সনদ নাম বা সনদ আইডি প্রদান করুন");
+      return;
     }
 
-    const params = new URLSearchParams()
-    if (sonodName) params.set("sonod_name", sonodName)
-    if (sonodId) params.set("sonod_Id", sonodId)
+    const params = new URLSearchParams();
+    if (sonodName) params.set("sonod_name", sonodName);
+    if (sonodId) params.set("sonod_Id", sonodId);
 
-    navigate(`?${params.toString()}`)
-    fetchData(sonodName, sonodId)
-  }
+    navigate(`?${params.toString()}`);
+    fetchData(sonodName, sonodId);
+  };
 
   useEffect(() => {
     if (urlSonodName || urlSonodId) {
-      fetchData(urlSonodName, urlSonodId)
+      fetchData(urlSonodName, urlSonodId);
     }
-  }, [urlSonodName, urlSonodId])
+  }, [urlSonodName, urlSonodId]);
 
   const getErrorMessage = () => {
-    if (error) return error
+    if (error) return error;
     if (result && result.isError) {
-      if (result.data && typeof result.data === "object" && "message" in result.data) {
-        return result.data.message
+      if (
+        result.data &&
+        typeof result.data === "object" &&
+        "message" in result.data
+      ) {
+        return result.data.message;
       }
       if (result.error && result.error.message) {
-        return result.error.message
+        return result.error.message;
       }
-      return "কোন সনদ পাওয়া যায়নি। অনুগ্রহ করে সঠিক তথ্য দিয়ে আবার চেষ্টা করুন।"
+      return "কোন সনদ পাওয়া যায়নি। অনুগ্রহ করে সঠিক তথ্য দিয়ে আবার চেষ্টা করুন।";
     }
-    return null
-  }
+    return null;
+  };
 
-  const errorMessage = getErrorMessage()
+  const errorMessage = getErrorMessage();
 
   const renderStatusBadge = (status: string) => {
-    const badgeStyle = { fontSize: '14px', padding: '8px 15px', fontWeight: '700' };
+    const badgeStyle = {
+      fontSize: "14px",
+      padding: "8px 15px",
+      fontWeight: "700",
+    };
     if (status === "approved" || status === "অনুমোদিত") {
-      return <Badge bg="success" className="rounded-pill shadow-sm border border-success" style={badgeStyle}><i className="fas fa-check-circle me-2"></i> অনুমোদিত</Badge>;
+      return (
+        <Badge
+          bg="success"
+          className="rounded-pill shadow-sm border border-success"
+          style={badgeStyle}
+        >
+          <i className="fas fa-check-circle me-2"></i> অনুমোদিত
+        </Badge>
+      );
     }
-    return <Badge bg="secondary" className="rounded-pill shadow-sm" style={badgeStyle}><i className="fas fa-info-circle me-2"></i> {status}</Badge>;
+    return (
+      <Badge
+        bg="secondary"
+        className="rounded-pill shadow-sm"
+        style={badgeStyle}
+      >
+        <i className="fas fa-info-circle me-2"></i> {status}
+      </Badge>
+    );
   };
 
   const renderPaymentBadge = (status: string) => {
-    const badgeStyle = { fontSize: '13px', padding: '6px 12px', fontWeight: '700' };
+    const badgeStyle = {
+      fontSize: "13px",
+      padding: "6px 12px",
+      fontWeight: "700",
+    };
     if (status === "Paid" || status === "পরিশোধিত") {
-      return <Badge bg="primary" className="rounded-pill shadow-sm border border-primary" style={badgeStyle}><i className="fas fa-money-check-alt me-2"></i> পরিশোধিত</Badge>;
+      return (
+        <Badge
+          bg="primary"
+          className="rounded-pill shadow-sm border border-primary"
+          style={badgeStyle}
+        >
+          <i className="fas fa-money-check-alt me-2"></i> পরিশোধিত
+        </Badge>
+      );
     }
-    return <Badge bg="secondary" className="rounded-pill shadow-sm" style={badgeStyle}><i className="fas fa-clock me-2"></i> {status}</Badge>;
+    return (
+      <Badge
+        bg="secondary"
+        className="rounded-pill shadow-sm"
+        style={badgeStyle}
+      >
+        <i className="fas fa-clock me-2"></i> {status}
+      </Badge>
+    );
   };
 
   return (
@@ -193,7 +237,9 @@ export default function SonodSearch() {
 
       <div className="text-center mb-5">
         <h3 className="fw-bold text-primary mb-2">সনদ অনুসন্ধান</h3>
-        <p className="text-muted">আপনার সনদ নাম বা সনদ আইডি দিয়ে অনুসন্ধান করুন</p>
+        <p className="text-muted">
+          আপনার সনদ নাম বা সনদ আইডি দিয়ে অনুসন্ধান করুন
+        </p>
       </div>
 
       <Card className="search-card mb-4 shadow-sm border-0">
@@ -262,7 +308,9 @@ export default function SonodSearch() {
         <Card className="result-card shadow-sm border-0 mb-4 h-100">
           <Card.Body className="p-5 text-center">
             <Spinner animation="grow" variant="primary" className="mb-3" />
-            <h5 className="text-muted">তথ্য পাওয়া যাচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</h5>
+            <h5 className="text-muted">
+              তথ্য পাওয়া যাচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...
+            </h5>
           </Card.Body>
         </Card>
       )}
@@ -272,13 +320,18 @@ export default function SonodSearch() {
           <Card.Header className="bg-primary bg-opacity-10 border-bottom-0 p-4">
             <div className="d-flex justify-content-between align-items-center result-header">
               <div>
-                <h4 className="fw-bold text-primary mb-1">{result.data.sonod_name}</h4>
+                <h4 className="fw-bold text-primary mb-1">
+                  {result.data.sonod_name}
+                </h4>
                 <Tooltip title="কপি করতে ক্লিক করুন">
                   <p
                     className="text-muted mb-0 fw-semibold copyable-text"
-                    onClick={() => "id" in result.data && handleCopy(result.data.sonod_Id)}
+                    onClick={() =>
+                      "id" in result.data && handleCopy(result.data.sonod_Id)
+                    }
                   >
-                    সনদ আইডিঃ {result.data.sonod_Id} <i className="far fa-copy ms-1 small"></i>
+                    সনদ আইডিঃ {result.data.sonod_Id}{" "}
+                    <i className="far fa-copy ms-1 small"></i>
                   </p>
                 </Tooltip>
               </div>
@@ -293,35 +346,73 @@ export default function SonodSearch() {
               <Col md={6}>
                 <div className="p-3 bg-light rounded-3 h-100">
                   <div className="mb-4">
-                    <div className="detail-label"><i className="fas fa-user me-2"></i>আবেদনকারীর নাম</div>
+                    <div className="detail-label">
+                      <i className="fas fa-user me-2"></i>আবেদনকারীর নাম
+                    </div>
                     <Tooltip title="কপি করতে ক্লিক করুন">
-                      <div className="detail-value copyable-text" onClick={() => "id" in result.data && handleCopy(result.data.applicant_name)}>
+                      <div
+                        className="detail-value copyable-text"
+                        onClick={() =>
+                          "id" in result.data &&
+                          handleCopy(result.data.applicant_name)
+                        }
+                      >
                         {"id" in result.data && result.data.applicant_name}
                       </div>
                     </Tooltip>
                   </div>
                   <div className="mb-4">
-                    <div className="detail-label"><i className="fas fa-id-card me-2"></i>জাতীয় পরিচয়পত্র নম্বর</div>
+                    <div className="detail-label">
+                      <i className="fas fa-id-card me-2"></i>জাতীয় পরিচয়পত্র
+                      নম্বর
+                    </div>
                     <Tooltip title="কপি করতে ক্লিক করুন">
-                      <div className="detail-value copyable-text" onClick={() => "id" in result.data && handleCopy(result.data.applicant_national_id_number)}>
-                        {"id" in result.data && result.data.applicant_national_id_number}
+                      <div
+                        className="detail-value copyable-text"
+                        onClick={() =>
+                          "id" in result.data &&
+                          handleCopy(result.data.applicant_national_id_number)
+                        }
+                      >
+                        {"id" in result.data &&
+                          result.data.applicant_national_id_number}
                       </div>
                     </Tooltip>
                   </div>
                   {result.data.applicant_birth_certificate_number && (
                     <div className="mb-4">
-                      <div className="detail-label"><i className="fas fa-baby me-2"></i>জন্ম নিবন্ধন নম্বর</div>
+                      <div className="detail-label">
+                        <i className="fas fa-baby me-2"></i>জন্ম নিবন্ধন নম্বর
+                      </div>
                       <Tooltip title="কপি করতে ক্লিক করুন">
-                        <div className="detail-value copyable-text" onClick={() => "id" in result.data && result.data.applicant_birth_certificate_number && handleCopy(result.data.applicant_birth_certificate_number)}>
-                          {"id" in result.data && result.data.applicant_birth_certificate_number}
+                        <div
+                          className="detail-value copyable-text"
+                          onClick={() =>
+                            "id" in result.data &&
+                            result.data.applicant_birth_certificate_number &&
+                            handleCopy(
+                              result.data.applicant_birth_certificate_number
+                            )
+                          }
+                        >
+                          {"id" in result.data &&
+                            result.data.applicant_birth_certificate_number}
                         </div>
                       </Tooltip>
                     </div>
                   )}
                   <div className="mb-0">
-                    <div className="detail-label"><i className="fas fa-venus-mars me-2"></i>লিঙ্গ</div>
+                    <div className="detail-label">
+                      <i className="fas fa-venus-mars me-2"></i>লিঙ্গ
+                    </div>
                     <Tooltip title="কপি করতে ক্লিক করুন">
-                      <div className="detail-value copyable-text" onClick={() => "id" in result.data && handleCopy(result.data.applicant_gender)}>
+                      <div
+                        className="detail-value copyable-text"
+                        onClick={() =>
+                          "id" in result.data &&
+                          handleCopy(result.data.applicant_gender)
+                        }
+                      >
                         {"id" in result.data && result.data.applicant_gender}
                       </div>
                     </Tooltip>
@@ -331,35 +422,68 @@ export default function SonodSearch() {
               <Col md={6}>
                 <div className="p-3 bg-light rounded-3 h-100">
                   <div className="mb-4">
-                    <div className="detail-label"><i className="fas fa-university me-2"></i>ইউনিয়ন</div>
+                    <div className="detail-label">
+                      <i className="fas fa-university me-2"></i>ইউনিয়ন
+                    </div>
                     <Tooltip title="কপি করতে ক্লিক করুন">
-                      <div className="detail-value copyable-text" onClick={() => "id" in result.data && handleCopy(result.data.unioun_name)}>
+                      <div
+                        className="detail-value copyable-text"
+                        onClick={() =>
+                          "id" in result.data &&
+                          handleCopy(result.data.unioun_name)
+                        }
+                      >
                         {"id" in result.data && result.data.unioun_name}
                       </div>
                     </Tooltip>
                   </div>
                   {result.data.applicant_date_of_birth && (
                     <div className="mb-4">
-                      <div className="detail-label"><i className="fas fa-birthday-cake me-2"></i>জন্ম তারিখ</div>
+                      <div className="detail-label">
+                        <i className="fas fa-birthday-cake me-2"></i>জন্ম তারিখ
+                      </div>
                       <Tooltip title="কপি করতে ক্লিক করুন">
-                        <div className="detail-value copyable-text" onClick={() => "id" in result.data && result.data.applicant_date_of_birth && handleCopy(result.data.applicant_date_of_birth)}>
-                          {"id" in result.data && result.data.applicant_date_of_birth}
+                        <div
+                          className="detail-value copyable-text"
+                          onClick={() =>
+                            "id" in result.data &&
+                            result.data.applicant_date_of_birth &&
+                            handleCopy(result.data.applicant_date_of_birth)
+                          }
+                        >
+                          {"id" in result.data &&
+                            result.data.applicant_date_of_birth}
                         </div>
                       </Tooltip>
                     </div>
                   )}
                   <div className="mb-4">
-                    <div className="detail-label"><i className="fas fa-calendar-alt me-2"></i>অর্থবছর</div>
+                    <div className="detail-label">
+                      <i className="fas fa-calendar-alt me-2"></i>অর্থবছর
+                    </div>
                     <Tooltip title="কপি করতে ক্লিক করুন">
-                      <div className="detail-value copyable-text" onClick={() => "id" in result.data && handleCopy(result.data.orthoBchor)}>
+                      <div
+                        className="detail-value copyable-text"
+                        onClick={() =>
+                          "id" in result.data &&
+                          handleCopy(result.data.orthoBchor)
+                        }
+                      >
                         {"id" in result.data && result.data.orthoBchor}
                       </div>
                     </Tooltip>
                   </div>
                   <div className="mb-0">
-                    <div className="detail-label"><i className="fas fa-history me-2"></i>ইস্যু বছর</div>
+                    <div className="detail-label">
+                      <i className="fas fa-history me-2"></i>ইস্যু বছর
+                    </div>
                     <Tooltip title="কপি করতে ক্লিক করুন">
-                      <div className="detail-value copyable-text" onClick={() => "id" in result.data && handleCopy(result.data.year)}>
+                      <div
+                        className="detail-value copyable-text"
+                        onClick={() =>
+                          "id" in result.data && handleCopy(result.data.year)
+                        }
+                      >
                         {"id" in result.data && result.data.year}
                       </div>
                     </Tooltip>
@@ -375,9 +499,22 @@ export default function SonodSearch() {
                 <Row className="mb-4">
                   <Col md={12}>
                     <div className="p-4 bg-white rounded-3 shadow-sm border-start border-4 border-primary">
-                      <div className="detail-label text-primary mb-3"><i className="fas fa-users me-2"></i>উত্তরাধিকারী তালিকা</div>
+                      <div className="detail-label text-primary mb-3">
+                        <i className="fas fa-users me-2"></i>উত্তরাধিকারী তালিকা
+                      </div>
                       <Tooltip title="কপি করতে ক্লিক করুন">
-                        <div className="detail-value copyable-text" style={{ fontSize: '16px', color: '#1e293b', lineHeight: '1.6' }} onClick={() => "id" in result.data && handleCopy(result.data.successor_list)}>
+                        <div
+                          className="detail-value copyable-text"
+                          style={{
+                            fontSize: "16px",
+                            color: "#1e293b",
+                            lineHeight: "1.6",
+                          }}
+                          onClick={() =>
+                            "id" in result.data &&
+                            handleCopy(result.data.successor_list)
+                          }
+                        >
                           {"id" in result.data && result.data.successor_list}
                         </div>
                       </Tooltip>
@@ -392,59 +529,95 @@ export default function SonodSearch() {
               <Tooltip title="কপি করতে ক্লিক করুন">
                 <div
                   className="text-primary fw-bold copyable-text px-4 py-2 bg-primary bg-opacity-10 rounded-3 shadow-sm mb-3 mb-md-0"
-                  style={{ fontSize: '18px', border: '1px solid rgba(13, 110, 253, 0.3)' }}
-                  onClick={() => "id" in result.data && handleCopy(result.data.id.toString())}
+                  style={{
+                    fontSize: "18px",
+                    border: "1px solid rgba(13, 110, 253, 0.3)",
+                  }}
+                  onClick={() =>
+                    "id" in result.data && handleCopy(result.data.id.toString())
+                  }
                 >
-                  <span className="small text-muted me-2" style={{ fontSize: '14px' }}>DATABASE ID:</span> {result.data.id} <i className="far fa-copy ms-2 small"></i>
+                  <span
+                    className="small text-muted me-2"
+                    style={{ fontSize: "14px" }}
+                  >
+                    DATABASE ID:
+                  </span>{" "}
+                  {result.data.id} <i className="far fa-copy ms-2 small"></i>
                 </div>
               </Tooltip>
               <div className="d-flex gap-2 action-buttons">
-                <Button
-                  onClick={() => "id" in result.data && navigate(`/dashboard/sonod/${encodeURIComponent(result.data.sonod_name)}/action/edit/${result.data.id}`)}
-                  variant="outline-info"
-                  className="fw-bold"
-                >
-                  <i className="fas fa-edit me-2"></i>
-                  এডিট করুন
-                </Button>
-
-                <Tooltip title="প্রাপ্তী স্বীকারপত্র">
-                  <Button
-                    as="a"
-                    href={`${VITE_BASE_DOC_URL}/applicant/copy/download/${result.data.id}`}
-                    variant="outline-secondary"
-                    target="_blank"
-                    className="fw-bold"
+                {/* Edit (internal route) */}
+                {"id" in result.data && (
+                  <Link
+                    to={`/dashboard/sonod/${encodeURIComponent(
+                      result.data.sonod_name
+                    )}/action/edit/${result.data.id}`}
+                    className="btn btn-outline-info fw-bold text-decoration-none"
                   >
-                    <i className="fas fa-file-invoice me-2"></i>
-                    রশিদ
-                  </Button>
-                </Tooltip>
+                    <i className="fas fa-edit me-2"></i>
+                    এডিট করুন
+                  </Link>
+                )}
 
-                <Tooltip title="রশিদ প্রিন্ট">
-                  <Button
-                    as="a"
-                    href={`${VITE_BASE_DOC_URL}/sonod/invoice/download/${result.data.id}`}
-                    variant="outline-primary"
-                    target="_blank"
-                    className="fw-bold"
+                {/* English Edit */}
+                {result.data.hasEnData == 1 && (
+                  <Link
+                    to={`/dashboard/sonod/${encodeURIComponent(
+                      result.data.sonod_name
+                    )}/action/edit-english/${result.data.id}`}
+                    className="btn btn-outline-warning fw-bold text-decoration-none"
                   >
-                    <i className="fas fa-print me-2"></i>
-                    ইনভয়েস
-                  </Button>
-                </Tooltip>
+                    <i className="fas fa-language me-2"></i>
+                    ইংরেজি সনদ এডিট করুন
+                  </Link>
+                )}
 
-                <Button
-                  as="a"
-                  href={result.data.download_url}
-                  variant="success"
+                {/* Receipt */}
+                <a
+                  href={`${VITE_BASE_DOC_URL}/applicant/copy/download/${result.data.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="fw-bold px-4 shadow-sm"
+                  className="btn btn-outline-secondary fw-bold"
+                  title="প্রাপ্তী স্বীকারপত্র"
+                >
+                  <i className="fas fa-file-invoice me-2"></i>
+                  রশিদ
+                </a>
+
+                {/* Invoice */}
+                <a
+                  href={`${VITE_BASE_DOC_URL}/sonod/invoice/download/${result.data.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline-primary fw-bold"
+                  title="রশিদ প্রিন্ট"
+                >
+                  <i className="fas fa-print me-2"></i>
+                  ইনভয়েস
+                </a>
+
+                {/* Download Certificate */}
+                <a
+                  href={result.data.download_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-success fw-bold px-4 shadow-sm"
                 >
                   <i className="fas fa-download me-2"></i>
                   সনদ ডাউনলোড
-                </Button>
+                </a>
+
+                {result.data.hasEnData == 1 && (
+                  <a
+                    href={`${VITE_BASE_DOC_URL}/sonod/download/${result.data.id}?en=true`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-success btn-sm me-1"
+                  >
+                    ইংরেজি সনদ
+                  </a>
+                )}
               </div>
             </div>
           </Card.Body>
@@ -460,5 +633,5 @@ export default function SonodSearch() {
         </Card>
       )}
     </div>
-  )
+  );
 }
