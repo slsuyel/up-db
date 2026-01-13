@@ -196,7 +196,7 @@ const AdminSonodEdit = () => {
                   }
                 >
                   <Option value="bangla">Bangla</Option>
-                  <Option value="english">English</Option>
+                  <Option value="noto_sans_bengali">noto_sans_bengali</Option>
                 </Select>
               </div>
               <div className="col-md-4">
