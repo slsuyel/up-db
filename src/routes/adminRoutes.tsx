@@ -22,6 +22,8 @@ import SupportPage from "@/pages/Supports/Support";
 import SystemSettings from "@/pages/SystemSettings/SystemSettingsPage";
 import EkpayPaymentReportList from "@/pages/dashboard/Report/EkpayPaymentReportList";
 import NotFound from "@/pages/dashboard/NotFound";
+import EnglishEditSonod from "@/pages/dashboard/SonodManagement/EnglishEditSonod";
+import AdminSonodEdit from "@/pages/dashboard/SonodManagement/AdminSonodEdit";
 
 export const adminRoutes = [
   {
@@ -92,8 +94,16 @@ export const adminRoutes = [
     element: <SonodManagement />,
   },
   {
+    path: "sonod/:service/action/admin-edit/:id",
+    element: <AdminSonodEdit />,
+  },
+  {
     path: "sonod/:service/action/edit/:id",
     element: <EditSonod />,
+  },
+  {
+    path: "sonod/:service/action/edit-english/:id",
+    element: <EnglishEditSonod />,
   },
   {
     path: "settings",

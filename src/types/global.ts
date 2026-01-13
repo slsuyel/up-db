@@ -94,6 +94,7 @@ export type TService = {
 
 export interface TApplicantData {
   unioun_name?: string;
+  hasEnData?: any;
   applicant_name?: string;
   applicant_gender?: string;
   applicant_father_name?: string;
@@ -128,6 +129,7 @@ export interface TApplicantData {
   uniqeKey: string;
 
   sonod_name: string;
+  organization_word_no?: string | number | any;
   successor_father_name: string | null;
   successor_mother_name: string | null;
   ut_father_name: string | null;
@@ -307,11 +309,11 @@ export interface SonodReport {
 }
 
 export interface Totals {
-  total_pending: string;   // eg: "৫১৬৪"
-  total_approved: string;  // eg: "২৫৫২৭৭"
-  total_cancel: string;    // eg: "১৭৪৫"
-  total_payments: string;  // eg: "৩১৬৫৪০"
-  total_amount: string;    // eg: "০.০০"
+  total_pending: string; // eg: "৫১৬৪"
+  total_approved: string; // eg: "২৫৫২৭৭"
+  total_cancel: string; // eg: "১৭৪৫"
+  total_payments: string; // eg: "৩১৬৫৪০"
+  total_amount: string; // eg: "০.০০"
 }
 export interface TPaymentFailed {
   id: number;

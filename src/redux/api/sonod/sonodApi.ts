@@ -6,16 +6,17 @@ const sonodApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     allSonod: builder.query({
       query: ({ sonodName, stutus, token, sondId, union }) => ({
-        url: `admin/sonod/list?sonod_name=${sonodName}&stutus=${stutus}&union=${union}${sondId ? `&sondId=${sondId}` : ""
-          }`,
+        url: `admin/sonod/list?sonod_name=${sonodName}&stutus=${stutus}&union=${union}${
+          sondId ? `&sondId=${sondId}` : ""
+        }`,
         method: "Get",
         headers: { Authorization: `Bearer ${token}` },
       }),
       providesTags: ["sonod-action"],
     }),
     singleSonod: builder.query({
-      query: ({ token, id }) => ({
-        url: `/admin/sonod/single/${id}`,
+      query: ({ token, id, en = false }) => ({
+        url: `/admin/sonod/single/${id}?en=${en}`,
         method: "Get",
         headers: { Authorization: `Bearer ${token}` },
       }),
@@ -24,8 +25,9 @@ const sonodApi = apiSlice.injectEndpoints({
 
     allHolding: builder.query({
       query: ({ word, token, search }) => ({
-        url: `/user/holdingtax?page=1&word=${word}${search ? `&search=${search}` : ""
-          }`,
+        url: `/user/holdingtax?page=1&word=${word}${
+          search ? `&search=${search}` : ""
+        }`,
         method: "Get",
         headers: { Authorization: `Bearer ${token}` },
       }),
@@ -50,9 +52,6 @@ const sonodApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["holding"],
     }),
-
-
-
 
     sonodAction: builder.mutation({
       query: ({ id, token }) => ({
@@ -100,13 +99,32 @@ const sonodApi = apiSlice.injectEndpoints({
         url: `admin/holding-tax/Renew?unioun=${union}`,
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       }),
     }),
-
-
-
+    englishSonodUpdate: builder.mutation({
+      query: ({ id, data, token }) => ({
+        url: `/admin/english/sonod/update/${id}`,
+        method: "PUT",
+        body: data,
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }),
+      invalidatesTags: ["sonod-action"],
+    }),
+    sonodUpdateCancel: builder.mutation({
+      query: ({ id, data, token }) => ({
+        url: `admin/sonod/update-or-cancel/${id}`,
+        method: "POST",
+        body: data,
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }),
+      invalidatesTags: ["sonod-action"],
+    }),
   }),
 });
 
@@ -120,5 +138,7 @@ export const {
   useSonodUpdateMutation,
   useSonodFeesMutation,
   useUpdateSonodFeesMutation,
-  useRenewPreviousHoldingMutation
+  useRenewPreviousHoldingMutation,
+  useEnglishSonodUpdateMutation,
+  useSonodUpdateCancelMutation,
 } = sonodApi;
