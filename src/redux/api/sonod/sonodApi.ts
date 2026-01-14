@@ -6,9 +6,8 @@ const sonodApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     allSonod: builder.query({
       query: ({ sonodName, stutus, token, sondId, union }) => ({
-        url: `admin/sonod/list?sonod_name=${sonodName}&stutus=${stutus}&union=${union}${
-          sondId ? `&sondId=${sondId}` : ""
-        }`,
+        url: `admin/sonod/list?sonod_name=${sonodName}&stutus=${stutus}&union=${union}${sondId ? `&sondId=${sondId}` : ""
+          }`,
         method: "Get",
         headers: { Authorization: `Bearer ${token}` },
       }),
@@ -25,9 +24,8 @@ const sonodApi = apiSlice.injectEndpoints({
 
     allHolding: builder.query({
       query: ({ word, token, search }) => ({
-        url: `/user/holdingtax?page=1&word=${word}${
-          search ? `&search=${search}` : ""
-        }`,
+        url: `/user/holdingtax?page=1&word=${word}${search ? `&search=${search}` : ""
+          }`,
         method: "Get",
         headers: { Authorization: `Bearer ${token}` },
       }),
@@ -125,6 +123,13 @@ const sonodApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["sonod-action"],
     }),
+    getSonodDetails: builder.query({
+      query: ({ id, token }) => ({
+        url: `admin/genarate/sonod/details/${id}`,
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    }),
   }),
 });
 
@@ -141,4 +146,5 @@ export const {
   useRenewPreviousHoldingMutation,
   useEnglishSonodUpdateMutation,
   useSonodUpdateCancelMutation,
+  useLazyGetSonodDetailsQuery,
 } = sonodApi;
