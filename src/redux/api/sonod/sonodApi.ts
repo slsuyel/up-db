@@ -124,8 +124,8 @@ const sonodApi = apiSlice.injectEndpoints({
       invalidatesTags: ["sonod-action"],
     }),
     getSonodDetails: builder.query({
-      query: ({ id, token }) => ({
-        url: `admin/genarate/sonod/details/${id}`,
+      query: ({ id, token, sonod_name }) => ({
+        url: `admin/genarate/sonod/details/${id}${sonod_name ? `?sonod_name=${sonod_name}` : ""}`,
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       }),

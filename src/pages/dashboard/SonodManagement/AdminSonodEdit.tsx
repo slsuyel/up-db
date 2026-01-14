@@ -238,6 +238,7 @@ const AdminSonodEdit = ({ sonodId, sonodName }: AdminSonodEditProps) => {
                 <Select
                   className="w-100 "
                   style={{ height: 42 }}
+                  getPopupContainer={(trigger) => trigger.parentElement}
                   value={basicData.orthoBchor}
                   placeholder="অর্থবছর নির্বাচন করুন"
                   onChange={(v) =>
@@ -261,6 +262,7 @@ const AdminSonodEdit = ({ sonodId, sonodName }: AdminSonodEditProps) => {
                 <Select
                   className="w-100 "
                   style={{ height: 42 }}
+                  getPopupContainer={(trigger) => trigger.parentElement}
                   value={basicData.format}
                   onChange={(v) => setBasicData({ ...basicData, format: v })}
                 >
@@ -273,6 +275,7 @@ const AdminSonodEdit = ({ sonodId, sonodName }: AdminSonodEditProps) => {
                 <Select
                   className="w-100 "
                   style={{ height: 42 }}
+                  getPopupContainer={(trigger) => trigger.parentElement}
                   value={basicData.font_family}
                   onChange={(v) =>
                     setBasicData({ ...basicData, font_family: v })
@@ -389,7 +392,7 @@ const AdminSonodEdit = ({ sonodId, sonodName }: AdminSonodEditProps) => {
                     <label className="form-label fw-bold mb-0 text-primary">API থেকে প্রাপ্ত বিবরণ</label>
                     <Button
                       size="middle"
-                      onClick={() => triggerGetDetails({ id, token })}
+                      onClick={() => triggerGetDetails({ id: data?.data?.id || id, token })}
                       loading={detailsFetching}
                       type="primary"
                       icon={<ReloadOutlined />}
@@ -462,6 +465,7 @@ const AdminSonodEdit = ({ sonodId, sonodName }: AdminSonodEditProps) => {
               <label className="form-label fw-semibold">চেয়ারম্যানের নাম</label>
               <Input
                 value={chairmanData.chaireman_name}
+                disabled={chairmanData.isupdate_chaireman_name_from_unioninfo}
                 onChange={(e) =>
                   setChairmanData({
                     ...chairmanData,
@@ -484,16 +488,26 @@ const AdminSonodEdit = ({ sonodId, sonodName }: AdminSonodEditProps) => {
             </div>
             <div className="mb-3">
               <label className="form-label fw-semibold">ধরন / পদবী</label>
-              <Input
-                className="form-control"
+              <Select
+                className="w-100"
+                style={{ height: 42 }}
+                disabled={chairmanData.isupdate_chaireman_type_from_unioninfo}
+                getPopupContainer={(trigger) => trigger.parentElement}
                 value={chairmanData.chaireman_type}
-                onChange={(e) =>
+                onChange={(v) =>
                   setChairmanData({
                     ...chairmanData,
-                    chaireman_type: e.target.value,
+                    chaireman_type: v,
                   })
                 }
-              />
+              >
+                <Option value="চেয়ারম্যান">চেয়ারম্যান</Option>
+                <Option value="প্যানেল চেয়ারম্যান ১">প্যানেল চেয়ারম্যান ১</Option>
+                <Option value="প্যানেল চেয়ারম্যান ২">প্যানেল চেয়ারম্যান ২</Option>
+                <Option value="প্যানেল চেয়ারম্যান ৩">প্যানেল চেয়ারম্যান ৩</Option>
+                <Option value="প্রশাসক">প্রশাসক</Option>
+                <Option value="সদস্য/সদস্যা">সদস্য/সদস্যা</Option>
+              </Select>
               <Checkbox
                 checked={chairmanData.isupdate_chaireman_type_from_unioninfo}
                 onChange={(e) =>
@@ -510,6 +524,7 @@ const AdminSonodEdit = ({ sonodId, sonodName }: AdminSonodEditProps) => {
               <label className="form-label fw-semibold">ইমেল ঠিকানা</label>
               <Input
                 className="form-control"
+                disabled={chairmanData.isupdate_c_email_from_unioninfo}
                 value={chairmanData.c_email}
                 onChange={(e) =>
                   setChairmanData({ ...chairmanData, c_email: e.target.value })
@@ -535,6 +550,7 @@ const AdminSonodEdit = ({ sonodId, sonodName }: AdminSonodEditProps) => {
                 {/* File Input */}
                 <input
                   type="file"
+                  disabled={chairmanData.isupdate_chaireman_sign_from_unioninfo}
                   className="form-control mb-2"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
@@ -602,6 +618,7 @@ const AdminSonodEdit = ({ sonodId, sonodName }: AdminSonodEditProps) => {
               <label className="form-label fw-semibold">সচিবের নাম</label>
               <Input
                 value={socibData.socib_name}
+                disabled={socibData.isupdate_socib_name_from_unioninfo}
                 onChange={(e) =>
                   setSocibData({ ...socibData, socib_name: e.target.value })
                 }
@@ -623,6 +640,7 @@ const AdminSonodEdit = ({ sonodId, sonodName }: AdminSonodEditProps) => {
               <label className="form-label fw-semibold">ইমেল ঠিকানা</label>
               <Input
                 className="form-control"
+                disabled={socibData.isupdate_socib_email_from_unioninfo}
                 value={socibData.socib_email}
                 onChange={(e) =>
                   setSocibData({ ...socibData, socib_email: e.target.value })
@@ -647,6 +665,7 @@ const AdminSonodEdit = ({ sonodId, sonodName }: AdminSonodEditProps) => {
               <div className="mb-2">
                 <input
                   type="file"
+                  disabled={socibData.isupdate_socib_signture_from_unioninfo}
                   className="form-control mb-2"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
