@@ -14,8 +14,8 @@ const sonodApi = apiSlice.injectEndpoints({
       providesTags: ["sonod-action"],
     }),
     singleSonod: builder.query({
-      query: ({ token, id, en = false }) => ({
-        url: `/admin/sonod/single/${id}?en=${en}`,
+      query: ({ token, id, en = false, sonod_name }) => ({
+        url: `/admin/sonod/single/${id}?en=${en}&sonod_name=${sonod_name}`,
         method: "Get",
         headers: { Authorization: `Bearer ${token}` },
       }),

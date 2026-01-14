@@ -23,11 +23,17 @@ import {
 
 const { Option } = Select;
 
-const AdminSonodEdit = () => {
-  const { id } = useParams();
+interface AdminSonodEditProps {
+  sonodId?: string;
+  sonodName?: string;
+}
+
+const AdminSonodEdit = ({ sonodId, sonodName }: AdminSonodEditProps) => {
+  const { id: paramId } = useParams();
+  const id = sonodId || paramId;
   const token = localStorage.getItem("token");
 
-  const { data, isLoading } = useSingleSonodQuery({ id, token });
+  const { data, isLoading } = useSingleSonodQuery({ id, token, sonod_name: sonodName });
   const [sonodUpdateCancel, { isLoading: updating }] =
     useSonodUpdateCancelMutation();
 

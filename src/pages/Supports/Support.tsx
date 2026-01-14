@@ -17,6 +17,7 @@ import { message, Tooltip } from "antd";
 import { useAppSelector } from "@/redux/features/hooks";
 import { RootState } from "@/redux/features/store";
 import { Link } from "react-router-dom";
+import AdminSonodEdit from "../dashboard/SonodManagement/AdminSonodEdit";
 
 interface Support {
   id: number;
@@ -48,6 +49,11 @@ const SupportPage: React.FC = () => {
   const [status, setStatus] = useState<string>("pending");
   const [messageText, setMessageText] = useState<string>("");
 
+  // Sonod Edit Modal State
+  const [showSonodModal, setShowSonodModal] = useState(false);
+  const [sonodEditId, setSonodEditId] = useState<string | null>(null);
+  const [sonodEditName, setSonodEditName] = useState<string | null>(null);
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
@@ -63,6 +69,12 @@ const SupportPage: React.FC = () => {
     setStatus(support.status);
     setMessageText("");
     setShowModal(true);
+  };
+
+  const handleOpenSonodEditModal = (sonodId: string, sonodName: string) => {
+    setSonodEditId(sonodId);
+    setSonodEditName(sonodName);
+    setShowSonodModal(true);
   };
 
   const handleUpdate = async () => {
@@ -541,11 +553,10 @@ const SupportPage: React.FC = () => {
                               size="sm"
                               as="a"
                               target="_blank"
-                              href={`${
-                                isUnion
-                                  ? `https://uniontax.gov.bd/sonod/search?sonodType=${support.sonod_name}&sonodNo=${support.sonod_id}`
-                                  : `https://pouroseba.gov.bd/sonod/search?sonodType=${support.sonod_name}&sonodNo=${support.sonod_id}`
-                              }`}
+                              href={`${isUnion
+                                ? `https://uniontax.gov.bd/sonod/search?sonodType=${support.sonod_name}&sonodNo=${support.sonod_id}`
+                                : `https://pouroseba.gov.bd/sonod/search?sonodType=${support.sonod_name}&sonodNo=${support.sonod_id}`
+                                }`}
                               title="পিডিএফ দেখুন"
                             >
                               <i className="fas fa-file-pdf"></i>
@@ -579,8 +590,20 @@ const SupportPage: React.FC = () => {
                             target="_blank"
                             className="btn btn-primary btn-sm fw-bold text-decoration-none"
                           >
-                            এডিট
+                            <i className="fas fa-search"></i>
                           </Link>
+                          {support?.sonod_id && (
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
+                              onClick={() =>
+                                handleOpenSonodEditModal(support.sonod_id!, support.sonod_name)
+                              }
+                              title="সনদ এডিট করুন"
+                            >
+                              <i className="fas fa-edit"></i>
+                            </Button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -638,6 +661,25 @@ const SupportPage: React.FC = () => {
             )}
           </Button>
         </Modal.Footer>
+      </Modal>
+
+      {/* Sonod Edit Modal */}
+      <Modal
+        show={showSonodModal}
+        onHide={() => setShowSonodModal(false)}
+        fullscreen
+        centered
+      >
+        <Modal.Header closeButton className="bg-light">
+          <Modal.Title className="fw-bold">সনদ এডিট করুন</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="bg-light p-0">
+          {sonodEditId && (
+            <div className="p-4">
+              <AdminSonodEdit sonodId={sonodEditId} sonodName={sonodEditName || ""} />
+            </div>
+          )}
+        </Modal.Body>
       </Modal>
     </div>
   );
