@@ -17,8 +17,6 @@ import {
 import { Menu, ConfigProvider, Avatar, Button } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-const { SubMenu } = Menu;
-
 const Sidebar = ({ onClose }: { onClose?: () => void }) => {
   const user = useAppSelector((state: RootState) => state.user.user);
   const location = useLocation();
@@ -66,9 +64,10 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
       title: "প্রতিবেদন",
       icon: <FileTextOutlined />,
       submenu: [
-        { key: "reports", title: "লেনদেনের প্রতিবেদন", slug: "/reports" },
+        { key: "transaction-reports", title: "লেনদেনের প্রতিবেদন", slug: "/reports" },
         { key: "payment-failed", title: "পেমেন্ট ফেইল্ড", slug: "/payment-failed" },
         { key: "search", title: "সকল প্রতিবেদন", slug: "/up-search" },
+        { key: "overview", title: "ওভারভিউ প্রতিবেদন", slug: "/overview" },
       ],
     },
 
@@ -175,40 +174,37 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
               mode="inline"
               selectedKeys={[location.pathname.split("/").pop() || "dashboard"]}
               style={{ border: "none", background: "transparent", marginTop: "10px" }}
-              onClick={() => { if (onClose) onClose(); }}
-            >
-              {menuItems.map((item) =>
-                item.submenu ? (
-                  <SubMenu
-                    key={item.key}
-                    icon={item.icon}
-                    title={<span style={{ fontWeight: 600, fontSize: "14px" }}>{item.title}</span>}
-                  >
-                    {item.submenu.map((subItem) => (
-                      <Menu.Item key={subItem.key}>
-                        <Link
-                          className="text-decoration-none"
-                          to={`/dashboard${subItem.slug}`}
-                          style={{ fontSize: "13px" }}
-                        >
-                          {subItem.title}
-                        </Link>
-                      </Menu.Item>
-                    ))}
-                  </SubMenu>
+              onClick={() => {
+                if (onClose) onClose();
+              }}
+              items={menuItems.map((item) => ({
+                key: item.key,
+                icon: item.icon,
+                label: item.submenu ? (
+                  <span style={{ fontWeight: 600, fontSize: "14px" }}>{item.title}</span>
                 ) : (
-                  <Menu.Item key={item.key} icon={item.icon}>
+                  <Link
+                    className="text-decoration-none"
+                    to={`/dashboard${item.slug}`}
+                    style={{ fontWeight: 600, fontSize: "14px" }}
+                  >
+                    {item.title}
+                  </Link>
+                ),
+                children: item.submenu?.map((subItem) => ({
+                  key: subItem.key,
+                  label: (
                     <Link
                       className="text-decoration-none"
-                      to={`/dashboard${item.slug}`}
-                      style={{ fontWeight: 600, fontSize: "14px" }}
+                      to={`/dashboard${subItem.slug}`}
+                      style={{ fontSize: "13px" }}
                     >
-                      {item.title}
+                      {subItem.title}
                     </Link>
-                  </Menu.Item>
-                )
-              )}
-            </Menu>
+                  ),
+                })),
+              }))}
+            />
             <div style={{ height: "20px" }}></div>
           </div>
 

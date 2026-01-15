@@ -8,6 +8,7 @@ import SingleHolding from "@/pages/dashboard/holding/SingleHolding";
 import PaymentFailed from "@/pages/dashboard/Report/PaymentFailed";
 import SonodBaseReport from "@/pages/dashboard/Report/SonodBaseReport";
 import EkpayReports from "@/pages/dashboard/Report/EkpayReports";
+import OverviewReport from "@/pages/dashboard/Admin/OverviewReport";
 
 import EditSonod from "@/pages/dashboard/SonodManagement/EditSonod";
 import SonodManagement from "@/pages/dashboard/SonodManagement/SonodManagement";
@@ -67,6 +68,10 @@ export const adminRoutes = [
   {
     path: "up-search",
     element: <SearchFilter />,
+  },
+  {
+    path: "overview",
+    element: <OverviewReport />,
   },
   {
     path: "sonod-base-report/:service",

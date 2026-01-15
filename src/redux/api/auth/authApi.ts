@@ -157,7 +157,38 @@ const authApi = apiSlice.injectEndpoints({
         },
       }),
     }),
-    
+
+    overviewReport: builder.query({
+      query: ({ token, data }) => ({
+        url: `/admin/dashboard/overview`,
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        params: data,
+      }),
+    }),
+    sonodWiseSummary: builder.query({
+      query: ({ token, data }) => ({
+        url: `/admin/dashboard/sonod-wise-summary`,
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        params: data,
+      }),
+    }),
+    locationChildSummary: builder.query({
+      query: ({ token, data }) => ({
+        url: `/admin/dashboard/location-child-summary`,
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        params: data,
+      }),
+    }),
+
 
 
   }),
@@ -175,6 +206,12 @@ export const {
   useResetPassLinkMutation,
   useChangePasswordMutation,
   useAdminReportMutation,
+  useOverviewReportQuery,
+  useLazyOverviewReportQuery,
+  useSonodWiseSummaryQuery,
+  useLazySonodWiseSummaryQuery,
+  useLocationChildSummaryQuery,
+  useLazyLocationChildSummaryQuery,
   useCreateUnionMutation,
   useCreateUnionByUpazilaMutation,
   useShowUnionByUpazilaMutation,
