@@ -8,7 +8,10 @@ import React, { type ChangeEvent, useEffect, useState } from "react"
 import { Spinner } from "react-bootstrap"
 import Summary from "./Summary"
 import { Link } from "react-router-dom"
-import { message } from "antd"
+import { message, DatePicker } from "antd"
+import dayjs from "dayjs"
+
+const { RangePicker } = DatePicker
 import { useAppSelector } from "@/redux/features/hooks"
 import type { RootState } from "@/redux/features/store"
 import Breadcrumbs from "@/components/reusable/Breadcrumbs"
@@ -70,8 +73,8 @@ const OverviewReport: React.FC = () => {
     const [districts, setDistricts] = useState<TDistrict[]>([])
     const [upazilas, setUpazilas] = useState<TUpazila[]>([])
     const [unions, setUnions] = useState<TUnion[]>([])
-    const [fromDate, setFromDate] = useState<string>("")
-    const [toDate, setToDate] = useState<string>("")
+    const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null]>([null, null])
+    const [activeFilter, setActiveFilter] = useState<string>("all")
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalData, setModalData] = useState<any>(null)
     const [modalTitle, setModalTitle] = useState("")
@@ -188,11 +191,15 @@ const OverviewReport: React.FC = () => {
         setSelectedUnion(union || null)
     }
 
-    const handleSearchClick = async () => {
+    const handleSearchClick = async (range?: [dayjs.Dayjs | null, dayjs.Dayjs | null]) => {
         if (!selectedDivision?.name) {
             message.warning("বিভাগ নির্বাচন করুন")
             return
         }
+
+        const [start, end] = range || dateRange;
+        const from_date = start ? start.format('YYYY-MM-DD') : undefined;
+        const to_date = end ? end.format('YYYY-MM-DD') : undefined;
 
         const requestData = {
             division_name: selectedDivision?.name,
@@ -200,8 +207,8 @@ const OverviewReport: React.FC = () => {
             upazila_name: selectedUpazila?.name || undefined,
             union_name: selectedUnion?.name ? selectedUnion.name.replace(/\s+/g, "").toLowerCase() : undefined,
             sonod_name: selected || undefined,
-            from_date: fromDate || undefined,
-            to_date: toDate || undefined,
+            from_date,
+            to_date,
         }
 
         try {
@@ -217,9 +224,10 @@ const OverviewReport: React.FC = () => {
         setModalData(null)
 
         let title = ""
+        const [start, end] = dateRange;
         const requestData: any = {
-            from_date: fromDate || undefined,
-            to_date: toDate || undefined,
+            from_date: start ? start.format('YYYY-MM-DD') : undefined,
+            to_date: end ? end.format('YYYY-MM-DD') : undefined,
             token: token,
         }
 
@@ -402,30 +410,134 @@ const OverviewReport: React.FC = () => {
                     </select>
                 </div>
 
-                <div className="col-md-2">
-                    <label htmlFor="fromDate">শুরুর তারিখ</label>
-                    <input
-                        type="date"
-                        id="fromDate"
-                        className="searchFrom form-control"
-                        value={fromDate}
-                        onChange={(e) => setFromDate(e.target.value)}
+                <div className="col-12 mt-3 mb-2 px-3">
+                    <div className="d-flex flex-wrap gap-2 align-items-center">
+                        <span className="small fw-bold text-muted me-2">দ্রুত ফিল্টার:</span>
+                        <button
+                            className={`btn btn-sm ${activeFilter === '7d' ? 'btn-primary' : 'btn-light border'} rounded-pill px-4 py-2 fw-bold shadow-sm hover-lift d-flex align-items-center`}
+                            style={{ fontSize: '13px' }}
+                            disabled={isLoading || isFetching}
+                            onClick={() => {
+                                const range: [dayjs.Dayjs | null, dayjs.Dayjs | null] = [dayjs().subtract(7, 'day'), dayjs()];
+                                setDateRange(range);
+                                setActiveFilter('7d');
+                                handleSearchClick(range);
+                            }}
+                        >
+                            {(isLoading || isFetching) && activeFilter === '7d' ? (
+                                <Spinner animation="border" size="sm" className="me-2" />
+                            ) : (
+                                <i className={`fa-solid fa-clock-rotate-left me-1 ${activeFilter === '7d' ? 'text-white' : 'text-primary'}`}></i>
+                            )}
+                            শেষ ৭ দিন
+                        </button>
+                        <button
+                            className={`btn btn-sm ${activeFilter === '30d' ? 'btn-primary' : 'btn-light border'} rounded-pill px-4 py-2 fw-bold shadow-sm hover-lift d-flex align-items-center`}
+                            style={{ fontSize: '13px' }}
+                            disabled={isLoading || isFetching}
+                            onClick={() => {
+                                const range: [dayjs.Dayjs | null, dayjs.Dayjs | null] = [dayjs().subtract(1, 'month'), dayjs()];
+                                setDateRange(range);
+                                setActiveFilter('30d');
+                                handleSearchClick(range);
+                            }}
+                        >
+                            {(isLoading || isFetching) && activeFilter === '30d' ? (
+                                <Spinner animation="border" size="sm" className="me-2" />
+                            ) : (
+                                <i className={`fa-solid fa-calendar-day me-1 ${activeFilter === '30d' ? 'text-white' : 'text-success'}`}></i>
+                            )}
+                            ৩০ দিন
+                        </button>
+                        <button
+                            className={`btn btn-sm ${activeFilter === '3m' ? 'btn-primary' : 'btn-light border'} rounded-pill px-4 py-2 fw-bold shadow-sm hover-lift d-flex align-items-center`}
+                            style={{ fontSize: '13px' }}
+                            disabled={isLoading || isFetching}
+                            onClick={() => {
+                                const range: [dayjs.Dayjs | null, dayjs.Dayjs | null] = [dayjs().subtract(3, 'month'), dayjs()];
+                                setDateRange(range);
+                                setActiveFilter('3m');
+                                handleSearchClick(range);
+                            }}
+                        >
+                            {(isLoading || isFetching) && activeFilter === '3m' ? (
+                                <Spinner animation="border" size="sm" className="me-2" />
+                            ) : (
+                                <i className={`fa-solid fa-calendar-week me-1 ${activeFilter === '3m' ? 'text-white' : 'text-info'}`}></i>
+                            )}
+                            ৩ মাস
+                        </button>
+                        <button
+                            className={`btn btn-sm ${activeFilter === '6m' ? 'btn-primary' : 'btn-light border'} rounded-pill px-4 py-2 fw-bold shadow-sm hover-lift d-flex align-items-center`}
+                            style={{ fontSize: '13px' }}
+                            disabled={isLoading || isFetching}
+                            onClick={() => {
+                                const range: [dayjs.Dayjs | null, dayjs.Dayjs | null] = [dayjs().subtract(6, 'month'), dayjs()];
+                                setDateRange(range);
+                                setActiveFilter('6m');
+                                handleSearchClick(range);
+                            }}
+                        >
+                            {(isLoading || isFetching) && activeFilter === '6m' ? (
+                                <Spinner animation="border" size="sm" className="me-2" />
+                            ) : (
+                                <i className={`fa-solid fa-calendar-days me-1 ${activeFilter === '6m' ? 'text-white' : 'text-warning'}`}></i>
+                            )}
+                            ৬ মাস
+                        </button>
+                        <button
+                            className={`btn btn-sm ${activeFilter === '1y' ? 'btn-primary' : 'btn-light border'} rounded-pill px-4 py-2 fw-bold shadow-sm hover-lift d-flex align-items-center`}
+                            style={{ fontSize: '13px' }}
+                            disabled={isLoading || isFetching}
+                            onClick={() => {
+                                const range: [dayjs.Dayjs | null, dayjs.Dayjs | null] = [dayjs().subtract(1, 'year'), dayjs()];
+                                setDateRange(range);
+                                setActiveFilter('1y');
+                                handleSearchClick(range);
+                            }}
+                        >
+                            {(isLoading || isFetching) && activeFilter === '1y' ? (
+                                <Spinner animation="border" size="sm" className="me-2" />
+                            ) : (
+                                <i className={`fa-solid fa-calendar-check me-1 ${activeFilter === '1y' ? 'text-white' : 'text-danger'}`}></i>
+                            )}
+                            ১ বছর
+                        </button>
+                        <button
+                            className={`btn btn-sm ${activeFilter === 'all' ? 'btn-primary' : 'btn-light border'} rounded-pill px-4 py-2 fw-bold shadow-sm hover-lift d-flex align-items-center`}
+                            style={{ fontSize: '13px' }}
+                            disabled={isLoading || isFetching}
+                            onClick={() => {
+                                const range: [dayjs.Dayjs | null, dayjs.Dayjs | null] = [null, null];
+                                setDateRange(range);
+                                setActiveFilter('all');
+                                handleSearchClick(range);
+                            }}
+                        >
+                            {(isLoading || isFetching) && activeFilter === 'all' ? (
+                                <Spinner animation="border" size="sm" className="me-2" />
+                            ) : (
+                                <i className={`fa-solid fa-earth-asia me-1 ${activeFilter === 'all' ? 'text-white' : 'text-secondary'}`}></i>
+                            )}
+                            সব সময়
+                        </button>
+                    </div>
+                </div>
+
+                <div className="col-md-4">
+                    <label>তারিখ পরিসীমা (Date Range)</label>
+                    <RangePicker
+                        className="w-100"
+                        style={{ height: '38px' }}
+                        value={dateRange}
+                        onChange={(dates) => setDateRange(dates as [dayjs.Dayjs | null, dayjs.Dayjs | null])}
+                        format="DD/MM/YYYY"
+                        placeholder={['শুরুর তারিখ', 'শেষের তারিখ']}
                     />
                 </div>
 
                 <div className="col-md-2">
-                    <label htmlFor="toDate">শেষের তারিখ</label>
-                    <input
-                        type="date"
-                        id="toDate"
-                        className="searchFrom form-control"
-                        value={toDate}
-                        onChange={(e) => setToDate(e.target.value)}
-                    />
-                </div>
-
-                <div className="col-md-2">
-                    <button disabled={isLoading || isFetching} onClick={handleSearchClick} className="btn btn-primary mt-4 d-flex align-items-center justify-content-center" style={{ minWidth: '100px', height: '38px' }}>
+                    <button disabled={isLoading || isFetching} onClick={() => handleSearchClick()} className="btn btn-primary mt-4 d-flex align-items-center justify-content-center" style={{ minWidth: '100px', height: '38px' }}>
                         {(isLoading || isFetching) ? (
                             <>
                                 <Spinner
@@ -436,10 +548,10 @@ const OverviewReport: React.FC = () => {
                                     aria-hidden="true"
                                     className="me-2"
                                 />
-                                Loading...
+                                লোডিং...
                             </>
                         ) : (
-                            "Search"
+                            "সার্চ"
                         )}
                     </button>
                 </div>
@@ -454,7 +566,7 @@ const OverviewReport: React.FC = () => {
                         to={`${VITE_BASE_DOC_URL}/download/reports/get-reports${selectedDivision ? `?division_name=${selectedDivision.name}` : ""
                             }${selectedDistrict ? `&district_name=${selectedDistrict.name}` : ""}${selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ""
                             }${selectedUnion ? `&union_name=${selectedUnion.name}` : ""}${selected ? `&sonod_name=${selected}` : ""
-                            }${fromDate ? `&from_date=${fromDate}` : ""}${toDate ? `&to_date=${toDate}` : ""}&token=${token}`}
+                            }${dateRange[0] ? `&from_date=${dateRange[0].format('YYYY-MM-DD')}` : ""}${dateRange[1] ? `&to_date=${dateRange[1].format('YYYY-MM-DD')}` : ""}&token=${token}`}
                         className="btn btn-info text-white"
                     >
                         প্রতিবেদন ডাউনলোড করুন
