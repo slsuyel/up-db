@@ -410,6 +410,62 @@ const OverviewReport: React.FC = () => {
                     </select>
                 </div>
 
+                <div className="col-md-4">
+                    <label>তারিখ পরিসীমা (Date Range)</label>
+                    <RangePicker
+                        className="w-100"
+                        style={{ height: '38px' }}
+                        value={dateRange}
+                        onChange={(dates) => {
+                            const range = dates as [dayjs.Dayjs | null, dayjs.Dayjs | null];
+                            setDateRange(range);
+
+                            if (!range || (!range[0] && !range[1])) {
+                                setActiveFilter("all");
+                            } else if (range[0] && range[1]) {
+                                const start = range[0].startOf('day');
+                                const end = range[1].startOf('day');
+                                const today = dayjs().startOf('day');
+
+                                if (end.isSame(today)) {
+                                    if (start.isSame(today.subtract(7, 'day'))) setActiveFilter("7d");
+                                    else if (start.isSame(today.subtract(1, 'month'))) setActiveFilter("30d");
+                                    else if (start.isSame(today.subtract(3, 'month'))) setActiveFilter("3m");
+                                    else if (start.isSame(today.subtract(6, 'month'))) setActiveFilter("6m");
+                                    else if (start.isSame(today.subtract(1, 'year'))) setActiveFilter("1y");
+                                    else setActiveFilter("");
+                                } else {
+                                    setActiveFilter("");
+                                }
+                            } else {
+                                setActiveFilter("");
+                            }
+                        }}
+                        format="DD/MM/YYYY"
+                        placeholder={['শুরুর তারিখ', 'শেষের তারিখ']}
+                    />
+                </div>
+
+                <div className="col-md-2">
+                    <button disabled={isLoading || isFetching} onClick={() => handleSearchClick()} className="btn btn-primary mt-4 d-flex align-items-center justify-content-center" style={{ minWidth: '100px', height: '38px' }}>
+                        {(isLoading || isFetching) ? (
+                            <>
+                                <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                    className="me-2"
+                                />
+                                লোডিং...
+                            </>
+                        ) : (
+                            "সার্চ"
+                        )}
+                    </button>
+                </div>
+
                 <div className="col-12 mt-3 mb-2 px-3">
                     <div className="d-flex flex-wrap gap-2 align-items-center">
                         <span className="small fw-bold text-muted me-2">দ্রুত ফিল্টার:</span>
@@ -522,38 +578,6 @@ const OverviewReport: React.FC = () => {
                             সব সময়
                         </button>
                     </div>
-                </div>
-
-                <div className="col-md-4">
-                    <label>তারিখ পরিসীমা (Date Range)</label>
-                    <RangePicker
-                        className="w-100"
-                        style={{ height: '38px' }}
-                        value={dateRange}
-                        onChange={(dates) => setDateRange(dates as [dayjs.Dayjs | null, dayjs.Dayjs | null])}
-                        format="DD/MM/YYYY"
-                        placeholder={['শুরুর তারিখ', 'শেষের তারিখ']}
-                    />
-                </div>
-
-                <div className="col-md-2">
-                    <button disabled={isLoading || isFetching} onClick={() => handleSearchClick()} className="btn btn-primary mt-4 d-flex align-items-center justify-content-center" style={{ minWidth: '100px', height: '38px' }}>
-                        {(isLoading || isFetching) ? (
-                            <>
-                                <Spinner
-                                    as="span"
-                                    animation="border"
-                                    size="sm"
-                                    role="status"
-                                    aria-hidden="true"
-                                    className="me-2"
-                                />
-                                লোডিং...
-                            </>
-                        ) : (
-                            "সার্চ"
-                        )}
-                    </button>
                 </div>
             </div>
 

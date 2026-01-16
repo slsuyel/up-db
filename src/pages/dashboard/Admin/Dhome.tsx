@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLazyLocationChildSummaryQuery, useLazyOverviewReportQuery, useLazySonodWiseSummaryQuery } from "@/redux/api/auth/authApi";
-import { TAdminData, TDivision, TDistrict, TUpazila, TUnion } from "@/types/global";
 import Summary from "./Summary";
 import { Spinner } from "react-bootstrap";
 import ReportTable from "@/components/reusable/reports/ReportTable";
 import ReportModal from "@/components/reusable/reports/ReportModal";
-import { DatePicker, ConfigProvider } from "antd";
+import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/bn";
 
@@ -128,8 +127,64 @@ const Dhome = () => {
         <div className="col-12">
           {/* Date Filter Section */}
           <div className="row g-3 mb-4 align-items-end bg-white p-4 rounded-4 border premium-border mx-0 shadow-sm soft-shadow">
-            <div className="col-md-9 mb-2">
-              <div className="d-flex flex-wrap gap-2">
+            <div className="col-md-6">
+              <label className="form-label small fw-bold text-muted mb-2 ps-1">
+                <i className="fa-solid fa-calendar-range me-2 text-primary"></i>তারিখ পরিসীমা (Date Range)
+              </label>
+              <RangePicker
+                className="w-100 border-0 bg-light rounded-3 shadow-none fw-semibold"
+                style={{ height: '42px' }}
+                value={dateRange}
+                onChange={(dates) => {
+                  const range = dates as [dayjs.Dayjs | null, dayjs.Dayjs | null];
+                  setDateRange(range);
+
+                  if (!range || (!range[0] && !range[1])) {
+                    setActiveFilter("all");
+                  } else if (range[0] && range[1]) {
+                    const start = range[0].startOf('day');
+                    const end = range[1].startOf('day');
+                    const today = dayjs().startOf('day');
+
+                    if (end.isSame(today)) {
+                      if (start.isSame(today.subtract(7, 'day'))) setActiveFilter("7d");
+                      else if (start.isSame(today.subtract(1, 'month'))) setActiveFilter("30d");
+                      else if (start.isSame(today.subtract(3, 'month'))) setActiveFilter("3m");
+                      else if (start.isSame(today.subtract(6, 'month'))) setActiveFilter("6m");
+                      else if (start.isSame(today.subtract(1, 'year'))) setActiveFilter("1y");
+                      else setActiveFilter("");
+                    } else {
+                      setActiveFilter("");
+                    }
+                  } else {
+                    setActiveFilter("");
+                  }
+                }}
+                format="DD/MM/YYYY"
+                placeholder={['শুরুর তারিখ', 'শেষের তারিখ']}
+              />
+            </div>
+            <div className="col-md-2">
+              <button
+                className="btn btn-primary w-100 rounded-3 shadow-sm border-0 fw-bold d-flex align-items-center justify-content-center gap-2 hover-lift"
+                style={{ height: '42px', background: 'linear-gradient(135deg, #4e73df 0%, #224abe 100%)' }}
+                onClick={() => fetchData()}
+                disabled={isLoading || isFetching}
+              >
+                {(isLoading || isFetching) ? (
+                  <Spinner animation="border" size="sm" />
+                ) : (
+                  <>
+                    <i className="fa-solid fa-magnifying-glass"></i>
+                    <span>সার্চ</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="col-12 mt-2">
+              <div className="d-flex flex-wrap gap-2 align-items-center">
+                <span className="small fw-bold text-muted me-2">দ্রুত ফিল্টার:</span>
                 <button
                   className={`btn btn-sm ${activeFilter === '7d' ? 'btn-primary' : 'btn-light border'} rounded-pill px-4 py-2 fw-bold hover-lift shadow-sm d-flex align-items-center`}
                   onClick={() => {
@@ -239,37 +294,6 @@ const Dhome = () => {
                   সব সময়
                 </button>
               </div>
-            </div>
-
-            <div className="col-md-6">
-              <label className="form-label small fw-bold text-muted mb-2 ps-1">
-                <i className="fa-solid fa-calendar-range me-2 text-primary"></i>তারিখ পরিসীমা (Date Range)
-              </label>
-              <RangePicker
-                className="w-100 border-0 bg-light rounded-3 shadow-none fw-semibold"
-                style={{ height: '42px' }}
-                value={dateRange}
-                onChange={(dates) => setDateRange(dates as [dayjs.Dayjs | null, dayjs.Dayjs | null])}
-                format="DD/MM/YYYY"
-                placeholder={['শুরুর তারিখ', 'শেষের তারিখ']}
-              />
-            </div>
-            <div className="col-md-2">
-              <button
-                className="btn btn-primary w-100 rounded-3 shadow-sm border-0 fw-bold d-flex align-items-center justify-content-center gap-2 hover-lift"
-                style={{ height: '42px', background: 'linear-gradient(135deg, #4e73df 0%, #224abe 100%)' }}
-                onClick={() => fetchData()}
-                disabled={isLoading || isFetching}
-              >
-                {(isLoading || isFetching) ? (
-                  <Spinner animation="border" size="sm" />
-                ) : (
-                  <>
-                    <i className="fa-solid fa-magnifying-glass"></i>
-                    <span>সার্চ</span>
-                  </>
-                )}
-              </button>
             </div>
           </div>
 
