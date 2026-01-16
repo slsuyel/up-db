@@ -1,57 +1,99 @@
-import { useEffect, useState } from "react";
-import { useAdminReportMutation } from "@/redux/api/auth/authApi";
-import { TAdminData } from "@/types/global";
+import React, { useEffect, useState } from "react";
+import { useLazyLocationChildSummaryQuery, useLazyOverviewReportQuery, useLazySonodWiseSummaryQuery } from "@/redux/api/auth/authApi";
+import { TAdminData, TDivision, TDistrict, TUpazila, TUnion } from "@/types/global";
 import Summary from "./Summary";
-import DividedReportSummary from "./DividedReportSummary";
-
+import { Spinner } from "react-bootstrap";
+import ReportTable from "@/components/reusable/reports/ReportTable";
+import ReportModal from "@/components/reusable/reports/ReportModal";
 
 const Dhome = () => {
-  const [adminReport, { isLoading }] = useAdminReportMutation();
-  const [adminTotals, setAdminTotals] = useState<TAdminData["totals"] | null>(null);
-  const [adminDividedReports, setAdminDividedReports] = useState<TAdminData["divided_reports"] | null>(null);
-  const [adminReportTitle, setAdminReportTitle] = useState<TAdminData | null>(null);
+  const [adminReportTrigger, { isLoading }] = useLazyOverviewReportQuery();
+  const [sonodWiseSummaryTrigger] = useLazySonodWiseSummaryQuery()
+  const [locationChildSummaryTrigger] = useLazyLocationChildSummaryQuery()
+
+  const [adminTotals, setAdminTotals] = useState<any | null>(null);
+  const [adminDividedReports, setAdminDividedReports] = useState<any[] | null>(null);
+  const [adminReportTitle, setAdminReportTitle] = useState<string | null>(null);
+  const [reportLevel, setReportLevel] = useState<string>("")
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalData, setModalData] = useState<any>(null)
+  const [modalTitle, setModalTitle] = useState("")
+  const [modalLoading, setModalLoading] = useState(false)
+
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (token) {
       const fetchData = async () => {
-        const lastFetchTime = localStorage.getItem("lastFetchTime");
-        const cachedData = localStorage.getItem("cachedAdminData");
-        const currentTime = new Date().getTime();
-        const thirtyMinutes = 30 * 60 * 1000;
+        try {
+          const response = await adminReportTrigger({
+            token,
+            data: { auth: true },
+          }).unwrap();
 
-        if (
-          cachedData &&
-          JSON.parse(cachedData) &&
-          lastFetchTime &&
-          currentTime - parseInt(lastFetchTime) <= thirtyMinutes
-        ) {
-          const parsed = JSON.parse(cachedData);
-          setAdminTotals(parsed.total_report.totals);
-          setAdminDividedReports(parsed.divided_reports);
-          setAdminReportTitle(parsed.title);
-        } else {
-          try {
-            const response = await adminReport({
-              data: { auth: true },
-              token,
-            }).unwrap();
-
-            setAdminTotals(response.data.total_report.totals || null);
-            setAdminDividedReports(response.data.divided_reports || null);
-            setAdminReportTitle(response.data.title || null);
-
-            localStorage.setItem("cachedAdminData", JSON.stringify(response.data));
-            localStorage.setItem("lastFetchTime", currentTime.toString());
-          } catch (error) {
-            console.error("Error fetching report:", error);
-          }
+          const responseData = response.data;
+          setAdminTotals(responseData || null);
+          setAdminDividedReports(responseData.children || []);
+          setAdminReportTitle(responseData.name || null);
+          setReportLevel(responseData.level || "");
+        } catch (error) {
+          console.error("Error fetching report:", error);
         }
       };
 
       fetchData();
     }
-  }, [token, adminReport]);
+  }, [token, adminReportTrigger]);
+
+  const handleModalReportClick = async (child: any, type: string) => {
+    setIsModalOpen(true)
+    setModalLoading(true)
+    setModalData(null)
+
+    let title = ""
+    const requestData: any = {
+      token: token,
+    }
+
+    if (reportLevel === "division") {
+      requestData.division_name = adminReportTitle;
+      requestData.district_name = child.name;
+    } else if (reportLevel === "district") {
+      requestData.district_name = adminReportTitle;
+      requestData.upazila_name = child.name;
+    } else if (reportLevel === "upazila") {
+      requestData.upazila_name = adminReportTitle;
+      requestData.union_name = child.name;
+    } else if (reportLevel === "union") {
+      requestData.union_name = adminReportTitle;
+      requestData.sonod_name = child.sonod_name;
+    }
+
+    if (type === "union") {
+      title = `${child.bn_name || child.name} - ইউনিয়ন ভিত্তিক প্রতিবেদন`
+      requestData.report_type = "union"
+    } else if (type === "sonod") {
+      title = `${child.bn_name || child.name || child.sonod_name} - সনদ ভিত্তিক প্রতিবেদন`
+      requestData.report_type = "sonod"
+    }
+
+    setModalTitle(title)
+
+    try {
+      let res: any;
+      if (type === "sonod") {
+        res = await sonodWiseSummaryTrigger({ token, data: requestData }).unwrap()
+      } else {
+        res = await locationChildSummaryTrigger({ token, data: requestData }).unwrap()
+      }
+      setModalData(res.data)
+    } catch (error) {
+      console.error("Error fetching detail report:", error)
+    } finally {
+      setModalLoading(false)
+    }
+  }
 
   const currentDate = new Date().toLocaleDateString('bn-BD', {
     weekday: 'long',
@@ -89,17 +131,26 @@ const Dhome = () => {
             </section>
           )}
 
-          {(adminDividedReports || isLoading) && (
+          {(adminDividedReports && adminDividedReports.length > 0 || isLoading) && (
             <section className="mb-4 bg-white p-4 rounded-4 border premium-border soft-shadow">
-              <DividedReportSummary
-                data={adminDividedReports}
-                title={adminReportTitle || "বিভাগীয় রিপোর্ট সারাংশ"}
+              <ReportTable
+                data={adminDividedReports || []}
                 isLoading={isLoading}
+                level={reportLevel}
+                onReportClick={handleModalReportClick}
               />
             </section>
           )}
         </div>
       </div>
+
+      <ReportModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={modalTitle}
+        loading={modalLoading}
+        data={modalData}
+      />
     </div>
   );
 };

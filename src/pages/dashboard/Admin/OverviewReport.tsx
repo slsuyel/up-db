@@ -8,12 +8,12 @@ import React, { type ChangeEvent, useEffect, useState } from "react"
 import { Spinner } from "react-bootstrap"
 import Summary from "./Summary"
 import { Link } from "react-router-dom"
-import { Modal, message, Space, Button, Tooltip } from "antd"
-import { PlusOutlined, MinusOutlined, ApartmentOutlined, FileTextOutlined } from "@ant-design/icons"
+import { message } from "antd"
 import { useAppSelector } from "@/redux/features/hooks"
 import type { RootState } from "@/redux/features/store"
 import Breadcrumbs from "@/components/reusable/Breadcrumbs"
-// Unused imports: DividedReportSummary, DividedReportCharts (can be restored if needed)
+import ReportTable from "@/components/reusable/reports/ReportTable"
+import ReportModal from "@/components/reusable/reports/ReportModal"
 
 // Define interfaces for the report data structure
 interface ChildStats {
@@ -76,7 +76,6 @@ const OverviewReport: React.FC = () => {
     const [modalData, setModalData] = useState<any>(null)
     const [modalTitle, setModalTitle] = useState("")
     const [modalLoading, setModalLoading] = useState(false)
-    const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
 
     const [adminReport, { isLoading, isFetching, data }] = useLazyOverviewReportQuery()
     const [sonodWiseSummaryTrigger] = useLazySonodWiseSummaryQuery()
@@ -216,7 +215,6 @@ const OverviewReport: React.FC = () => {
         setIsModalOpen(true)
         setModalLoading(true)
         setModalData(null)
-        setExpandedRows(new Set()) // Reset expansions when opening modal
 
         let title = ""
         const requestData: any = {
@@ -254,7 +252,6 @@ const OverviewReport: React.FC = () => {
         }
 
         setModalTitle(title)
-        setExpandedRows(new Set())
 
         try {
             let res: any;
@@ -469,283 +466,21 @@ const OverviewReport: React.FC = () => {
 
 
             <div className="row mx-auto mt-4">
-                {overviewData?.children && (
-                    <h6 className="mb-4 fs-4 border-bottom">
-                        {overviewData.level === "division"
-                            ? "বিভাগীয় জেলা ভিত্তিক প্রতিবেদন"
-                            : overviewData.level === "district"
-                                ? "জেলা ভিত্তিক উপজেলা প্রতিবেদন"
-                                : overviewData.level === "upazila"
-                                    ? "উপজেলা ভিত্তিক ইউনিয়ন প্রতিবেদন"
-                                    : "বিস্তারিত প্রতিবেদন"}
-                    </h6>
-                )}
-
-                <table className="table table-bordered table-hover">
-                    <thead className="thead-dark">
-                        <tr>
-                            <th>নাম</th>
-                            <th> নতুন আবেদন </th>
-                            <th>অনুমোদিত আবেদন</th>
-                            <th>বাতিল</th>
-                            <th>মোট লেনদেন</th>
-                            <th>মোট টাকা</th>
-                            <th>রিপোর্ট</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {overviewData?.children?.map((child, index) => (
-                            <tr key={index}>
-                                <td>
-                                    {child.sonod_name || (
-                                        <>
-                                            {child.bn_name} {child.name && `(${child.name})`}
-                                        </>
-                                    )}
-                                </td>
-                                <td>{child.total_pending}</td>
-                                <td>{child.total_approved}</td>
-                                <td>{child.total_cancel}</td>
-                                <td>{child.total_payments}</td>
-                                <td>{child.total_amount}</td>
-                                <td>
-                                    <div className="d-flex flex-nowrap gap-2">
-                                        <Tooltip title="ইউনিয়ন বিস্তারিত প্রতিবেদন (উপজেলা ভিত্তিক)">
-                                            <Button
-                                                size="small"
-                                                type="primary"
-                                                icon={<ApartmentOutlined />}
-                                                className="d-flex align-items-center justify-content-center"
-                                                style={{
-                                                    background: 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)',
-                                                    border: 'none',
-                                                    borderRadius: '6px',
-                                                    fontSize: '11px',
-                                                    fontWeight: 600
-                                                }}
-                                                onClick={() => handleModalReportClick(child, "union")}
-                                            >
-                                                ইউনিয়ন
-                                            </Button>
-                                        </Tooltip>
-
-                                        <Tooltip title="সনদ ভিত্তিক বিস্তারিত প্রতিবেদন">
-                                            <Button
-                                                size="small"
-                                                type="primary"
-                                                icon={<FileTextOutlined />}
-                                                className="d-flex align-items-center justify-content-center"
-                                                style={{
-                                                    background: 'linear-gradient(135deg, #52c41a 0%, #389e0d 100%)',
-                                                    border: 'none',
-                                                    borderRadius: '6px',
-                                                    fontSize: '11px',
-                                                    fontWeight: 600
-                                                }}
-                                                onClick={() => handleModalReportClick(child, "sonod")}
-                                            >
-                                                সনদ
-                                            </Button>
-                                        </Tooltip>
-
-                                        {/* <Tooltip title="ইউনিয়ন ও সনদ সমন্বিত প্রতিবেদন">
-                                            <Button
-                                                size="small"
-                                                type="primary"
-                                                icon={<AuditOutlined />}
-                                                className="d-flex align-items-center justify-content-center"
-                                                style={{
-                                                    background: 'linear-gradient(135deg, #722ed1 0%, #531dab 100%)',
-                                                    border: 'none',
-                                                    borderRadius: '6px',
-                                                    fontSize: '11px',
-                                                    fontWeight: 600
-                                                }}
-                                                onClick={() => handleModalReportClick(child, "union_sonod")}
-                                            >
-                                                সমন্বিত
-                                            </Button>
-                                        </Tooltip> */}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <ReportTable
+                    data={overviewData?.children || []}
+                    isLoading={isLoading || isFetching}
+                    level={overviewData?.level}
+                    onReportClick={handleModalReportClick}
+                />
             </div>
 
-            <Modal
+            <ReportModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
                 title={modalTitle}
-                open={isModalOpen}
-                onCancel={() => setIsModalOpen(false)}
-                footer={null}
-                width={1000}
-                style={{ top: 20 }}
-            >
-                {modalLoading ? (
-                    <div className="text-center p-5">
-                        <Spinner animation="border" variant="primary" />
-                        <p className="mt-2">লোড হচ্ছে...</p>
-                    </div>
-                ) : modalData ? (
-                    <div className="table-responsive">
-                        <table className="table table-bordered table-hover">
-                            <thead className="table-light">
-                                <tr>
-                                    <th>নাম</th>
-                                    <th>নতুন আবেদন</th>
-                                    <th>অনুমোদিত</th>
-                                    <th>বাতিল</th>
-                                    <th>লেনদেন</th>
-                                    <th>টাকা</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {Array.isArray(modalData) && modalData.some(item => item.children) ? (
-                                    // Handle nested location-child-summary (Upazila > Unions) with expansion
-                                    modalData.map((group: any, gIdx: number) => {
-                                        const isExpanded = expandedRows.has(group.name);
-                                        // Calculate parent totals
-                                        const parentTotals = group.children?.reduce((acc: any, curr: any) => ({
-                                            pending: acc.pending + (curr.pending || 0),
-                                            approved: acc.approved + (curr.approved || 0),
-                                            cancel: acc.cancel + (curr.cancel || 0),
-                                            payments: acc.payments + (curr.payments || 0),
-                                            amount: acc.amount + parseFloat(curr.amount || 0)
-                                        }), { pending: 0, approved: 0, cancel: 0, payments: 0, amount: 0 });
-
-                                        return (
-                                            <React.Fragment key={gIdx}>
-                                                <tr
-                                                    onClick={() => {
-                                                        const newExpanded = new Set<string>();
-                                                        if (!isExpanded) newExpanded.add(group.name);
-                                                        setExpandedRows(newExpanded);
-                                                    }}
-                                                    style={{
-                                                        cursor: 'pointer',
-                                                        backgroundColor: isExpanded ? '#003a8c' : '#f0f2f5',
-                                                        color: isExpanded ? '#ffffff' : '#000000',
-                                                        transition: 'all 0.3s'
-                                                    }}
-                                                    className="fw-bold"
-                                                >
-                                                    <td style={{ color: isExpanded ? '#ffffff' : 'inherit', backgroundColor: isExpanded ? '#003a8c' : '#f0f2f5' }}>
-                                                        <Space>
-                                                            {isExpanded ? <MinusOutlined style={{ fontSize: '12px', color: '#fff' }} /> : <PlusOutlined style={{ fontSize: '12px' }} />}
-                                                            {group.bn_name || group.name}
-                                                        </Space>
-                                                    </td>
-                                                    <td style={{ color: isExpanded ? '#ffffff' : 'inherit', backgroundColor: isExpanded ? '#003a8c' : '#f0f2f5' }}>{parentTotals.pending}</td>
-                                                    <td style={{ color: isExpanded ? '#ffffff' : 'inherit', backgroundColor: isExpanded ? '#003a8c' : '#f0f2f5' }}>{parentTotals.approved}</td>
-                                                    <td style={{ color: isExpanded ? '#ffffff' : 'inherit', backgroundColor: isExpanded ? '#003a8c' : '#f0f2f5' }}>{parentTotals.cancel}</td>
-                                                    <td style={{ color: isExpanded ? '#ffffff' : 'inherit', backgroundColor: isExpanded ? '#003a8c' : '#f0f2f5' }}>{parentTotals.payments}</td>
-                                                    <td style={{ color: isExpanded ? '#ffffff' : 'inherit', backgroundColor: isExpanded ? '#003a8c' : '#f0f2f5' }}>{parentTotals.amount.toFixed(2)}</td>
-                                                </tr>
-                                                {isExpanded && group.children?.map((item: any, cIdx: number) => (
-                                                    <tr key={`${gIdx}-${cIdx}`}>
-                                                        <td style={{ paddingLeft: '40px', borderLeft: '4px solid #003a8c', backgroundColor: '#e6f7ff' }}>
-                                                            <div className="d-flex align-items-center">
-                                                                <span className="me-2 text-primary">•</span>
-                                                                {item.sonod_name || item.bn_name || item.name}
-                                                            </div>
-                                                        </td>
-                                                        <td style={{ backgroundColor: '#e6f7ff' }}>{item.pending || 0}</td>
-                                                        <td style={{ backgroundColor: '#e6f7ff' }}>{item.approved || 0}</td>
-                                                        <td style={{ backgroundColor: '#e6f7ff' }}>{item.cancel || 0}</td>
-                                                        <td style={{ backgroundColor: '#e6f7ff' }}>{item.payments || 0}</td>
-                                                        <td style={{ backgroundColor: '#e6f7ff' }}>{item.amount || 0}</td>
-                                                    </tr>
-                                                ))}
-                                            </React.Fragment>
-                                        );
-                                    })
-                                ) : Array.isArray(modalData) ? (
-                                    // Handle flat sonod-wise summary
-                                    modalData.map((item: any, idx: number) => (
-                                        <tr key={idx}>
-                                            <td>{item.sonod_name || item.bn_name || item.name}</td>
-                                            <td>{item.pending || item.total_pending || 0}</td>
-                                            <td>{item.approved || item.total_approved || 0}</td>
-                                            <td>{item.cancel || item.total_cancel || 0}</td>
-                                            <td>{item.payments || item.total_payments || 0}</td>
-                                            <td>{item.amount || item.total_amount || 0}</td>
-                                        </tr>
-                                    ))
-                                ) : modalData?.children && modalData.children.length > 0 ? (
-                                    modalData.children.map((item: any, idx: number) => (
-                                        <tr key={idx}>
-                                            <td>{item.sonod_name || item.bn_name || item.name}</td>
-                                            <td> {item.total_pending ?? item.pending ?? 0} </td>
-                                            <td> {item.total_approved ?? item.approved ?? 0} </td>
-                                            <td> {item.total_cancel ?? item.cancel ?? 0} </td>
-                                            <td> {item.total_payments ?? item.payments ?? 0} </td>
-                                            <td> {item.total_amount ?? item.amount ?? 0} </td>
-                                        </tr>
-                                    ))
-                                ) : modalData.sonod_reports && modalData.sonod_reports.length > 0 ? (
-                                    modalData.sonod_reports.map((item: any, idx: number) => (
-                                        <tr key={idx}>
-                                            <td>{item.sonod_name}</td>
-                                            <td>{item.pending_count}</td>
-                                            <td>{item.approved_count}</td>
-                                            <td>{item.cancel_count}</td>
-                                            <td>-</td>
-                                            <td>-</td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan={6} className="text-center">কোন তথ্য পাওয়া যায়নি</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                            <tfoot className="table-secondary fw-bold">
-                                <tr>
-                                    <td>সর্বমোট</td>
-                                    <td>
-                                        {Array.isArray(modalData)
-                                            ? modalData.some(item => item.children)
-                                                ? modalData.reduce((acc, curr) => acc + (curr.children?.reduce((sum: number, c: any) => sum + (c.pending || 0), 0) || 0), 0)
-                                                : modalData.reduce((acc, curr) => acc + (curr.pending || curr.total_pending || 0), 0)
-                                            : (modalData.total_pending || 0)}
-                                    </td>
-                                    <td>
-                                        {Array.isArray(modalData)
-                                            ? modalData.some(item => item.children)
-                                                ? modalData.reduce((acc, curr) => acc + (curr.children?.reduce((sum: number, c: any) => sum + (c.approved || 0), 0) || 0), 0)
-                                                : modalData.reduce((acc, curr) => acc + (curr.approved || curr.total_approved || 0), 0)
-                                            : (modalData.total_approved || 0)}
-                                    </td>
-                                    <td>
-                                        {Array.isArray(modalData)
-                                            ? modalData.some(item => item.children)
-                                                ? modalData.reduce((acc, curr) => acc + (curr.children?.reduce((sum: number, c: any) => sum + (c.cancel || 0), 0) || 0), 0)
-                                                : modalData.reduce((acc, curr) => acc + (curr.cancel || curr.total_cancel || 0), 0)
-                                            : (modalData.total_cancel || 0)}
-                                    </td>
-                                    <td>
-                                        {Array.isArray(modalData)
-                                            ? modalData.some(item => item.children)
-                                                ? modalData.reduce((acc, curr) => acc + (curr.children?.reduce((sum: number, c: any) => sum + (c.payments || 0), 0) || 0), 0)
-                                                : modalData.reduce((acc, curr) => acc + (curr.payments || curr.total_payments || 0), 0)
-                                            : (modalData.total_payments || 0)}
-                                    </td>
-                                    <td>
-                                        {Array.isArray(modalData)
-                                            ? modalData.some(item => item.children)
-                                                ? modalData.reduce((acc, curr) => acc + (curr.children?.reduce((sum: number, c: any) => sum + parseFloat(c.amount || 0), 0) || 0), 0).toFixed(2)
-                                                : modalData.reduce((acc, curr) => acc + parseFloat(curr.amount || curr.total_amount || 0), 0).toFixed(2)
-                                            : (modalData.total_amount || 0)}
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                ) : (
-                    <div className="text-center p-5 text-muted">কোন তথ্য নেই</div>
-                )}
-            </Modal>
+                loading={modalLoading}
+                data={modalData}
+            />
         </div>
     )
 }
