@@ -306,6 +306,8 @@ export interface SonodReport {
   pending_count: number;
   approved_count: number;
   cancel_count: number;
+  total_payments?: number;
+  total_amount?: string;
 }
 
 export interface Totals {

@@ -38,8 +38,7 @@ const UnionReports = () => {
       return;
     }
 
-    const smallUnion = `${selectedUnion}`.replace(/\s+/g, "").toLowerCase();
-    const url = `${VITE_BASE_DOC_URL}/payment/report/download?union=${smallUnion}&from=${formData.fromDate}&to=${formData.toDate}&sonod_type=${formData.sonod}&payment_type=${formData.paymentType}&token=${token}`;
+    const url = `${VITE_BASE_DOC_URL}/payment/report/download?union=${selectedUnion}&from=${formData.fromDate}&to=${formData.toDate}&sonod_type=${formData.sonod}&payment_type=${formData.paymentType}&token=${token}`;
     window.open(url, "_blank");
   };
 

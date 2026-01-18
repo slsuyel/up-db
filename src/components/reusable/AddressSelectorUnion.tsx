@@ -6,9 +6,17 @@ import { RootState } from "@/redux/features/store";
 
 type AddressSelectorProps = {
   onUnionChange: (union: TUnion | null) => void;
+  onDivisionChange?: (division: TDivision | null) => void;
+  onDistrictChange?: (district: TDistrict | null) => void;
+  onUpazilaChange?: (upazila: TUpazila | null) => void;
 };
 
-const AddressSelectorUnion = ({ onUnionChange }: AddressSelectorProps) => {
+const AddressSelectorUnion = ({
+  onUnionChange,
+  onDivisionChange,
+  onDistrictChange,
+  onUpazilaChange,
+}: AddressSelectorProps) => {
   const user = useAppSelector((state: RootState) => state.user.user);
   const [divisions, setDivisions] = useState<TDivision[]>([]);
   const [districts, setDistricts] = useState<TDistrict[]>([]);
@@ -95,6 +103,9 @@ const AddressSelectorUnion = ({ onUnionChange }: AddressSelectorProps) => {
     setSelectedDistrict(null);
     setSelectedUpazila(null);
     setSelectedUnion(null);
+    onDivisionChange?.(division || null);
+    onDistrictChange?.(null);
+    onUpazilaChange?.(null);
     onUnionChange(null);
 
     // Clear any previous localStorage values
@@ -104,12 +115,12 @@ const AddressSelectorUnion = ({ onUnionChange }: AddressSelectorProps) => {
   };
 
   const handleDistrictChange = (e: ChangeEvent<HTMLSelectElement>) => {
-
-
     const district = districts.find((d) => d.id == e.target.value);
     setSelectedDistrict(district || null);
     setSelectedUpazila(null);
     setSelectedUnion(null);
+    onDistrictChange?.(district || null);
+    onUpazilaChange?.(null);
     onUnionChange(null);
 
     // Clear upazila and union in localStorage
@@ -121,6 +132,7 @@ const AddressSelectorUnion = ({ onUnionChange }: AddressSelectorProps) => {
     const upazila = upazilas.find((u) => u.id == e.target.value);
     setSelectedUpazila(upazila || null);
     setSelectedUnion(null);
+    onUpazilaChange?.(upazila || null);
     onUnionChange(null);
 
     // Clear union in localStorage
@@ -129,83 +141,84 @@ const AddressSelectorUnion = ({ onUnionChange }: AddressSelectorProps) => {
 
   const handleUnionChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const union = unions.find((u) => u.id == e.target.value);
-    setSelectedUnion(union || null);
-    onUnionChange(union || null);
+    const sanitizedUnion = union ? { ...union, name: union.name.replace(/\s+/g, "").toLowerCase() } : null;
+    setSelectedUnion(sanitizedUnion);
+    onUnionChange(sanitizedUnion);
   };
 
   return (
-<div className="card shadow-sm mb-4">
-  <div className="card-header bg-primary text-white">
-    <h5 className="mb-0">ঠিকানা নির্বাচন করুন</h5>
-  </div>
-  <div className="card-body">
-    <div className="row g-3">
-      <div className="col-md-3">
-        <label className="form-label fw-semibold">বিভাগ</label>
-        <select
-          className="form-select"
-          value={selectedDivision?.id || ""}
-          disabled={!!user?.division_name}
-          onChange={handleDivisionChange}
-        >
-          <option value="">নির্বাচন করুন</option>
-          {divisions.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.bn_name}
-            </option>
-          ))}
-        </select>
+    <div className="card shadow-sm mb-4">
+      <div className="card-header bg-primary text-white">
+        <h5 className="mb-0">ঠিকানা নির্বাচন করুন</h5>
       </div>
-      <div className="col-md-3">
-        <label className="form-label fw-semibold">জেলা</label>
-        <select
-          className="form-select"
-          value={selectedDistrict?.id || ""}
-          disabled={!!user?.district_name}
-          onChange={handleDistrictChange}
-        >
-          <option value="">নির্বাচন করুন</option>
-          {districts.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.bn_name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="col-md-3">
-        <label className="form-label fw-semibold">উপজেলা</label>
-        <select
-          className="form-select"
-          value={selectedUpazila?.id || ""}
-          disabled={!!user?.upazila_name}
-          onChange={handleUpazilaChange}
-        >
-          <option value="">নির্বাচন করুন</option>
-          {upazilas.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.bn_name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="col-md-3">
-        <label className="form-label fw-semibold">ইউনিয়ন</label>
-        <select
-          className="form-select"
-          value={selectedUnion?.id || ""}
-          onChange={handleUnionChange}
-        >
-          <option value="">নির্বাচন করুন</option>
-          {unions.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.bn_name}
-            </option>
-          ))}
-        </select>
+      <div className="card-body">
+        <div className="row g-3">
+          <div className="col-md-3">
+            <label className="form-label fw-semibold">বিভাগ</label>
+            <select
+              className="form-select"
+              value={selectedDivision?.id || ""}
+              disabled={!!user?.division_name}
+              onChange={handleDivisionChange}
+            >
+              <option value="">নির্বাচন করুন</option>
+              {divisions.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.bn_name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-md-3">
+            <label className="form-label fw-semibold">জেলা</label>
+            <select
+              className="form-select"
+              value={selectedDistrict?.id || ""}
+              disabled={!!user?.district_name}
+              onChange={handleDistrictChange}
+            >
+              <option value="">নির্বাচন করুন</option>
+              {districts.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.bn_name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-md-3">
+            <label className="form-label fw-semibold">উপজেলা</label>
+            <select
+              className="form-select"
+              value={selectedUpazila?.id || ""}
+              disabled={!!user?.upazila_name}
+              onChange={handleUpazilaChange}
+            >
+              <option value="">নির্বাচন করুন</option>
+              {upazilas.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.bn_name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-md-3">
+            <label className="form-label fw-semibold">ইউনিয়ন</label>
+            <select
+              className="form-select"
+              value={selectedUnion?.id || ""}
+              onChange={handleUnionChange}
+            >
+              <option value="">নির্বাচন করুন</option>
+              {unions.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.bn_name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
   );
 };

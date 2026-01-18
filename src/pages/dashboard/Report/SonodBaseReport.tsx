@@ -1,20 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAdminReportMutation } from "@/redux/api/auth/authApi";
 import { TAdminData, TDistrict, TDivision, TUnion, TUpazila } from "@/types";
-import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Spinner } from "react-bootstrap";
 
 import { Link, useParams } from "react-router-dom";
-// import { message } from "antd";
 import Breadcrumbs from "@/components/reusable/Breadcrumbs";
 import { useAppSelector } from "@/redux/features/hooks";
 import { RootState } from "@/redux/features/store";
+import AddressSelectorUnion from "@/components/reusable/AddressSelectorUnion";
+import PouroLocationSelector from "@/components/reusable/PouroLocationSelector";
 
 const SonodBaseReport: React.FC = () => {
   const { service } = useParams();
   const isUnion = useAppSelector(
     (state: RootState) => state.siteSetting.isUnion
   );
-  const user = useAppSelector((state: RootState) => state.user.user);
   const token = localStorage.getItem("token");
   const [selectedUnion, setSelectedUnion] = useState<TUnion | null>(null);
   const [selectedDivision, setSelectedDivision] = useState<TDivision | null>(
@@ -24,147 +25,24 @@ const SonodBaseReport: React.FC = () => {
     null
   );
   const [selectedUpazila, setSelectedUpazila] = useState<TUpazila | null>(null);
-  const [divisions, setDivisions] = useState<TDivision[]>([]);
-  const [districts, setDistricts] = useState<TDistrict[]>([]);
-  const [upazilas, setUpazilas] = useState<TUpazila[]>([]);
-  const [unions, setUnions] = useState<TUnion[]>([]);
 
   const VITE_BASE_DOC_URL = import.meta.env.VITE_BASE_DOC_URL;
 
   const [adminReport, { isLoading, data }] = useAdminReportMutation();
 
-  useEffect(() => {
-    fetch("/divisions.json")
-      .then((res) => res.json())
-      .then((data: TDivision[]) => {
-        setDivisions(data);
-        if (user?.division_name) {
-          const userDivision = data.find((d) => d?.name === user.division_name);
-          if (userDivision) {
-            setSelectedDivision(userDivision);
-          }
-        }
-      })
-      .catch((error) => console.error("Error fetching divisions data:", error));
-  }, [user]);
-
-  useEffect(() => {
-    if (selectedDivision) {
-      fetch("/districts.json")
-        .then((response) => response.json())
-        .then((data: TDistrict[]) => {
-          const filteredDistricts = data.filter(
-            (d) => d?.division_id === selectedDivision.id
-          );
-          setDistricts(filteredDistricts);
-          if (user?.district_name) {
-            const userDistrict = filteredDistricts.find(
-              (d) => d?.name === user.district_name
-            );
-            if (userDistrict) {
-              setSelectedDistrict(userDistrict);
-            }
-          }
-        })
-        .catch((error) =>
-          console.error("Error fetching districts data:", error)
-        );
-    }
-  }, [selectedDivision, user]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
-      fetch("/upazilas.json")
-        .then((response) => response.json())
-        .then((data: TUpazila[]) => {
-          const filteredUpazilas = data.filter(
-            (upazila) => upazila.district_id === selectedDistrict.id
-          );
-          setUpazilas(filteredUpazilas);
-          if (user?.upazila_name) {
-            const userUpazila = filteredUpazilas.find(
-              (u) => u?.name === user.upazila_name
-            );
-            if (userUpazila) {
-              setSelectedUpazila(userUpazila);
-            }
-          }
-        })
-        .catch((error) =>
-          console.error("Error fetching upazilas data:", error)
-        );
-    }
-  }, [selectedDistrict, user]);
-
-  useEffect(() => {
-    if (selectedUpazila) {
-      fetch("/unions.json")
-        .then((response) => response.json())
-        .then((data: TUnion[]) => {
-          const filteredUnions = data.filter(
-            (union) => union.upazilla_id === selectedUpazila.id
-          );
-          setUnions(filteredUnions);
-        })
-        .catch((error) => console.error("Error fetching unions data:", error));
-    }
-  }, [selectedUpazila]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
-      fetch("/pouroseba.json")
-        .then((res) => res.json())
-        .then((data) => {
-          const filteredPorasova = data.filter(
-            (u: any) => u.district_id == selectedDistrict.id
-          );
-          console.log(filteredPorasova);
-          setUnions(filteredPorasova);
-        })
-        .catch((error) => console.error("Error fetching unions:", error));
-    } else {
-      setUnions([]);
-    }
-  }, [selectedDistrict]);
-
-  const handleDivisionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const division = divisions.find((d) => d.id === event.target.value);
-    setSelectedDivision(division || null);
-    setSelectedDistrict(null);
-    setSelectedUpazila(null);
-    setSelectedUnion(null);
-  };
-
-  const handleDistrictChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const district = districts.find((d) => d.id === event.target.value);
-    setSelectedDistrict(district || null);
-    setSelectedUpazila(null);
-  };
-
-  const handleUpazilaChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const upazila = upazilas.find((u) => u.id === event.target.value);
-    setSelectedUpazila(upazila || null);
-  };
-
-  const handleUnionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const union = unions.find((u) => u.id === event.target.value);
-    setSelectedUnion(union || null);
-  };
-
   const handleSearchClick = useCallback(async () => {
     if (!selectedDivision?.name) {
-      //   message.warning("বিভাগ নির্বাচন করুন");
       return;
     }
 
-    const data = {
+    const requestData = {
       division_name: selectedDivision?.name,
-      district_name: selectedDistrict?.name,
-      upazila_name: selectedUpazila?.name,
-      union_name: selectedUnion?.name.replace(/\s+/g, "").toLowerCase(),
+      district_name: selectedDistrict?.name || undefined,
+      upazila_name: selectedUpazila?.name || undefined,
+      union_name: selectedUnion?.name || undefined,
       sonod_name: service,
     };
-    await adminReport({ data, token }).unwrap();
+    await adminReport({ data: requestData, token }).unwrap();
   }, [
     selectedDivision,
     selectedDistrict,
@@ -175,117 +53,41 @@ const SonodBaseReport: React.FC = () => {
     token,
   ]);
 
-  // useEffect(() => {
-  //   handleSearchClick();
-  // }, [service, handleSearchClick]);
-
   const admin: TAdminData = data?.data?.total_report;
 
   return (
     <div className="bg-white p-2 p-md-3 rounded">
       <Breadcrumbs current={` ${service} প্রতিবেদন`} />
-      <div className="row mx-auto">
-        <div className="col-md-2">
-          <label htmlFor="division">বিভাগ নির্বাচন করুন</label>
-          <select
-            disabled={!!user?.division_name}
-            id="division"
-            className="searchFrom form-control"
-            value={selectedDivision?.id || ""}
-            onChange={handleDivisionChange}
-          >
-            <option value="">বিভাগ নির্বাচন করুন</option>
-            {divisions.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.bn_name}
-              </option>
-            ))}
-          </select>
+
+      <div className="row mx-auto mb-3">
+        <div className="col-md-12">
+          {isUnion ? (
+            <AddressSelectorUnion
+              onDivisionChange={(division: TDivision | null) => setSelectedDivision(division)}
+              onDistrictChange={(district: TDistrict | null) => setSelectedDistrict(district)}
+              onUpazilaChange={(upazila: TUpazila | null) => setSelectedUpazila(upazila)}
+              onUnionChange={(union: TUnion | null) => setSelectedUnion(union)}
+            />
+          ) : (
+            <PouroLocationSelector
+              onDivisionChange={(division: any) => setSelectedDivision(division)}
+              onDistrictChange={(district: any) => setSelectedDistrict(district)}
+              onUnionChange={(union: any) => setSelectedUnion(union)}
+              showLabels={true}
+            />
+          )}
         </div>
+      </div>
 
-        {selectedDivision && (
-          <div className="col-md-2">
-            <label htmlFor="district">জেলা নির্বাচন করুন</label>
-            <select
-              disabled={!!user?.district_name}
-              id="district"
-              className="searchFrom form-control"
-              value={selectedDistrict?.id || ""}
-              onChange={handleDistrictChange}
-            >
-              <option value="">জেলা নির্বাচন করুন</option>
-              {districts.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.bn_name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {isUnion ? (
-          <>
-            {selectedDistrict && (
-              <div className="col-md-2">
-                <label htmlFor="upazila">উপজেলা নির্বাচন করুন</label>
-                <select
-                  disabled={!!user?.upazila_name}
-                  id="upazila"
-                  className="searchFrom form-control"
-                  value={selectedUpazila?.id || ""}
-                  onChange={handleUpazilaChange}
-                >
-                  <option value="">উপজেলা নির্বাচন করুন</option>
-                  {upazilas.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.bn_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {selectedUpazila && (
-              <div className="col-md-2">
-                <label htmlFor="union">ইউনিয়ন নির্বাচন করুন</label>
-                <select
-                  id="union"
-                  className="searchFrom form-control"
-                  value={selectedUnion?.id || ""}
-                  onChange={handleUnionChange}
-                >
-                  <option value="">ইউনিয়ন নির্বাচন করুন</option>
-                  {unions.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.bn_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="col-md-2">
-            <label htmlFor="union">পৌরসভা নির্বাচন করুন</label>
-            <select
-              id="union"
-              className="searchFrom form-control"
-              value={selectedUnion?.id || ""}
-              onChange={handleUnionChange}
-            >
-              <option value="">পৌরসভা নির্বাচন করুন</option>
-              {unions.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.bn_name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
+      <div className="row mx-auto align-items-end g-3">
         <div className="col-md-2">
-          <button onClick={handleSearchClick} className="btn btn-primary mt-4">
-            Search
+          <button
+            disabled={isLoading}
+            onClick={handleSearchClick}
+            className="btn btn-primary w-100"
+            style={{ height: "38px" }}
+          >
+            {isLoading ? <Spinner animation="border" size="sm" /> : "সার্চ"}
           </button>
         </div>
       </div>
@@ -293,172 +95,61 @@ const SonodBaseReport: React.FC = () => {
       <div className=" w-100 text-center my-5"> {isLoading && <Spinner />}</div>
 
       <div className=" my-3 d-flex justify-content-end text-white">
-        {admin?.sonod_reports.length >= 1 && (
+        {admin?.sonod_reports && admin?.sonod_reports.length >= 1 && (
           <Link
             target="_blank"
-            to={`${VITE_BASE_DOC_URL}/download/reports/get-reports${
-              selectedDivision ? `?division_name=${selectedDivision.name}` : ""
-            }${
-              selectedDistrict ? `&district_name=${selectedDistrict.name}` : ""
-            }${selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ""}${
-              selectedUnion ? `&union_name=${selectedUnion.name}` : ""
-            }${service ? `&sonod_name=${service}` : ""}&token=${token}`}
-            className="btn btn-info text-white"
+            to={`${VITE_BASE_DOC_URL}/download/reports/get-reports${selectedDivision ? `?division_name=${selectedDivision.name}` : ""
+              }${selectedDistrict ? `&district_name=${selectedDistrict.name}` : ""
+              }${selectedUpazila ? `&upazila_name=${selectedUpazila.name}` : ""}${selectedUnion ? `&union_name=${selectedUnion.name}` : ""
+              }&sonod_name=${service}&detials=1&token=${token}`}
+            className="btn btn-primary "
           >
-            প্রতিবেদন ডাউনলোড করুন
+            <i className="fa-solid fa-download"></i> রিপোর্ট ডাউনলোড
           </Link>
         )}
       </div>
 
-      {/* {admin?.totals && <Summary data={admin.totals} isLoading={isLoading} />} */}
-
-      <div className=" row mx-auto mt-4">
+      <div className="row mx-auto mt-4">
         {admin?.sonod_reports && (
           <h6 className="mb-4 fs-4 border-bottom">
             {selectedUnion?.bn_name
-              ? `${selectedUnion.bn_name} ${
-                  isUnion ? "ইউনিয়নের" : "পৌরসভার "
-                } সনদের প্রতিবেদন`
+              ? `${selectedUnion.bn_name} ইউনিয়নের সনদের প্রতিবেদন`
               : selectedUpazila?.bn_name
-              ? `${selectedUpazila.bn_name} উপজেলার সকল ${
-                  isUnion ? "ইউনিয়নের" : "পৌরসভার "
-                } সনদের প্রতিবেদন`
-              : selectedDistrict?.bn_name
-              ? `${selectedDistrict.bn_name} জেলার সকল ${
-                  isUnion ? "ইউনিয়নের" : "পৌরসভার "
-                } সনদের প্রতিবেদন`
-              : selectedDivision?.bn_name
-              ? `${selectedDivision.bn_name} বিভাগের সকল ${
-                  isUnion ? "ইউনিয়নের" : "পৌরসভার "
-                } সনদের প্রতিবেদন`
-              : "সনদের প্রতিবেদন"}
+                ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
+                : selectedDistrict?.bn_name
+                  ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের সনদের প্রতিবেদন`
+                  : selectedDivision?.bn_name
+                    ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের সনদের প্রতিবেদন`
+                    : "সনদের প্রতিবেদন"}
           </h6>
         )}
 
-        <table className="table table-bordered table-hover">
-          <thead className="thead-dark">
-            <tr>
-              <th>সনদ নাম</th>
-              <th> নতুন আবেদন </th>
-              <th>অনুমোদিত আবেদন</th>
-              <th>বাতিল</th>
-              {!selectedUnion && <th>বিস্তারিত</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {admin?.sonod_reports?.map((report, index) => (
-              <tr key={index}>
-                <td>{report.sonod_name}</td>
-                <td>
-                  {selectedUnion ? (
-                    <Link
-                      to={`/dashboard/sonod/${
-                        report.sonod_name
-                      }/${"Pending"}/${selectedUnion?.name
-                        .replace(/\s+/g, "")
-                        .toLowerCase()}`}
-                    >
-                      {" "}
-                      {report.pending_count}
-                    </Link>
-                  ) : (
-                    report.pending_count
-                  )}
-                </td>
-                <td>
-                  {selectedUnion ? (
-                    <Link
-                      to={`/dashboard/sonod/${
-                        report.sonod_name
-                      }/${"approved"}/${selectedUnion?.name
-                        .replace(/\s+/g, "")
-                        .toLowerCase()}`}
-                    >
-                      {" "}
-                      {report.approved_count}
-                    </Link>
-                  ) : (
-                    report.approved_count
-                  )}
-                </td>
-                <td>
-                  {selectedUnion ? (
-                    <Link
-                      to={`/dashboard/sonod/${
-                        report.sonod_name
-                      }/${"cancel"}/${selectedUnion?.name
-                        .replace(/\s+/g, "")
-                        .toLowerCase()}`}
-                    >
-                      {" "}
-                      {report.cancel_count}
-                    </Link>
-                  ) : (
-                    report.cancel_count
-                  )}
-                </td>
-                {!selectedUnion && (
-                  <td>
-                    <a
-                      href={`${VITE_BASE_DOC_URL}/download/reports/get-reports?${
-                        selectedDivision?.name
-                          ? `division_name=${selectedDivision.name}&`
-                          : ""
-                      }${
-                        selectedDistrict?.name
-                          ? `district_name=${selectedDistrict.name}&`
-                          : ""
-                      }${
-                        selectedUpazila?.name
-                          ? `upazila_name=${selectedUpazila.name}&`
-                          : ""
-                      }${`sonod_name=${report.sonod_name}&`}detials=1&token=${token}`}
-                      target="_blank"
-                      className="btn btn-sm btn-info"
-                    >
-                      <i className="fa-solid fa-download text-white"></i>{" "}
-                      ডাউনলোড
-                    </a>
-                  </td>
-                )}
+        <div className="table-responsive">
+          <table className="table table-bordered table-hover">
+            <thead className="thead-dark">
+              <tr>
+                <th>সনদ নাম</th>
+                <th> নতুন আবেদন </th>
+                <th>অনুমোদিত আবেদন</th>
+                <th>বাতিল</th>
+                <th>মোট লেনদেন</th>
+                <th>প্রয়োজনীয় টাকা</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="row mx-auto  mt-5 ">
-        {admin?.payment_reports && (
-          <h6 className="mb-4 fs-4 border-bottom">
-            {selectedUnion?.bn_name
-              ? `${selectedUnion.bn_name} ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-              : selectedUpazila?.bn_name
-              ? `${selectedUpazila.bn_name} উপজেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-              : selectedDistrict?.bn_name
-              ? `${selectedDistrict.bn_name} জেলার সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-              : selectedDivision?.bn_name
-              ? `${selectedDivision.bn_name} বিভাগের সকল ইউনিয়নের আদায়কৃত ফি এর প্রতিবেদন`
-              : "আদায়কৃত ফি এর প্রতিবেদন"}
-          </h6>
-        )}
-
-        <table className="table table-bordered table-hover">
-          <thead className="thead-dark">
-            <tr>
-              <th>সনদ নাম</th>
-              <th>মোট লেনদেন</th>
-              <th>মোট টাকার পরিমাণ</th>
-            </tr>
-          </thead>
-          <tbody>
-            {admin?.payment_reports?.map((report, index) => (
-              <tr key={index}>
-                <td>{report.sonod_type}</td>
-                <td>{report.total_payments}</td>
-                <td>{report.total_amount}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {admin?.sonod_reports?.map((report, index) => (
+                <tr key={index}>
+                  <td>{report.sonod_name}</td>
+                  <td>{report.pending_count}</td>
+                  <td>{report.approved_count}</td>
+                  <td>{report.cancel_count}</td>
+                  <td>{report.total_payments}</td>
+                  <td>{report.total_amount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

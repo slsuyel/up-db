@@ -7,10 +7,12 @@ const { Option } = Select;
 interface LocationSelectorProps {
   onUnionSelect?: (union: any | null) => void; // optional
   onUnionChange?: (union: any | null) => void; // optional
+  onDivisionChange?: (division: any | null) => void;
+  onDistrictChange?: (district: any | null) => void;
   showLabels?: boolean;
 }
 
-const PouroLocationSelector = ({ onUnionSelect, onUnionChange, showLabels = false }: LocationSelectorProps) => {
+const PouroLocationSelector = ({ onUnionSelect, onUnionChange, onDivisionChange, onDistrictChange, showLabels = false }: LocationSelectorProps) => {
   const [selecteddivisions, setSelectedDivisions] = useState<string>("");
   const [selectedDistrict, setSelectedDistrict] = useState<string>("");
   const [selectedUnion, setSelectedUnion] = useState<string>("");
@@ -55,25 +57,33 @@ const PouroLocationSelector = ({ onUnionSelect, onUnionChange, showLabels = fals
     setSelectedDivisions(value);
     setSelectedDistrict("");
     setUnions([]);
+    const division = divisions.find((d) => d.id === value);
+    if (onDivisionChange) onDivisionChange(division || null);
+    if (onDistrictChange) onDistrictChange(null);
+    if (onUnionChange) onUnionChange(null);
   };
 
   const handleDistrictChange = (value: string) => {
     setSelectedDistrict(value);
     setSelectedUnion("");
+    const district = districts.find((d) => d.id === value);
+    if (onDistrictChange) onDistrictChange(district || null);
+    if (onUnionChange) onUnionChange(null);
   };
 
   const handleUnionChange = (value: string) => {
     const selectedUnionObject = unions.find(
       (u) => u?.name.toLowerCase().replace(/\s+/g, "") === value.toLowerCase().replace(/\s+/g, "")
     );
-    setSelectedUnion(selectedUnionObject?.name || "");
+    const sanitizedUnion = selectedUnionObject ? { ...selectedUnionObject, name: selectedUnionObject.name.replace(/\s+/g, "").toLowerCase() } : null;
+    setSelectedUnion(sanitizedUnion?.name || "");
 
     // Call both props if they exist
     if (onUnionSelect) {
-      onUnionSelect(selectedUnionObject || null);
+      onUnionSelect(sanitizedUnion);
     }
     if (onUnionChange) {
-      onUnionChange(selectedUnionObject || null);
+      onUnionChange(sanitizedUnion);
     }
   };
 

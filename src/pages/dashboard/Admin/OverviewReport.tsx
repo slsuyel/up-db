@@ -4,7 +4,7 @@
 import useAllServices from "@/hooks/useAllServices"
 import { useLazyLocationChildSummaryQuery, useLazyOverviewReportQuery, useLazySonodWiseSummaryQuery } from "@/redux/api/auth/authApi"
 import type { TDistrict, TDivision, TUnion, TUpazila } from "@/types"
-import React, { type ChangeEvent, useEffect, useState } from "react"
+import React, { useState } from "react"
 import { Spinner } from "react-bootstrap"
 import Summary from "./Summary"
 import { Link } from "react-router-dom"
@@ -17,6 +17,8 @@ import type { RootState } from "@/redux/features/store"
 import Breadcrumbs from "@/components/reusable/Breadcrumbs"
 import ReportTable from "@/components/reusable/reports/ReportTable"
 import ReportModal from "@/components/reusable/reports/ReportModal"
+import AddressSelectorUnion from "@/components/reusable/AddressSelectorUnion"
+import PouroLocationSelector from "@/components/reusable/PouroLocationSelector"
 
 // Define interfaces for the report data structure
 interface ChildStats {
@@ -61,7 +63,6 @@ interface OverviewResponse {
 const OverviewReport: React.FC = () => {
 
     const isUnion = useAppSelector((state: RootState) => state.siteSetting.isUnion);
-    const user = useAppSelector((state: RootState) => state.user.user)
     const token = localStorage.getItem("token")
     const services = useAllServices()
     const [selected, setSelected] = useState<string>("")
@@ -69,10 +70,6 @@ const OverviewReport: React.FC = () => {
     const [selectedDivision, setSelectedDivision] = useState<TDivision | null>(null)
     const [selectedDistrict, setSelectedDistrict] = useState<TDistrict | null>(null)
     const [selectedUpazila, setSelectedUpazila] = useState<TUpazila | null>(null)
-    const [divisions, setDivisions] = useState<TDivision[]>([])
-    const [districts, setDistricts] = useState<TDistrict[]>([])
-    const [upazilas, setUpazilas] = useState<TUpazila[]>([])
-    const [unions, setUnions] = useState<TUnion[]>([])
     const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null]>([null, null])
     const [activeFilter, setActiveFilter] = useState<string>("all")
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -86,110 +83,6 @@ const OverviewReport: React.FC = () => {
 
     const VITE_BASE_DOC_URL = import.meta.env.VITE_BASE_DOC_URL as string
 
-    useEffect(() => {
-        fetch("/divisions.json")
-            .then((res) => res.json())
-            .then((data: TDivision[]) => {
-                setDivisions(data)
-                if (user?.division_name) {
-                    const userDivision = data.find((d) => d?.name === user.division_name)
-                    if (userDivision) {
-                        setSelectedDivision(userDivision)
-                    }
-                }
-            })
-            .catch((error) => console.error("Error fetching divisions data:", error))
-    }, [user])
-
-    useEffect(() => {
-        if (selectedDivision) {
-            fetch("/districts.json")
-                .then((response) => response.json())
-                .then((data: TDistrict[]) => {
-                    const filteredDistricts = data.filter((d) => d?.division_id === selectedDivision.id)
-                    setDistricts(filteredDistricts)
-                    if (user?.district_name) {
-                        const userDistrict = filteredDistricts.find((d) => d?.name === user.district_name)
-                        if (userDistrict) {
-                            setSelectedDistrict(userDistrict)
-                        }
-                    }
-                })
-                .catch((error) => console.error("Error fetching districts data:", error))
-        }
-    }, [selectedDivision, user])
-
-    useEffect(() => {
-        if (selectedDistrict) {
-            fetch("/upazilas.json")
-                .then((response) => response.json())
-                .then((data: TUpazila[]) => {
-                    const filteredUpazilas = data.filter((upazila) => upazila.district_id === selectedDistrict.id)
-                    setUpazilas(filteredUpazilas)
-                    if (user?.upazila_name) {
-                        const userUpazila = filteredUpazilas.find((u) => u?.name === user.upazila_name)
-                        if (userUpazila) {
-                            setSelectedUpazila(userUpazila)
-                        }
-                    }
-                })
-                .catch((error) => console.error("Error fetching upazilas data:", error))
-        }
-    }, [selectedDistrict, user])
-
-    useEffect(() => {
-        if (selectedUpazila) {
-            fetch("/unions.json")
-                .then((response) => response.json())
-                .then((data: TUnion[]) => {
-                    const filteredUnions = data.filter((union) => union.upazilla_id === selectedUpazila.id)
-                    setUnions(filteredUnions)
-                })
-                .catch((error) => console.error("Error fetching unions data:", error))
-        }
-    }, [selectedUpazila])
-
-    useEffect(() => {
-        if (selectedDistrict) {
-            fetch("/pouroseba.json")
-                .then((res) => res.json())
-                .then((data) => {
-                    const filteredPorasova = data.filter((u: any) => u.district_id == selectedDistrict.id);
-                    console.log(filteredPorasova);
-                    setUnions(filteredPorasova);
-                })
-                .catch((error) => console.error("Error fetching unions:", error));
-        } else {
-            setUnions([]);
-        }
-    }, [selectedDistrict]);
-
-
-    const handleDivisionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-        const division = divisions.find((d) => d.id === event.target.value)
-        setSelectedDivision(division || null)
-        setSelectedDistrict(null)
-        setSelectedUpazila(null)
-        setSelectedUnion(null)
-    }
-
-    const handleDistrictChange = (event: ChangeEvent<HTMLSelectElement>) => {
-        const district = districts.find((d) => d.id === event.target.value)
-        setSelectedDistrict(district || null)
-        setSelectedUpazila(null)
-        setSelectedUnion(null)
-    }
-
-    const handleUpazilaChange = (event: ChangeEvent<HTMLSelectElement>) => {
-        const upazila = upazilas.find((u) => u.id === event.target.value)
-        setSelectedUpazila(upazila || null)
-        setSelectedUnion(null)
-    }
-
-    const handleUnionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-        const union = unions.find((u) => u.id === event.target.value)
-        setSelectedUnion(union || null)
-    }
 
     const handleSearchClick = async (range?: [dayjs.Dayjs | null, dayjs.Dayjs | null]) => {
         if (!selectedDivision?.name) {
@@ -205,7 +98,7 @@ const OverviewReport: React.FC = () => {
             division_name: selectedDivision?.name,
             district_name: selectedDistrict?.name || undefined,
             upazila_name: selectedUpazila?.name || undefined,
-            union_name: selectedUnion?.name ? selectedUnion.name.replace(/\s+/g, "").toLowerCase() : undefined,
+            union_name: selectedUnion?.name || undefined,
             sonod_name: selected || undefined,
             from_date,
             to_date,
@@ -297,102 +190,29 @@ const OverviewReport: React.FC = () => {
     return (
         <div className="bg-white p-2 p-md-3 rounded">
             <Breadcrumbs current=" ওভারভিউ প্রতিবেদন" />
-            <div className="row mx-auto">
-                <div className="col-md-2">
-                    <label htmlFor="division">বিভাগ নির্বাচন করুন</label>
-                    <select
-                        disabled={!!user?.division_name}
-                        id="division"
-                        className="searchFrom form-control"
-                        value={selectedDivision?.id || ""}
-                        onChange={handleDivisionChange}
-                    >
-                        <option value="">বিভাগ নির্বাচন করুন</option>
-                        {divisions.map((d) => (
-                            <option key={d.id} value={d.id}>
-                                {d.bn_name}
-                            </option>
-                        ))}
-                    </select>
+
+            <div className="row mx-auto mb-3">
+                <div className="col-md-12">
+                    {isUnion ? (
+                        <AddressSelectorUnion
+                            onDivisionChange={(division: TDivision | null) => setSelectedDivision(division)}
+                            onDistrictChange={(district: TDistrict | null) => setSelectedDistrict(district)}
+                            onUpazilaChange={(upazila: TUpazila | null) => setSelectedUpazila(upazila)}
+                            onUnionChange={(union: TUnion | null) => setSelectedUnion(union)}
+                        />
+                    ) : (
+                        <PouroLocationSelector
+                            onDivisionChange={(division: any) => setSelectedDivision(division)}
+                            onDistrictChange={(district: any) => setSelectedDistrict(district)}
+                            onUnionChange={(union: any) => setSelectedUnion(union)}
+                            showLabels={true}
+                        />
+                    )}
                 </div>
+            </div>
 
-                {selectedDivision && (
-                    <div className="col-md-2">
-                        <label htmlFor="district">জেলা নির্বাচন করুন</label>
-                        <select
-                            disabled={!!user?.district_name}
-                            id="district"
-                            className="searchFrom form-control"
-                            value={selectedDistrict?.id || ""}
-                            onChange={handleDistrictChange}
-                        >
-                            <option value="">জেলা নির্বাচন করুন</option>
-                            {districts.map((d) => (
-                                <option key={d.id} value={d.id}>
-                                    {d.bn_name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                )}
-
-                {isUnion ? <>
-                    {selectedDistrict && (
-                        <div className="col-md-2">
-                            <label htmlFor="upazila">উপজেলা নির্বাচন করুন</label>
-                            <select
-                                disabled={!!user?.upazila_name}
-                                id="upazila"
-                                className="searchFrom form-control"
-                                value={selectedUpazila?.id || ""}
-                                onChange={handleUpazilaChange}
-                            >
-                                <option value="">উপজেলা নির্বাচন করুন</option>
-                                {upazilas.map((u) => (
-                                    <option key={u.id} value={u.id}>
-                                        {u.bn_name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
-
-                    {selectedUpazila && (
-                        <div className="col-md-2">
-                            <label htmlFor="union">ইউনিয়ন নির্বাচন করুন</label>
-                            <select
-                                id="union"
-                                className="searchFrom form-control"
-                                value={selectedUnion?.id || ""}
-                                onChange={handleUnionChange}
-                            >
-                                <option value="">ইউনিয়ন নির্বাচন করুন</option>
-                                {unions.map((u) => (
-                                    <option key={u.id} value={u.id}>
-                                        {u.bn_name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
-                </> : <div className="col-md-2">
-                    <label htmlFor="union">পৌরসভা নির্বাচন করুন</label>
-                    <select
-                        id="union"
-                        className="searchFrom form-control"
-                        value={selectedUnion?.id || ""}
-                        onChange={handleUnionChange}
-                    >
-                        <option value="">পৌরসভা নির্বাচন করুন</option>
-                        {unions.map((u) => (
-                            <option key={u.id} value={u.id}>
-                                {u.bn_name}
-                            </option>
-                        ))}
-                    </select>
-                </div>}
-
-                <div className="col-md-2">
+            <div className="row mx-auto align-items-end g-3">
+                <div className="col-md-3">
                     <label htmlFor="service">সেবা নির্বাচন করুন</label>
                     <select
                         id="service"

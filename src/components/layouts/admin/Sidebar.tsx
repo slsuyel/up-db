@@ -54,6 +54,7 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
             { key: "union-create", title: "ইউনিয়ন তৈরি", slug: "/create-union" },
             { key: "system-settings", title: "সিস্টেম সেটিংস", slug: "/system-settings" },
             { key: "ekpay-report", title: "একপে প্রতিবেদন", slug: "/ekpay-report" },
+            { key: "users", title: "ব্যবহারকারী", slug: "/users" },
           ],
         },
       ]
@@ -103,7 +104,6 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
       icon: <SettingOutlined />,
       submenu: [
         { key: "site-settings", title: "সাইট সেটিংস", slug: "/site-settings" },
-        { key: "users", title: "ব্যবহারকারী", slug: "/users" },
       ],
     },
   ];

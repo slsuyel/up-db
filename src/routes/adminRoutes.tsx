@@ -9,6 +9,7 @@ import PaymentFailed from "@/pages/dashboard/Report/PaymentFailed";
 import SonodBaseReport from "@/pages/dashboard/Report/SonodBaseReport";
 import EkpayReports from "@/pages/dashboard/Report/EkpayReports";
 import OverviewReport from "@/pages/dashboard/Admin/OverviewReport";
+import UserManagement from "@/pages/dashboard/Admin/UserManagement";
 
 import EditSonod from "@/pages/dashboard/SonodManagement/EditSonod";
 import SonodManagement from "@/pages/dashboard/SonodManagement/SonodManagement";
@@ -30,6 +31,10 @@ export const adminRoutes = [
   {
     path: "",
     element: <Dhome />,
+  },
+  {
+    path: "users",
+    element: <UserManagement />,
   },
 
   {
