@@ -11,6 +11,23 @@ const adminUserApi = apiSlice.injectEndpoints({
             }),
             providesTags: ["sonod-action"], // Reusing sonod-action for now, can add specific tag if needed
         }),
+        getAdminUser: builder.query({
+            query: ({ token, id }) => ({
+                url: `/admin/users/${id}`,
+                method: "GET",
+                headers: { Authorization: `Bearer ${token}` },
+            }),
+            providesTags: ["sonod-action"],
+        }),
+        updateAdminUser: builder.mutation({
+            query: ({ token, id, data }) => ({
+                url: `/admin/users/${id}`,
+                method: "PUT",
+                headers: { Authorization: `Bearer ${token}` },
+                body: data,
+            }),
+            invalidatesTags: ["sonod-action"],
+        }),
         loginByAdmin: builder.mutation({
             query: ({ token, email }) => ({
                 url: `/admin/users/login/by/admin`,
@@ -22,5 +39,5 @@ const adminUserApi = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useGetAdminUsersQuery, useLoginByAdminMutation } = adminUserApi;
+export const { useGetAdminUsersQuery, useLoginByAdminMutation, useGetAdminUserQuery, useUpdateAdminUserMutation } = adminUserApi;
 export default adminUserApi;
